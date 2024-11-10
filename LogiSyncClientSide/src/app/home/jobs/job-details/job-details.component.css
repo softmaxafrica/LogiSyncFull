@@ -1,0 +1,71 @@
+.job-details-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2.header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .job-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .job-details .label {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .job-details .value {
+    color: #333;
+  }
+  
+  .update-price-section, 
+  .finalize-agreement-section, 
+  .save-all-section {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  input {
+    margin-left: 10px;
+    padding: 5px;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .save-btn {
+    margin-left: 10px;
+  }
+  
+  .finalize-btn {
+    background-color: #28a745;
+  }
+  
+  .finalize-btn:hover {
+    background-color: #218838;
+  }
+  

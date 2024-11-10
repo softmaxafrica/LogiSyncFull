@@ -1,0 +1,77 @@
+﻿<!-- <p-menubar [model]="items">
+    <ng-template pTemplate="end">
+      <div class="profile-menu">
+      
+           <p-avatar 
+  *ngIf="user"
+  label="{{ user.email.substring(0, 2).toUpperCase() }}"
+  class="profile-avatar" 
+  (click)="onAvatarClick($event)">
+</p-avatar>
+
+        <p-menu #profileMenu [popup]="true">
+          <ng-template pTemplate="content">
+            <div class="profile-details">
+              <h3>{{ user?.userID }}</h3>
+              <p>Email: {{ user?.email }}</p>
+              <p>Role: {{ user?.role }}</p>
+              <button (click)="logout()" pButton label="Logout" class="p-button-danger p-mt-2"></button>
+            </div>
+          </ng-template>
+        </p-menu>
+      </div>
+    </ng-template>
+  </p-menubar>
+  <p-toast></p-toast> --> 
+
+
+  <div style="display: flex; height: 100vh;" > 
+    <!-- Sidebar with Animated Gradient Background -->
+    <p-sidebar [visible]="true" 
+    closeOnEscape="true"
+    [style]="{ width: '250px', borderRadius: '12px' }" class="animated-gradient" >
+      <p-menubar [model]="items" [style]="{ background: 'none', border: 'none', margin: '1rem' }">
+        <ng-template let-item pTemplate="item">
+          <a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link">
+            <!-- Display image icon instead of default PrimeNG icon -->
+            <img *ngIf="item.icon" [src]="item.icon"   width="34px" style="margin-right: 2rem;">
+            <span>{{ item.label }}</span>
+          </a>
+        </ng-template>
+      </p-menubar>
+    </p-sidebar>
+    
+  
+    <!-- Main Content Area with Animated Gradient Background -->
+    <div class="animated-gradient" style="flex-grow: 1; padding: 16px; margin-left: 250px; height: 100vh; overflow-y: auto;">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  
+  <style>
+  .animated-gradient {
+    background: linear-gradient(135deg, #fef24f, #00cbfe);
+    background-size: 200% 200%;
+    animation: gradientAnimation 10s ease infinite;
+  }
+  
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  /* Force the gradient to apply to p-sidebar's internal structure */
+  ::ng-deep .p-sidebar-content {
+    background: linear-gradient(135deg, #ffffff86, #fffdff);
+    background-size: 200% 200%;
+    animation: gradientAnimation 10s ease infinite;
+  }
+  </style>
+  

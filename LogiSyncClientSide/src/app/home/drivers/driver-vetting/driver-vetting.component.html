@@ -1,0 +1,202 @@
+
+<p-toolbar  >
+    
+  <p-dock [model]="actionMenu" position="top">
+    <ng-template pTemplate="item" let-item>
+        <img [src]="item.icon" [alt]="item.label" width="70%">
+        <label>{{item.label}}</label>
+
+    </ng-template>
+</p-dock>
+<div class="p-toolbar-group-right">
+  <input pInputText type="text"  placeholder="Search" />
+  <p-button  label="Search" icon="pi pi-search"  ></p-button>
+</div>
+ 
+</p-toolbar>
+
+<div class="driver-vetting">
+   
+    
+  
+   
+
+  <p-card [header]="'driver_approval_header' | translate">
+    <p-button 
+    type="button" 
+    icon="pi pi-chevron-left" 
+    (click)="globalColumnControlService.prev()" 
+    [disabled]="globalColumnControlService.isFirstPage()" 
+    styleClass="p-button-text" />
+<p-button 
+    type="button"
+    icon="pi pi-refresh" 
+    (click)="globalColumnControlService.reset()" 
+    styleClass="p-button-text" />
+    <p-button 
+            type="button" 
+            icon="pi pi-chevron-right" 
+            (click)="globalColumnControlService.next()" 
+            [disabled]="isLastPage()" 
+            styleClass="p-button-text" />
+            <p-button 
+            type="button" 
+            icon="pi pi-cog" 
+            (click)="columnDialogVisible = true" 
+            label="Manage Columns" 
+            styleClass="p-button-text" />
+        
+  <p-table
+                [value]="drivers"
+                [paginator]="true"
+                [rows]="rows"
+                [first]="first"
+                [showCurrentPageReport]="true"
+                [tableStyle]="{ 'min-width': '50rem' }"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                (onPage)="globalColumnControlService.pageChange($event)"
+                [rowsPerPageOptions]="[10, 25, 50]"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let col of globalColumnControlService.getTargetColumns()">
+                            {{ col.header }}
+                        </th>
+                        <th>{{ 'actions' | translate }}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-driver>
+                    <tr>
+                        <td *ngFor="let col of globalColumnControlService.getTargetColumns()">
+                            {{ driver[col.field] }}
+                        </td>
+                        <td>
+                          <button pButton label="{{ 'approve' | translate }}" (click)="approveDriver(driver)" class="p-button-success"></button>
+                          <button pButton label="{{ 'reject' | translate }}" (click)="rejectDriver(driver)" class="p-button-danger"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                
+            </p-table>
+  
+</p-card>
+    
+    <p-dialog [(visible)]="displayDialog" [header]="'driver_approval_header' | translate" [modal]="true" [closable]="false" [style]="{width: '80vw'}">
+      <form [formGroup]="driverForm">
+        <div class="flex">
+          <!-- Left Side with Form Fields -->
+          <div class="flex flex-column w-5">
+            <div class="myform">
+              <!-- Full Name -->
+              <div class="mb-3">
+                <label for="fullName">{{ 'full_name' | translate }}</label>
+                <p-floatLabel>
+                  <input pInputText id="fullName" type="text" formControlName="fullName" [disabled]="true" />
+                </p-floatLabel>
+              </div>
+
+              <!-- License Number -->
+              <div class="mb-3">
+                <label for="licenseNumber">{{ 'license_number' | translate }}</label>
+                <p-floatLabel>
+                  <input pInputText id="licenseNumber" type="text" formControlName="licenseNumber" [disabled]="true" />
+                </p-floatLabel>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email">{{ 'email' | translate }}</label>
+                <p-floatLabel>
+                  <input pInputText id="email" type="email" formControlName="email" [disabled]="true" />
+                </p-floatLabel>
+              </div>
+
+              <!-- Phone -->
+              <div class="mb-3">
+                <label for="phone">{{ 'phone' | translate }}</label>
+                <p-floatLabel>
+                  <input pInputText id="phone" type="text" formControlName="phone" [disabled]="true" />
+                </p-floatLabel>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+
+          <!-- Right Side with Remaining Form Fields and Button -->
+          <div class="flex flex-column w-full">
+            <div class="myform">
+              <!-- Registration Comment -->
+              <div class="mb-3">
+                <label for="registrationComment">{{ 'registration_comment' | translate }}</label>
+                <p-floatLabel>
+                  <textarea pInputTextarea id="registrationComment" rows="5" formControlName="registrationComment"></textarea>
+                 </p-floatLabel>
+              </div>
+
+              <!-- Company ID (Hidden Field) -->
+              <input type="hidden" formControlName="companyID" />
+              <!-- Submit Button -->
+              <div class="flex justify-content-end mt-4">
+                <button pButton type="button" 
+                        [label]="action === 'approve' ? ('approve' | translate) : ('reject' | translate)" 
+                        icon="pi pi-check" 
+                        [class]="action === 'approve' ? 'p-button-success' : 'p-button-danger'" 
+                        (click)="onSubmit()">
+                </button>
+                <button pButton type="button" 
+                        label="{{ 'cancel' | translate }}" 
+                        icon="pi pi-times" 
+                        class="p-button-secondary" 
+                        (click)="onCancel()">
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </p-dialog>
+
+     <!-- Column Management Dialog -->
+     <!-- <p-dialog 
+     [(visible)]="columnDialogVisible" 
+     [header]="'Manage Columns'" 
+     [modal]="true" 
+     [responsive]="true"
+     [style]="globalColumnControlService.getColumnDialogConfig()"> -->
+
+     <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [style]="{width: '50hw'}">
+
+     <p-fieldset legend="Columns" [toggleable]="true">
+         <p-pickList 
+             [source]="globalColumnControlService.getSourceColumns()" 
+             [target]="globalColumnControlService.getTargetColumns()" 
+             sourceHeader="Available Columns"
+             targetHeader="Selected Columns" 
+             [dragdrop]="true" 
+             [responsive]="true"
+           
+             sourceHeader="Available Columns"
+             targetHeader="Selected Columns" 
+             [dragdrop]="true" 
+             [responsive]="true"
+             breakpoint="1400px"
+             filterBy="header" 
+             showSourceControls="false"
+             showTargetControls="false"
+             breakpoint="1400px">
+             <ng-template let-column pTemplate="item">
+                 <div class="flex flex-wrap p-2 align-items-center gap-3">
+                     <span class="font-bold">
+                         {{ column.header }}
+                     </span>
+                 </div>
+             </ng-template>
+         </p-pickList>
+     </p-fieldset>
+     <p-footer>
+         <p-button label="Close" icon="pi pi-times" (click)="columnDialogVisible = false"></p-button>
+     </p-footer>
+ </p-dialog>
+</div>

@@ -1,0 +1,47 @@
+
+<div class="card flex justify-content-center">
+    <p-card header="LogiSync ">
+        <p class="m-0">
+
+        </p>
+        <p-divider />
+
+        <div class="card">
+            <p-splitter [style]="{ height: '300px' }" styleClass="mb-5">
+                <ng-template pTemplate>
+                    <div class="col flex align-items-center justify-content-center">
+                        Welcome LogiSync 
+                    </div>
+                </ng-template>
+                <ng-template pTemplate>
+                    <div class="col flex align-items-center justify-content-center">
+                        Please login to continue !
+                        <p-divider />
+                        <div class="card flex justify-content-center">
+
+                                <div class="card flex justify-content-center">
+                                    <p-floatLabel>
+                                        <input id="username" type="text" pInputText [(ngModel)]="username" />
+                                        <label for="username">Username</label>
+                                    </p-floatLabel>
+                                </div>
+
+                                <div class="card flex flex-wrap gap-3 justify-content-center">
+                                    <p-floatLabel>
+                                        <input id="password" type="password" pInputText [(ngModel)]="password" />
+                                        <label for="password">password</label>
+                                    </p-floatLabel>
+                                </div>
+
+                                <div class="card flex flex-wrap gap-30 justify-content-center">
+                                    <p-button label="Primary" [text]="true" [raised]="true" />
+                                    <p-button label="Secondary" [text]="true" [raised]="true" severity="secondary" />
+
+                                </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-splitter>
+        </div>
+    </p-card>
+</div>

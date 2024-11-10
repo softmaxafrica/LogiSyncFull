@@ -1,0 +1,204 @@
+
+
+
+
+
+:host ::ng-deep {
+  .product-item {
+      .product-item-content {
+          border: 1px solid var(--surface-d);
+          border-radius: 3px;
+          margin: .3rem;
+          text-align: center;
+          padding: 2rem 0;
+      }
+  
+      .product-image {
+          width: 50%;
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+      }
+  }
+}
+
+
+
+
+.profile-menu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-avatar {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #fff; /* Optional: add border to avatar */
+    box-shadow: 0 0 0 2px #007ad9; /* Optional: add a shadow effect */
+    cursor: pointer;
+  }
+  
+  .profile-details {
+    padding: 10px;
+  }
+  
+  .p-menu .p-menuitem {
+    padding: 10px;
+  }
+
+  .dashboard-container {
+    padding: 15px;
+  }
+  
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .card-item {
+    flex: 1 1 22%;  
+    min-width: 250px;  
+    margin-bottom: 15px;  
+  }
+  
+  .large-card-item {
+    flex: 1 1 48%;  
+    min-width: 300px;  
+    margin-bottom: 15px;
+  }
+
+   .truck-image {
+    width: 350px;
+    height: 250px;
+    object-fit: cover;
+  }
+
+  .p-card {
+    min-width: 250px;
+  }
+
+  .p-button-sm {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+ 
+  .chip-green {
+    background-color: #4CAF50; /* green */
+    color: white;
+  }
+  
+  .chip-red {
+    background-color: #F44336; /* red */
+    color: white;
+  }
+  div#backlayout {
+    vertical-align: middle;
+    margin: 2rem;
+}
+  
+  /* Remove background and borders from the menubar */
+.p-menubar {
+  background: none !important; /* Removes the background color */
+  border: none !important; /* Removes any border */
+  box-shadow: none !important; /* Removes shadow */
+}
+
+/* Ensure all items within the menubar have no background */
+.p-menubar .p-menuitem {
+  background: none !important; /* No background */
+  border: none !important; /* No border */
+}
+
+/* Make menu items transparent on hover */
+.p-menubar .p-menuitem:hover {
+  background: none !important; /* No background on hover */
+  color: inherit !important; /* Retain original text color */
+}
+
+/* Active menu items */
+.p-menubar .p-menuitem-active {
+  background: none !important; /* No background on active */
+  color: inherit !important; /* Retain original text color */
+}
+
+/* Remove color from disabled menu items */
+.p-menubar .p-menuitem-disabled {
+  background: none !important; /* No background */
+  color: inherit !important; /* Retain original text color */
+}
+
+/* Remove any padding or margins from menubar */
+.p-menubar .p-menubar-root-list {
+  margin: 0 !important; /* Remove any margin */
+  padding: 0 !important; /* Remove any padding */
+}
+
+/* Remove line under the menubar */
+.p-menubar .p-menubar-root-list {
+  border-bottom: none !important; /* No border bottom */
+}
+
+/* Additional styling to remove potential shadows or outlines */
+.p-menu {
+  box-shadow: none !important; /* No shadow */
+  outline: none !important; /* No outline */
+}
+
+/* Specific class to ensure no color in submenu items */
+.p-menu .p-menuitem {
+  background-color: transparent !important; /* Make background transparent */
+  color: inherit !important; /* Use inherited color */
+}
+
+ 
+.p-menu .p-menuitem:hover {
+  background: none !important;  
+  color: inherit !important; 
+} 
+.carousel-item {
+  margin: 0 15px; /* Adjust as needed for horizontal spacing */
+}
+
+ 
+label {
+  background: linear-gradient(270deg, 
+    #ff6a00,   
+    #ee0979,    
+    
+    #0b0a04,    
+    #fe0000,  
+    #1c03ab,   
+    #ff6a00     
+  );
+  background-size: 1200% 1200%;
+  animation: gradientAnimation 15s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;  
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+} 
+
+p-dropdown {
+  width: 100% !important;
+  
+}
+
+
+  @media (max-width: 768px) {
+    .card-item, .large-card-item {
+      flex: 1 1 100%;  
+    }
+  }
+
+  
+  
+  

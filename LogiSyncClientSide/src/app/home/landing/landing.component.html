@@ -1,0 +1,35 @@
+<div *ngIf="showWelcomeContent">
+      
+   
+ 
+  <div class="card flex justify-content-center" id="backlayout">
+    <p-card header="LogiSync" subheader="We are the logistics" [style]="{ width: '100%' }">
+        <ng-template pTemplate="header">
+         </ng-template>
+             <h1>Welcome to LogiSync</h1>
+      <p>Your trusted platform for managing logistics, monitoring trucks, handling job requests, invoicing, billing, and more.</p>
+  
+      <h2>For Companies:</h2>
+      <ul>
+        <li>Monitor your trucks and drivers</li>
+        <li>Receive job requests from customers</li>
+        <li>Manage invoicing and billing processes</li>
+        <li>Live tracking of cargo location and truck status</li>
+      </ul>
+  
+      <h2>For Customers:</h2>
+      <ul>
+        <li>Transparency and security for your cargo</li>
+        <li>Live monitoring of cargo location and truck status</li>
+        <li>Create job requests with ease</li>
+        <li>Price negotiation and seamless billing and payments</li>
+      </ul>
+         <ng-template pTemplate="footer">
+            <div class="flex gap-3 mt-1">
+                 <p-button label="Read More" class="w-full" styleClass="w-full" />
+            </div>
+        </ng-template>
+    </p-card>
+</div>
+  <router-outlet></router-outlet>
+  

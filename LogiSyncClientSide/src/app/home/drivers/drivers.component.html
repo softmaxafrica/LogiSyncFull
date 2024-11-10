@@ -1,0 +1,47 @@
+<div class="mb-3">
+    
+
+    <p-card>
+        <div class="mb-3" id="DriverList">
+            <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" styleClass="p-button-text"></p-button>
+            <p-button type="button" icon="pi pi-refresh" (click)="reset()" styleClass="p-button-text"></p-button>
+            <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" styleClass="p-button-text"></p-button>
+
+            <div class="card">
+                <p-fieldset legend="Columns" [toggleable]="true" [collapsed]="true">
+                    <p-pickList [source]="sourceColumns" [target]="targetColumns" sourceHeader="Available Columns" targetHeader="Selected Columns" [dragdrop]="true" [responsive]="true" [sourceStyle]="{ height: '5rem' }" [targetStyle]="{ height: '5rem' }" breakpoint="1400px">
+                        <ng-template let-column pTemplate="item">
+                            <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                <span class="font-bold">{{ column.header }}</span>
+                            </div>
+                        </ng-template>
+                    </p-pickList>
+                </p-fieldset>
+                <p-table [value]="drivers" [paginator]="true" [rows]="rows" [first]="first" [showCurrentPageReport]="true" [tableStyle]="{ 'min-width': '50rem' }" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" (onPage)="pageChange($event)" [rowsPerPageOptions]="[10, 25, 50]">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th *ngFor="let col of targetColumns">
+                                {{ col.header }}
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-driver>
+                        <tr>
+                            <td *ngFor="let col of targetColumns">
+                                {{ driver[col.field] }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="paginatorleft">
+                        <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                    </ng-template>
+                    <ng-template pTemplate="paginatorright">
+                        <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+     </p-card>
+</div>
+<router-outlet></router-outlet>

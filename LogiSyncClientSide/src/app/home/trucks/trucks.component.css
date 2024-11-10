@@ -1,0 +1,22 @@
+.driver-details-row {
+    display: flex;
+    justify-content: space-between; /* Space between label and value */
+    align-items: center; /* Align label and value in the same row */
+    margin-bottom: 10px; /* Add space between each row */
+  }    
+  .driver-details-row label {
+   
+    flex: 1; /* Make label take up some space */
+    font-weight: bold;  
+  
+}
+  
+  #Rlabels {
+
+    float: right;
+    flex: 2;  
+    margin-left: 20px;  
+    word-wrap: break-word;  
+  
+}
+  

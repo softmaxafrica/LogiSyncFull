@@ -1,0 +1,6 @@
+@LogiSyncWebApi.Server_HostAddress = http://localhost:5207
+
+GET {{LogiSyncWebApi.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,292 @@
+<div class="mb-3">
+  
+  <p-toolbar  >
+    
+    <p-dock [model]="actionMenu" position="top">
+      <ng-template pTemplate="item" let-item>
+          <img [src]="item.icon" [alt]="item.label" width="100%">
+      </ng-template>
+  </p-dock>
+  <div class="p-toolbar-group-right">
+    <input pInputText type="text" [(ngModel)]="jobSearchTerm" placeholder="Search Jobs" />
+    <p-button  label="Search" icon="pi pi-search" (click)="searchJobs()"></p-button>
+  </div>
+   
+  </p-toolbar>
+  
+
+    <!-- Manage Columns Button -->
+    <p-button type="button" icon="pi pi-cog" (click)="columnDialogVisible = true" label="Manage Columns" styleClass="p-button-text"></p-button>
+
+    <!-- Job Requests Table -->
+     <div class="card">
+      <!-- <p-table #dt [value]="jobRequests" (onRowSelect)="onRowSelect($event)" selectionMode="single"> -->
+       
+        <p-table #dt [value]="jobRequests" [paginator]="true" [rows]="10">
+          <ng-template pTemplate="header">
+          <tr>
+            <th *ngFor="let col of targetColumns" [pSortableColumn]="col.field">
+              {{ col.header }}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+              <p-columnFilter [field]="col.field" type="text" display="menu"></p-columnFilter>
+            </th>
+            <th>{{ 'actions' | translate }}</th>
+          </tr>
+        </ng-template>
+      
+        <!-- Table body template to display the data -->
+        <ng-template pTemplate="body" let-job let-columns="targetColumns">
+        
+          <tr [pSelectableRow]="job">
+            <td *ngFor="let col of targetColumns">
+              <!-- Check if the current column is the status column -->
+              <ng-container *ngIf="col.field === 'status'">
+                <p-tag 
+                  [value]="job[col.field]" 
+                  [severity]="functions.getSeverity(job[col.field])">
+                </p-tag>
+              </ng-container>
+              
+              <!-- For all other columns -->
+              <ng-container *ngIf="col.field !== 'status'">
+                {{ job[col.field] }}
+              </ng-container>
+            </td>
+            <td>
+                        
+              <img 
+              src="assets/images/icons/edit.png" 
+              width="50px" 
+              (click)="editRequests(job)"   
+              style="margin-right: 1rem;"
+            />
+           
+           <img 
+             src="assets/images/icons/delete.png" 
+              width="50px" 
+              />
+              
+           </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    
+
+    <!-- Column Management Dialog -->
+    <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [responsive]="true" [style]="globalColumnControlService.getColumnDialogConfig()">
+      <p-fieldset legend="Columns" [toggleable]="true">
+        <p-pickList [source]="sourceColumns" [target]="targetColumns" sourceHeader="Available Columns" targetHeader="Selected Columns" 
+                    [dragdrop]="true" [responsive]="true" breakpoint="1400px">
+          <ng-template let-column pTemplate="item">
+            <div class="flex flex-wrap p-2 align-items-center gap-3">
+              <span class="font-bold">{{ column.header }}</span>
+            </div>
+          </ng-template>
+        </p-pickList>
+      </p-fieldset>
+      <p-footer>
+        <p-button label="Close" icon="pi pi-times" (click)="columnDialogVisible = false"></p-button>
+      </p-footer>
+    </p-dialog>
+
+<!-- Job Creation Dialog -->
+<p-dialog [(visible)]="jobDialogVisible" [header]="'create_job_request' | translate" [modal]="true" [responsive]="true" [style]="{ width: '70vw' }" (onHide)="jobDialogVisible = false">
+  <p-card>
+    <div class="flex">
+      <!-- Left Column: Job Request Form -->
+      <div class="flex flex-column w-6 p-4">
+        <div class="myform">
+          <div class="mb-3">
+            <p-dropdown [options]="requestType" optionLabel="label" optionValue="value" [(ngModel)]="newJobRequest.requestType"
+                        placeholder="{{'Type of Request' | translate}}" styleClass="dropdown-width"></p-dropdown>
+          </div>
+
+          <!-- Truck Type Dropdown -->
+          <div class="mb-3">
+            <p-dropdown [options]="truckTypes" optionLabel="typeName" optionValue="truckTypeID" [(ngModel)]="selectedTruckTypeID" (ngModelChange)="onTruckTypeChange()"
+                        placeholder="{{'Truck Type Select' | translate}}" styleClass="dropdown-width">
+              <ng-template let-truck pTemplate="item">
+                <div title="{{truck.description}}">{{ truck.typeName }}</div>
+              </ng-template>
+            </p-dropdown>
+            <p>{{ selectedTruckDescription }}</p>
+          </div>
+
+          <!-- Customer Dropdown -->
+          <div class="mb-3">
+            <p-dropdown [options]="customersList" optionLabel="fullName" optionValue="customerID" [(ngModel)]="newJobRequest.customerID"
+                        placeholder="{{'Requesting Customer' | translate}}" styleClass="dropdown-width"></p-dropdown>
+          </div>
+
+         
+
+          <!-- Save Button -->
+          <div class="mb-3">
+            <p-button label="{{ 'save_request' | translate }}" icon="pi pi-save" class="p-button-primary" [disabled]="!isFormValid()" (click)="saveJob(newJobRequest)"></p-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+
+      <!-- Right Column: Truck Type Details with Image and Description -->
+      <div class="flex flex-column w-6 p-4">
+        <div class="myform">
+          <!-- Cargo Description -->
+          <div class="mb-3">
+            <label for="cargoDescription">{{ 'cargo_description' | translate }}</label>
+            <input pInputText id="cargoDescription" type="text" [(ngModel)]="newJobRequest.cargoDescription" />
+          </div>
+
+          <!-- Container Number -->
+          <div class="mb-3">
+            <label for="containerNumber">{{ 'container_number' | translate }}</label>
+            <input pInputText id="containerNumber" type="text" [(ngModel)]="newJobRequest.containerNumber" />
+          </div>
+ <!-- Pickup Location -->
+ <div class="mb-3">
+  <label for="pickupLocation">{{ 'pickup_location' | translate }}</label>
+  <input pInputText id="pickupLocation" type="text" [(ngModel)]="newJobRequest.pickupLocation" />
+</div>
+
+<!-- Delivery Location -->
+<div class="mb-3">
+  <label for="deliveryLocation">{{ 'delivery_location' | translate }}</label>
+  <input pInputText id="deliveryLocation" type="text" [(ngModel)]="newJobRequest.deliveryLocation" />
+</div>
+         
+        </div>
+      </div>
+    </div>
+  </p-card>
+</p-dialog>
+
+
+<!-- REQUEST DETAILS DIALOG -->
+ 
+<!-- REQUEST DETAILS DIALOG -->
+<p-dialog [(visible)]="requestDetailsVisible" [header]="'request_details' | translate" [modal]="true" [responsive]="true"  (onHide)="requestDetailsVisible = false" [closable]="false">
+  <p-card>
+    <div class="flex">
+      <!-- Left Column: Display Request Details -->
+      <div class="flex flex-column w-6 p-4">
+        <div class="myform">
+          <!-- Request Details -->
+          <div class="mb-3 d-flex align-items-center">
+            <label class="w-40 text-left font-bold mr-2">{{ 'type_of_request' | translate }}:</label>
+            <p class="w-60">{{ activeRequest?.requestType || 'N/A' }}</p>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label class="w-40 text-left font-bold mr-2">{{ 'truck_type' | translate }}:</label>
+            <p class="w-60">{{ activeRequest?.truckType || 'N/A' }}</p>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label class="w-40 text-left font-bold mr-2">{{ 'requesting_Customer' | translate }}:</label>
+            <p class="w-60">{{ getCustomerName(activeRequest?.customerID) || 'N/A' }}</p>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label class="w-40 text-left font-bold mr-2">{{ 'pickup_Location' | translate }}:</label>
+            <p class="w-60">{{ activeRequest?.pickupLocation || 'N/A' }}</p>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label class="w-40 text-left font-bold mr-2">{{ 'delivery_location' | translate }}:</label>
+            <p class="w-60">{{ activeRequest?.deliveryLocation || 'N/A' }}</p>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label class="w-40 text-left font-bold mr-2">{{ 'cargo_description' | translate }}:</label>
+            <p class="w-60">{{ activeRequest?.cargoDescription || 'N/A' }}</p>
+          </div>
+          <div class="mb-3 d-flex align-items-center" *ngIf="activeRequest?.containerNumber">
+            <label class="w-40 text-left font-bold mr-2">{{ 'reference_number' | translate }}:</label>
+            <p class="w-60">{{ activeRequest?.containerNumber || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+
+      <!-- Right Column: Input Fields for Updating -->
+      <div class="flex flex-column w-6 p-4">
+        <div class="myform">
+          <!-- Truck Selection -->
+          <div class="mb-3 d-flex align-items-center" *ngIf="showTruckContent">
+            <label class="w-40 text-left font-bold mr-2">{{ 'truck' | translate }}:</label>
+            <div class="w-60">
+              <ng-container *ngIf="!activeRequest!.truckID; else truckAssigned">
+                <p-dropdown 
+                  [options]="avilableTruckLists" 
+                  optionLabel="truckNumber" 
+                  optionValue="truckID" 
+                  [(ngModel)]="activeRequest!.truckID"
+                  placeholder="{{ 'Select Truck' | translate }}" 
+                  styleClass="dropdown-width">
+                </p-dropdown>
+              </ng-container>
+              <ng-template #truckAssigned>
+                <p>Assigned Truck ID: {{ activeRequest?.truckID }}</p>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- Driver Selection -->
+          <div class="mb-3 d-flex align-items-center" *ngIf="showDriverContent">
+            <label class="w-40 text-left font-bold mr-2">{{ 'Driver' | translate }}:</label>
+            <div class="w-60">
+              <ng-container *ngIf="!activeRequest!.driverID; else driverAssigned">
+                <p-dropdown 
+                  [options]="avilableDriverLists" 
+                  optionLabel="fullName" 
+                  optionValue="driverID" 
+                  [(ngModel)]="activeRequest!.driverID"
+                  placeholder="{{ '_select_driver' | translate }}" 
+                  styleClass="dropdown-width">
+                </p-dropdown>
+              </ng-container>
+              <ng-template #driverAssigned>
+                <p>Assigned Driver ID: {{ activeRequest?.driverID }}</p>
+              </ng-template>
+            </div>
+          </div>
+
+
+<!-- Accepted Price -->
+<div class="mb-3 d-flex align-items-center">
+  <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'request_price' | translate }}:</label>
+  <input pInputText id="requestedPrice" type="number" [ngModel]="activeRequest?.requestedPrice"   class="w-60" />
+  <!-- <input pInputText id="requestedPrice" type="number" [(ngModel)]="activeRequest?.requestedPrice" class="w-60" /> -->
+
+</div>
+
+
+<!-- Customer Price -->
+<div class="mb-3 d-flex align-items-center">
+  <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
+ </div>
+
+<!-- Accepted Price -->
+<div class="mb-3 d-flex align-items-center">
+  <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
+  <input pInputText id="acceptedPrice" type="number" [ngModel]="activeRequest?.acceptedPrice"   class="w-60" />
+  
+</div>
+          <!-- Apply and Close Buttons -->
+          <div class="mt-4 d-flex justify-content-end">
+            <p-button label="{{ 'Apply' | translate }}" icon="pi pi-check" class="p-button-primary mr-2" (onClick)="updateRequest()"></p-button>
+            <p-button label="{{ 'Close' | translate }}" icon="pi pi-times" class="p-button-secondary" (onClick)="closeJobDialog()"></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</p-dialog>
+
+    <!-- Agreement Document Preview Dialog -->
+    <p-dialog [(visible)]="agreementDialogVisible" header="Agreement Document" [modal]="true" [style]="{width: '50vw'}">
+      <div>
+        <p>Document preview not available. Click the button below to download the agreement.</p>
+      </div>
+    </p-dialog>
+ </div>

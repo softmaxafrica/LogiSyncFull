@@ -1,0 +1,69 @@
+<div class="job-details-container">
+    <h2 class="header">Job Request Details</h2>
+  
+    <!-- Job details section -->
+    <div class="job-details">
+      <div class="detail-row">
+        <span class="label"><strong>Pickup Location:</strong></span>
+        <span class="value">{{ job!.pickupLocation }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Delivery Location:</strong></span>
+        <span class="value">{{ job!.deliveryLocation }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Cargo Description:</strong></span>
+        <span class="value">{{ job!.cargoDescription }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Container Number:</strong></span>
+        <span class="value">{{ job?.containerNumber || 'N/A' }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Customer:</strong></span>
+        <span class="value">{{ job?.customerID }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Requested Price:</strong></span>
+        <span class="value">{{ job?.requestedPrice | currency }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Job Status:</strong></span>
+        <span class="value">{{ job?.status }}</span>
+      </div>
+  
+      <div class="detail-row">
+        <span class="label"><strong>Job Created Date:</strong></span>
+        <span class="value">{{ job?.truckID| date: 'longDate' }}</span>
+      </div>
+<!--   
+      <div class="detail-row">
+        <span class="label"><strong>Estimated Delivery Date:</strong></span>
+        <span class="value">{{ job!.estimatedDeliveryDate | date: 'longDate' }}</span>
+      </div> -->
+    </div>
+  
+    <!-- Update price section -->
+    <div class="update-price-section">
+      <label for="newPrice"><strong>Update Requested Price:</strong></label>
+      <input pInputText id="newPrice" type="number" [(ngModel)]="job!.requestedPrice" />
+      <button class="btn save-btn" (click)="saveChanges()">Save</button>
+    </div>
+  
+    <!-- Finalize agreement section -->
+    <div class="finalize-agreement-section">
+      <button class="btn finalize-btn" (click)="finalizeAgreement()">Finalize Agreement</button>
+    </div>
+  
+    <!-- Save all changes section -->
+    <div class="save-all-section">
+      <button class="btn save-all-btn" (click)="saveChanges()">Save All Changes</button>
+    </div>
+  </div>
+  

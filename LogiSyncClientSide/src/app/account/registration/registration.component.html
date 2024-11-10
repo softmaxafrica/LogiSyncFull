@@ -1,0 +1,109 @@
+ 
+
+<div class="flex h-screen justify-content-center align-items-center">
+  <p-card header="{{ 'company_registration' | translate }}" class="w-full max-w-6xl p-4" [style]="{ margin: '5rem' }">
+    <div class="flex">
+      <!-- Left Side with Form Fields -->
+      <div class="flex flex-column w-5">
+        <div class="myform" style="width: 400px;">
+          
+          <!-- Company TIN Number -->
+          <div class="mb-3">
+            <label for="companyTinNumber" class="block text-900 font-medium mb-2">{{ 'company_tin_number' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="companyTinNumber" type="text" [(ngModel)]="companyPayload.companyTinNumber" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Company Name -->
+          <div class="mb-3">
+            <label for="companyName" class="block text-900 font-medium mb-2">{{ 'company_name' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="companyName" type="text" [(ngModel)]="companyPayload.companyName" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Admin Full Name -->
+          <div class="mb-3">
+            <label for="adminFullName" class="block text-900 font-medium mb-2">{{ 'admin_full_name' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="adminFullName" type="text" [(ngModel)]="companyPayload.adminFullName" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Admin Email -->
+          <div class="mb-3">
+            <label for="adminEmail" class="block text-900 font-medium mb-2">{{ 'admin_email' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="adminEmail" type="email" [(ngModel)]="companyPayload.adminEmail" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Admin Contact -->
+          <div class="mb-3">
+            <label for="adminContact" class="block text-900 font-medium mb-2">{{ 'admin_contact' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="adminContact" type="text" [(ngModel)]="companyPayload.adminContact" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+
+      <!-- Right Side with Remaining Form Fields and Button -->
+      <div class="flex flex-column w-5">
+        <div class="myform" style="width: 400px;">
+          
+          <!-- Company Address -->
+          <div class="mb-3">
+            <label for="companyAddress" class="block text-900 font-medium mb-2">{{ 'company_address' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="companyAddress" type="text" [(ngModel)]="companyPayload.companyAddress" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Company Description -->
+          <div class="mb-3">
+            <label for="companyDescription" class="block text-900 font-medium mb-2">{{ 'company_description' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <textarea pInputTextarea id="companyDescription" rows="5" [(ngModel)]="companyPayload.companyDescription" 
+                      class="w-full p-inputtext-lg"></textarea>
+          </div>
+
+          <!-- Company Latitude -->
+          <div class="mb-3">
+            <label for="companyLatitude" class="block text-900 font-medium mb-2">{{ 'company_latitude' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="companyLatitude" type="number" [(ngModel)]="companyPayload.companyLatitude" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Company Longitude -->
+          <div class="mb-3">
+            <label for="companyLongitude" class="block text-900 font-medium mb-2">{{ 'company_longitude' | translate }}</label>
+          </div>
+          <div class="mb-3">
+            <input pInputText id="companyLongitude" type="number" [(ngModel)]="companyPayload.companyLongitude" 
+                   class="w-full p-inputtext-lg" />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-content-end mt-4">
+            <button pButton type="button" label="{{ 'register' | translate }}" icon="pi pi-user-plus" 
+                    class="p-button-primary" (click)="onRegister()"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>

@@ -1,0 +1,135 @@
+<p-toolbar  >
+    
+  <p-dock [model]="actionMenu" position="top">
+    <ng-template pTemplate="item" let-item>
+        <img [src]="item.icon" [alt]="item.label" width="70%">
+        <label>{{item.label}}</label>
+
+    </ng-template>
+</p-dock>
+<div class="p-toolbar-group-right">
+  <input pInputText type="text"  placeholder="Search" />
+  <p-button  label="Search" icon="pi pi-search"  ></p-button>
+</div>
+ 
+</p-toolbar>
+<div class="flex h-screen justify-content-center align-items-center">
+     
+
+    
+ 
+  <p-card header="{{ 'driver_registration' | translate }}" class="w-full max-w-6xl p-4"  >
+    <p-messages [value]="messages"
+                [enableService]="false"
+                [closable]="true"
+                [style]="{ margin: '1rem' }">
+    </p-messages>
+    <div class="flex">
+      <!-- Left Side with Form Fields -->
+      <div class="flex flex-column w-5">
+        <div class="myform">
+          <!-- Full Name -->
+          <div class="mb-3">
+            <label for="fullName">{{ 'full_name' | translate }}</label>
+            <input pInputText id="fullName" type="text" [(ngModel)]="driverPayload.fullName" class="w-full" />
+          </div>
+
+          <!-- License Number -->
+          <div class="mb-3">
+            <label for="licenseNumber">{{ 'license_number' | translate }}</label>
+            <input pInputText id="licenseNumber" type="text" [(ngModel)]="driverPayload.licenseNumber" class="w-full" />
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="email">{{ 'email' | translate }}</label>
+            <input pInputText id="email" type="email" [(ngModel)]="driverPayload.email" class="w-full" />
+          </div>
+
+          <!-- Phone -->
+          <div class="mb-3">
+            <label for="phone">{{ 'phone' | translate }}</label>
+            <input pInputText id="phone" type="text" [(ngModel)]="driverPayload.phone" class="w-full" />
+          </div>
+
+          <!-- License Classes -->
+          <div class="mb-3">
+            <label for="licenseClasses">{{ 'license_classes' | translate }}</label>
+            <input pInputText id="licenseClasses" type="text" [(ngModel)]="driverPayload.licenseClasses" class="w-full" />
+          </div>
+
+           <!-- License Expire Date -->
+           <div class="mb-3">
+            <label for="licenseExpireDate">{{ 'license_expire_date' | translate }}</label>
+           </div>
+           <div class="mb-3">
+            <p-calendar [(ngModel)]="driverPayload.licenseExpireDate" />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+
+      <!-- Right Side with Remaining Form Fields and File Upload -->
+      <div class="flex flex-column w-full">
+        <div class="myform">
+          <!-- Registration Comment -->
+          <div class="mb-3">
+            <label for="registrationComment">{{ 'registration_comment' | translate }}</label>
+            <textarea pInputTextarea id="registrationComment" rows="5" [(ngModel)]="driverPayload.registrationComment" class="w-full"></textarea>
+          </div>
+
+         
+          
+        
+          <!-- Is Available For Booking -->
+          <div class="card flex justify-content-left">  
+            <label for="isAvilableForBooking">{{ 'is_avilable_for_booking' | translate }}</label>
+            <div class="card flex justify-content-right" style="margin-left: 2rem;">
+              <p-checkbox [(ngModel)]="driverPayload.isAvilableForBooking" binary="true" 
+              severity="success"
+              ></p-checkbox>
+</div>
+            </div>
+
+          <!-- Profile Image Upload (using PrimeNG FileUpload) -->
+         
+            <div class="mb-3">
+          
+            <div class="card flex justify-content-center">
+              <p-toast /> 
+ <div class="mb-3">
+   <p-fileUpload 
+  name="imageFile" 
+  accept="image/*" 
+  chooseLabel="{{'profile_picture'|translate}}"
+  (onSelect)="onImageSelected($event)" 
+  customUpload="true">
+</p-fileUpload>
+</div>
+
+
+
+                </div>
+          </div>
+
+          <!-- Company ID (Hidden Field) -->
+          <input type="hidden" [(ngModel)]="driverPayload.companyID" />
+
+          <!-- Submit Button -->
+          <div class="flex justify-content-end mt-4">
+            <p-button  
+            label="{{ 'register' | translate }}" 
+            icon="pi pi-user-plus" (click)="onRegister()"
+            [raised]="true" 
+             severity="success"
+             [rounded]="true" 
+            ></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>
