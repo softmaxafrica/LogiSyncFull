@@ -31,9 +31,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var invoices = db.Invoices
-                                     .Include(i => i.Customer)
-                                     .Include(i => i.JobRequest)
-                                     .ToList();
+                                      .ToList();
                     executionResult.SetData(invoices);
                     return Ok(executionResult.GetServerResponse());
                 }
@@ -59,9 +57,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var invoice = db.Invoices
-                                    .Include(i => i.Customer)
-                                    .Include(i => i.JobRequest)
-                                    .FirstOrDefault(i => i.InvoiceNumber == invoiceNumber);
+                                     .FirstOrDefault(i => i.InvoiceNumber == invoiceNumber);
                     if (invoice == null)
                     {
                         return NotFound("Invoice not found");
@@ -81,24 +77,18 @@ namespace LogiSyncWebApi.Server.Controllers
         #region CreateInvoice
         [HttpPost]
         [Route("CreateInvoice")]
-        public async Task<IActionResult> CreateInvoice([FromBody] Invoice newInvoice)
+        public async Task<Invoice> CreateInvoice([FromBody] Invoice newInvoice)
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(CreateInvoice);
 
-            try
-            {
+           
                 _context.Invoices.Add(newInvoice);
                 await _context.SaveChangesAsync();
 
-                executionResult.SetData(newInvoice);
-                return Ok(executionResult.GetServerResponse());
-            }
-            catch (Exception ex)
-            {
-                executionResult.SetInternalServerError(nameof(InvoiceController), functionName, ex);
-                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
-            }
+                 return newInvoice;
+          
+           
         }
         #endregion
 
@@ -122,7 +112,10 @@ namespace LogiSyncWebApi.Server.Controllers
 
                     existingInvoice.CustomerID = updatedInvoice.CustomerID;
                     existingInvoice.JobRequestID = updatedInvoice.JobRequestID;
-                    existingInvoice.Amount = updatedInvoice.Amount;
+                    existingInvoice.ServiceCharge = updatedInvoice.ServiceCharge;
+                    existingInvoice.OperationalCharge = updatedInvoice.OperationalCharge;
+                    existingInvoice.PaymentId= updatedInvoice.PaymentId;
+
                     existingInvoice.IssueDate = updatedInvoice.IssueDate;
                     existingInvoice.DueDate = updatedInvoice.DueDate;
                     existingInvoice.Status = updatedInvoice.Status;

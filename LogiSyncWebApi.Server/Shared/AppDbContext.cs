@@ -76,11 +76,11 @@ namespace LogiSyncWebApi.Server.Shared
 
 
             // Invoice and JobRequest
-            modelBuilder.Entity<Invoice>()
-                 .HasOne(i => i.JobRequest)
-                 .WithMany(jr => jr.Invoices)
-                 .HasForeignKey(i => i.JobRequestID)
-                 .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<Invoice>()
+            //     .HasOne(i => i.JobRequest)
+            //     .WithMany(jr => jr.Invoices)
+            //     .HasForeignKey(i => i.JobRequestID)
+            //     .OnDelete(DeleteBehavior.Cascade);
  
 
             // JobRequest and Customer

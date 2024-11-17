@@ -20,27 +20,19 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
         #region GetAllChargableItemsToBill
         [HttpGet]
         [Route("GetAllChargableItemsToBill")]
-        public IActionResult GetAllChargableItemsToBill()
+         public List<ChargableItem> GetAllChargableItemsToBill()
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(GetAllChargableItemsToBill);
-
-            try
-            {
+ 
                 using (var db = new AppDbContext(_config))
                 {
-                    var ChargableItems = db.ChargableItems
+                    return db.ChargableItems
                         .Include(jr => jr.JobRequest)
                                       .ToList();
-                    executionResult.SetData(ChargableItems);
-                    return Ok(executionResult.GetServerResponse());
                 }
-            }
-            catch (Exception ex)
-            {
-                executionResult.SetInternalServerError(nameof(ChargableItemsController), functionName, ex);
-                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
-            }
+            
+             
         }
         #endregion
 
@@ -87,5 +79,40 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
             }
         }
         #endregion
+
+        #region UpdateChargableItemsStatusByJobRequest
+        [HttpPut("UpdateChargableItemsStatus/{jobRequestId}")]
+        public async Task<IActionResult> UpdateChargableItemsStatusAndInvoiceNumber(string jobRequestId,string Invoicestatus,int InvoiceNumber)
+        {
+            try
+            {
+                // Fetch all items with the given JobRequestID and status "PENDING"
+                var itemsToUpdate = await _context.ChargableItems
+                    .Where(item => item.JobRequestID == jobRequestId)
+                    .ToListAsync();
+
+                if (!itemsToUpdate.Any())
+                {
+                    return NotFound($"No chargeable items found for JobRequestID {jobRequestId} with status 'PENDING'.");
+                }
+
+                // Update the status 
+                foreach (var item in itemsToUpdate)
+                {
+                    item.Status = Invoicestatus;
+                    item.InvoiceNumber = InvoiceNumber;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok($"Chargeable items for JobRequestID {jobRequestId} have been updated to 'DRAFT'.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
     }
 }

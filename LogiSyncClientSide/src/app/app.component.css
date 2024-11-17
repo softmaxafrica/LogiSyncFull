@@ -114,3 +114,39 @@ label {
   -webkit-text-fill-color: transparent;
   font-weight: bold;  
 }
+
+span{
+  background: linear-gradient(270deg, 
+    #0ab5ea,   
+    #ee0979,    
+    
+    #0b0a04
+ 
+   
+  );
+  background-size: 1200% 1200%;
+  animation: gradientAnimation 15s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;  
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+} 
+
+ 
+
+  @media (max-width: 768px) {
+    .card-item, .large-card-item {
+      flex: 1 1 100%;  
+    }
+  }

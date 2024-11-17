@@ -1,7 +1,9 @@
+<div class="dashboard-container" id="backlayout">
+  <p-card>
  
-  <p-dock [model]="actionMenu" position="top">
+ <p-dock [model]="actionMenu" position="top">
     <ng-template pTemplate="item" let-item>
-        <img [src]="item.icon" [alt]="item.label" width="70%">
+        <img [src]="item.icon" [alt]="item.label" width="50%">
         <label>{{item.label}}</label>
 
     </ng-template>
@@ -192,4 +194,7 @@
          <p-button label="Close" icon="pi pi-times" (click)="columnDialogVisible = false"></p-button>
      </p-footer>
  </p-dialog>
+</div>
+
+</p-card>
 </div>

@@ -1,8 +1,11 @@
+<div class="dashboard-container" id="backlayout">
+   <p-card>
+
 <div class="mb-3">
   
-    <p-dock [model]="actionMenu" position="left">
+    <p-dock [model]="actionMenu" position="top">
       <ng-template pTemplate="item" let-item>
-          <img [src]="item.icon" [alt]="item.label" width="100%">
+          <img [src]="item.icon" [alt]="item.label" width="50%">
       </ng-template>
   </p-dock>
   
@@ -275,4 +278,7 @@
         <p>Document preview not available. Click the button below to download the agreement.</p>
       </div>
     </p-dialog>
+ </div>
+
+ </p-card>
  </div>
