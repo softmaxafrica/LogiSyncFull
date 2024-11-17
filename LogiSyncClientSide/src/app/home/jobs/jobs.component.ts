@@ -353,7 +353,7 @@ this.newJobRequest.companyID=this.companyId;
         this.showDriverContent=false;
         this.showTruckContent=false;
       }
-      if((ActiveReq.status =="PENDING PAYMENTS")||(ActiveReq.status=="CANCELLED"))
+      if((ActiveReq.status =="PENDING PAYMENTS")||(ActiveReq.status=="CANCELLED")|| (ActiveReq.status.includes("PENDING")))
         {
           this.showPriceContent=false;
         }
@@ -473,13 +473,13 @@ loadColumns() {
 
   // Initialize selected columns with default values
   this.targetColumns = [
-    { field: 'jobRequestID', header: 'Job Request ID' },
+    // { field: 'jobRequestID', header: 'Job Request ID' },
     { field: 'cargoDescription', header: 'Cargo Description' },
     { field: 'pickupLocation', header: 'Pickup Location' },
     { field: 'deliveryLocation', header: 'Delivery Location' },
-    { field: 'containerNumber', header: 'Reference Number' },
+    // { field: 'containerNumber', header: 'Reference Number' },
       // PriceDetails (PriceAgreement)
-      { field: 'priceAgreement.priceAgreementID', header: 'Agreement ID' },
+      // { field: 'priceAgreement.priceAgreementID', header: 'Agreement ID' },
 
       { field: 'priceAgreement.agreedPrice', header: 'Accepted Price' },
       { field: 'priceAgreement.customerPrice', header: 'Customer Price' },

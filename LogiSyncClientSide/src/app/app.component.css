@@ -1,101 +1,103 @@
+/* Set a global font size */
+body {
+  font-family: 'Arial', sans-serif;
+  font-size: 14px; /* Adjust size as per your needs */
+  color: #333; /* Professional dark color */
+}
+/*   */
 
-
-
-
-
-:host ::ng-deep {
-  .product-item {
-      .product-item-content {
-          border: 1px solid var(--surface-d);
-          border-radius: 3px;
-          margin: .3rem;
-          text-align: center;
-          padding: 2rem 0;
-      }
-  
-      .product-image {
-          width: 50%;
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
-      }
-  }
+/* Buttons in table actions */
+button {
+  font-size: 12px; /* Small button font */
+  padding: 5px 10px; /* Compact padding */
+  border-radius: 4px;
 }
 
-
-
-
-.profile-menu {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile-avatar {
-    width: 40px;
-    height: 40px;
-    border: 2px solid #fff; /* Optional: add border to avatar */
-    box-shadow: 0 0 0 2px #007ad9; /* Optional: add a shadow effect */
-    cursor: pointer;
-  }
-  
-  .profile-details {
-    padding: 10px;
-  }
-  
-  
-  .dashboard-container {
-    padding: 15px;
-  }
-  
-  .card-container {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .card-item {
-    flex: 1 1 22%;  
-    min-width: 250px;  
-    margin-bottom: 15px;  
-  }
-  
-  .large-card-item {
-    flex: 1 1 48%;  
-    min-width: 300px;  
-    margin-bottom: 15px;
-  }
-
-   .truck-image {
-    width: 350px;
-    height: 250px;
-    object-fit: cover;
-  }
-
-  .p-card {
-    min-width: 250px;
-  }
-
-  .p-button-sm {
-    font-size: 0.875rem;
-    padding: 0.5rem 0.75rem;
-  }
- 
-  .chip-green {
-    background-color: #4CAF50; /* green */
-    color: white;
-  }
-  
-  .chip-red {
-    background-color: #F44336; /* red */
-    color: white;
-  }
-  div#backlayout {
-    vertical-align: middle;
-    margin: 2rem;
+/* Status badges */
+.p-badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
 }
-   
+
+.p-badge-success {
+  background-color: #28a745; /* Green for success */
+  color: #fff;
+}
+
+.p-badge-warning {
+  background-color: #ffc107; /* Yellow for warning */
+  color: #000;
+}
+
+.p-badge-danger {
+  background-color: #dc3545; /* Red for danger */
+  color: #fff;
+}
+
+/* Adjust table column styles */
+.p-datatable-thead th, .p-datatable-tbody td {
+  text-align: center; /* Center-align text */
+  padding: 10px 8px; /* Compact padding */
+}
+
+.p-datatable-tbody td {
+  font-size: 13px; /* Smaller table content font */
+}
 .carousel-item {
   margin: 0 15px; /* Adjust as needed for horizontal spacing */
 }
+.truck-image {
+  width: 350px;
+  height: 250px;
+  object-fit: cover;
+}
 
- 
+.p-card {
+  min-width: 250px;
+}
+
+:root {
+  --primary-color: #007bff; /* Blue theme */
+  --font-family: 'Arial', sans-serif;
+  --font-size: .6rem;
+}
+/* Make the text in p-table smaller */
+p-table {
+  font-size: 0.6rem; /* Smaller text size for better readability */
+ }
+
+
+p-table th, p-table td {
+  padding: 5px; /* Reduce padding for a more compact table */
+}
+
+/* Adjust header text size */
+p-table th {
+  font-size: 0.65rem; /* Slightly larger than the table cells */
+}
+p-table {
+  font-size: 0.65rem; /* Slightly larger than the table cells */
+}
+
+p-table td {
+  font-size: 0.5rem; /* Slightly larger than the table cells */
+}
+/* Optional: Reduce the size of the table's borders */
+p-table .p-datatable-thead > tr > th {
+  border-bottom: 1px solid #ccc; /* Lighter borders */
+}
+
+p-table .p-datatable-tbody > tr > td {
+  border-bottom: 1px solid #f4f4f4; /* Lighter borders */
+}
+
+/* Optional: Adjust the hover effect for better visual experience */
+p-table .p-datatable-tbody > tr:hover {
+  background-color: #f7f7f7; /* Subtle hover effect */
+}
+
+
 label {
   background: linear-gradient(270deg, 
     #ff6a00,   
@@ -112,73 +114,3 @@ label {
   -webkit-text-fill-color: transparent;
   font-weight: bold;  
 }
-
-/* Side Menu Styling */
- /* Styles for Main Content Area to Adjust Based on Sidebar State */
- .p-sidebar {
-  overflow: hidden;
-  transition: width 0.3s ease;
-}
-
-.p-sidebar .p-menubar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.p-sidebar .p-menuitem-link {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.5rem;
-  transition: justify-content 0.3s ease;
-}
-
-.p-sidebar .p-menuitem-link img {
-  margin-right: 0;
-}
-
-.p-sidebar .p-menuitem-link span {
-  display: inline-block;
-  transition: opacity 0.3s;
-}
-
-.toggle-button {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 50px;
-  width: 100%;
-}
-
-
-/* End Side Menu Style */
-
-
-
-
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-} 
-
- 
-
-  @media (max-width: 768px) {
-    .card-item, .large-card-item {
-      flex: 1 1 100%;  
-    }
-  }
-
-  
-  
-  

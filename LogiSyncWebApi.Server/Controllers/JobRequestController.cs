@@ -156,7 +156,7 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Where(jr =>
                             jr.Status != "CANCELED" &&
                             (jr.Status != "PENDING PAYMENTS" ||
-                            (jr.Status == "PENDING PAYMENTS" && jr.AssignedCompany == CompanyID)))
+                            (((jr.Status == "PENDING PAYMENTS") ||(jr.Status == "PENDING AWAITING INVOICE")) && jr.AssignedCompany == CompanyID)))
                         .ToList();
 
                     // Check if any job requests exist

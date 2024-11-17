@@ -14,12 +14,13 @@
      <div class="card">
       <!-- <p-table #dt [value]="jobRequests" (onRowSelect)="onRowSelect($event)" selectionMode="single"> -->
        
-        <p-table #dt [value]="jobRequests" [paginator]="true" [rows]="10">
+        <p-table #dt [value]="jobRequests" [paginator]="true" [rows]="10" >
           <ng-template pTemplate="header">
             <tr>
               <th *ngFor="let col of targetColumns" [pSortableColumn]="col.field">
                 {{ col.header }}
                 <p-sortIcon [field]="col.field"></p-sortIcon>
+                
                 <p-columnFilter [field]="col.field" type="text" display="menu"></p-columnFilter>
               </th>
               <th>{{ 'actions' | translate }}</th>
@@ -49,10 +50,7 @@
                   (click)="editRequests(job)"   
                   style="margin-right: 1rem;"
                 />
-                <img 
-                  src="assets/images/icons/delete.png" 
-                  width="50px" 
-                />
+                 
               </td>
             </tr>
           </ng-template>

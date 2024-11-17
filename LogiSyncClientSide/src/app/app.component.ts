@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   profileMenu: any;
   isSidebarVisible: boolean = true;
   isExpanded: boolean = true; // Start with sidebar expanded
-
+  sidebarWidth: string = '200px';
 
   // Toggle function to expand/collapse the sidebar
  
@@ -44,9 +44,9 @@ export class AppComponent implements OnInit {
       });
     });
   }
-  toggleSidebar() {
-    this.isExpanded = !this.isExpanded;
-  }
+  // toggleSidebar() {
+  //   this.isExpanded = !this.isExpanded;
+  // }
   updateMenu(user: SecUser | null): void {
     if (user) {
       const role = user.role;
@@ -71,12 +71,8 @@ export class AppComponent implements OnInit {
           },
           { label: this.translate.instant('trucks'), icon: 'assets/images/icons/tracking-delivery.png', routerLink: '/home/trucks' },
           { label: this.translate.instant('requests'), icon: 'assets/images/icons/pull-request.png', routerLink: '/home/jobs' },
-          {
-            label: this.translate.instant('security'),
-            items: [
-              { label: this.translate.instant('roles'), icon: 'assets/images/icons/dashboard.png', routerLink: ['/home/drivers/roles'] }
-            ]
-          },
+          { label: this.translate.instant('roles'), icon: 'assets/images/icons/dashboard.png', routerLink: ['/home/drivers/roles'] },
+        
           { label: this.translate.instant('logout'),icon: 'assets/images/icons/dashboard.png', command: () => this.logout() }
         ];
       }
@@ -100,5 +96,10 @@ export class AppComponent implements OnInit {
 
   showUserProfile(): void {
     // Method to handle profile pop-up or dialog
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarVisible = !this.isSidebarVisible;
+    this.sidebarWidth = this.isSidebarVisible ? '200px' : '50px';
   }
 }

@@ -1,90 +1,60 @@
-﻿
+﻿<!-- sidebar.component.html -->
 
- 
-<div class="main-content">
-  <!-- Sidebar Component -->
-  <p-sidebar [(visible)]="isSidebarVisible"
-  [showCloseIcon]="true"
-  [dismissible]="true"
-  [ngStyle]="{ width: isExpanded ? '200px' : '100px', transition: 'width 0.2s' }">
-<div class="toggle-button" (click)="toggleSidebar()">
-<!-- <i class="pi" [ngClass]="isExpanded ? 'pi-angle-left' : 'pi-angle-right'"></i> -->
- 
-</div>
+<div class="layout-container">
+  <!-- Sidebar -->
+  <div class="sidebar" [class.collapsed]="isSidebarVisible" id="sidebar">
+    <!-- <button id="toggleSidebar" class="toggle-btn" (click)="toggleSidebar()">☰</button> -->
+    <div class="toggle-button" (click)="toggleSidebar()">
+      <i class="pi" [ngClass]="isSidebarVisible ? 'pi-angle-right' : 'pi-angle-left'" style="float: right;"></i>
+     </div>
+    <p-menubar [model]="items" [style]="{ background: 'none', border: 'none', padding: '0', margin: '1rem' }">
+      <ng-template let-item pTemplate="item">
+        <a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link" style="display: flex; align-items: center; padding: 0.3rem 0; margin: 0;">
+          <img *ngIf="item.icon" [src]="item.icon" width="30px" style="margin-right: 1rem;"> <!-- Reduced image size -->
+          <span *ngIf="!isSidebarVisible" style="font-size: 0.9rem; margin: 0;">{{ item.label }}</span> <!-- Reduced font size and margin -->
+        </a>
+      </ng-template>
+    </p-menubar>
+  
+  </div>
 
-<p-menubar [model]="items" [style]="{ background: 'none', border: 'none', margin: '.2rem' }">
-<ng-template let-item pTemplate="item">
-<a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link">
-<img *ngIf="item.icon" [src]="item.icon" width="50px" style="margin-right: 2rem;">  
-<span *ngIf="isExpanded">{{ item.label }}</span>
-</a>
-</ng-template>
-</p-menubar>
-</p-sidebar>
-
-  <!-- Toggle Sidebar Button (visible when sidebar is closed) -->
-  <button *ngIf="!isSidebarVisible" class="sidebar-toggle-btn" (click)="isSidebarVisible = true">
-    <i class="pi pi-bars"></i>
-  </button>
-
-  <!-- Main Content Area -->
-  <div class="main-content" [ngStyle]="{ 'margin-left': isExpanded && isSidebarVisible ? '200px' : '100px' }">
-    <!-- <p-toolbar  *ngIf="!isSidebarVisible">
-      <div class="p-toolbar-group-right"> -->
-         
-<p-menubar  *ngIf="!isSidebarVisible" [model]="items" [style]="{ background: 'none', border: 'none',  }">
-  <ng-template let-item pTemplate="item">
-  <a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link">
-  <img *ngIf="item.icon" [src]="item.icon" width="30px" style="margin-right: .5rem;">
-  <span *ngIf="isExpanded">{{ item.label }}</span>
- 
-   </a>
- 
-      
-   </ng-template>
-</p-menubar>
-      <!-- </div>
-       
-      </p-toolbar> -->
-    
+  <div class="main-content">
     <router-outlet></router-outlet>
   </div>
 </div>
 
 <style>
-  .main-content {
-    background: linear-gradient(135deg, #eee, #ff7cc4);
-    background-size: 200% 200%;
-    animation: gradientAnimation 10s ease infinite;
-  }
-
-  @keyframes gradientAnimation {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  .main-content {
-  transition: margin-left 0.3s ease;
-  padding: auto;
-   height: 100vh;
-  overflow-y: auto;
+/* Base styling for the layout */
+.layout-container {
+  display: flex;
+  height: 100vh;
+  transition: all 0.3s ease;
 }
 
-.p-sidebar {
-  overflow: hidden;
-}
-
-.p-sidebar .p-menubar {
+.sidebar {
+  background-color: transparent;
+  height: 100%;
+  width: 150px;
+  transition: width 0.3s ease; /* Transition for smooth resizing */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: flex-start;
+}
+
+.sidebar.collapsed {
+  width: 50px; /* Width when sidebar is collapsed */
+}
+
+.sidebar .toggle-btn {
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+  display: block;
 }
 
 .toggle-button {
@@ -95,22 +65,45 @@
   height: 50px;
 }
 
-/* Sidebar Toggle Button */
-.sidebar-toggle-btn {
-  position: fixed;
-  z-index: 1000;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s;
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+.main-content {
+  transition: margin-left 0.3s ease;
+  padding: auto;
+   height: 100vh;
+  overflow-y: auto;
+}
+/* Add vertical space between menu items */
+.sidebar .p-menu .p-menuitem {
+  margin-bottom: 1rem;  /* Adjust this value to control space between menu items */
 }
 
-.sidebar-toggle-btn:hover {
-  background-color: #0056b3;
+.sidebar .p-menu .p-menuitem .p-menuitem-link {
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 0;
+  margin: 0;
+}
+
+.sidebar .p-menu .p-menuitem .menu-icon {
+  margin-right: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.sidebar .p-menu .p-menuitem .menu-label {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .p-menu .p-menuitem .menu-label {
+  display: none;
+}
+
+.sidebar.collapsed .p-menu .p-menuitem .menu-icon {
+  transform: scale(0.8);
 }
 
 

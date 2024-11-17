@@ -204,7 +204,8 @@ import { CustomersComponent } from './home/customers/customers.component';
     CalendarModule,
     CheckboxModule,
     RadioButtonModule,
-    InputNumberModule
+    InputNumberModule,
+    PanelMenuModule
     
     
   ],
