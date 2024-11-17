@@ -23,7 +23,7 @@ namespace LogiSyncWebApi.Server.Models
         [Required]
         [Column("PAYMENT_DATE")]
         public DateTime PaymentDate { get; set; }
-
+        
         [Required]
         [Column("PAYMENT_METHOD")]
         public string PaymentMethod { get; set; } // e.g., "Credit Card", "Bank Transfer"

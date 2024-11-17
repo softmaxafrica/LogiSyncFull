@@ -4,6 +4,7 @@ using LogiSyncWebApi.Server.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogiSyncWebApi.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241116135041_ChargableItemsMgtn")]
+    partial class ChargableItemsMgtn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnName("AMOUNT");
 
                     b.Property<string>("CustomerID")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("CUSTOMER_ID");
 
                     b.Property<int?>("InvoiceNumber")
@@ -64,6 +67,8 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnName("STATUS");
 
                     b.HasKey("ItemId");
+
+                    b.HasIndex("CustomerID");
 
                     b.HasIndex("JobRequestID");
 
@@ -779,9 +784,15 @@ namespace LogiSyncWebApi.Server.Migrations
 
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.ChargableItem", b =>
                 {
+                    b.HasOne("LogiSyncWebApi.Server.Models.Customer", "BilledCustomer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID");
+
                     b.HasOne("LogiSyncWebApi.Server.Models.JobRequest", "JobRequest")
                         .WithMany()
                         .HasForeignKey("JobRequestID");
+
+                    b.Navigation("BilledCustomer");
 
                     b.Navigation("JobRequest");
                 });

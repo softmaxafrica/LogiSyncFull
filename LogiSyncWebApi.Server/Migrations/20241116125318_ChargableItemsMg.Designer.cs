@@ -4,6 +4,7 @@ using LogiSyncWebApi.Server.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogiSyncWebApi.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241116125318_ChargableItemsMg")]
+    partial class ChargableItemsMg
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnName("AMOUNT");
 
                     b.Property<string>("CustomerID")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("CUSTOMER_ID");
 
                     b.Property<int?>("InvoiceNumber")
@@ -47,16 +50,12 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("ISSUE_DATE");
 
-                    b.Property<string>("ItemDescription")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ITEM_DESCRRIPTION");
-
                     b.Property<string>("JobRequestID")
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("JOB_REQUEST_ID");
 
                     b.Property<string>("PriceAgreementID")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("PRICE_AGREEMENT_ID");
 
                     b.Property<string>("Status")
@@ -65,7 +64,11 @@ namespace LogiSyncWebApi.Server.Migrations
 
                     b.HasKey("ItemId");
 
+                    b.HasIndex("CustomerID");
+
                     b.HasIndex("JobRequestID");
+
+                    b.HasIndex("PriceAgreementID");
 
                     b.ToTable("ChargableItems");
                 });
@@ -779,11 +782,23 @@ namespace LogiSyncWebApi.Server.Migrations
 
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.ChargableItem", b =>
                 {
+                    b.HasOne("LogiSyncWebApi.Server.Models.Customer", "BilledCustomer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID");
+
                     b.HasOne("LogiSyncWebApi.Server.Models.JobRequest", "JobRequest")
                         .WithMany()
                         .HasForeignKey("JobRequestID");
 
+                    b.HasOne("LogiSyncWebApi.Server.Models.RequestWithPayment", "PriceAgreement")
+                        .WithMany()
+                        .HasForeignKey("PriceAgreementID");
+
+                    b.Navigation("BilledCustomer");
+
                     b.Navigation("JobRequest");
+
+                    b.Navigation("PriceAgreement");
                 });
 
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.CompanyCustomer", b =>

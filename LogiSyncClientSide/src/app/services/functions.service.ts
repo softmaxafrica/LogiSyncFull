@@ -54,15 +54,21 @@ export class FunctionsService {
     this.displaySuccess(userMsgKey);
   }
 
-  getSeverity(status: string): "success" | "secondary" | "info" | "warning" | "danger" | "contrast" | undefined {
+  getSeverity(status: string): "success" | "secondary" | "info" | "warning" | "danger" | "contrast"    | undefined {
     switch (status) {
+      case 'CREATED':
+        return 'info';
+        case 'ON AGREEMENT':
+        return 'warning';  
       case 'PENDING':
         return 'warning';  
       case 'COMPLETED':
         return 'success'; 
       case 'APPROVED':
-        return 'success'; 
-      case 'CANCELLED':
+        return 'success';
+        case 'PENDING PAYMENTS':
+        return 'danger';  
+      case 'CANCELED':
         return 'danger';  
       default:
         return undefined;  

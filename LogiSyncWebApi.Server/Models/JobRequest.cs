@@ -34,7 +34,8 @@ namespace LogiSyncWebApi.Server.Models
         [Column("PRICE_AGREEMENT_ID")]
         public string? PriceAgreementID { get; set; }
 
-        [ForeignKey("PriceAgreementID")]
+        //[ForeignKey("PriceAgreementID")]
+        [ForeignKey("JobRequestID, CompanyID")]
         public virtual RequestWithPayment PriceAgreement { get; set; }
        
         [Column("TRUCK_TYPE")]
@@ -42,7 +43,15 @@ namespace LogiSyncWebApi.Server.Models
 
         [ForeignKey("TruckID")]
         public string? TruckID { get; set; }
- 
+
+        [Column("CREATED_DATE")]
+        public DateTime? Cdate{ get; set; }
+
+
+        [Column("LAST_UPDATE_TIME")]
+        public DateTime? Udate { get; set; }
+
+
         // Navigation properties
         public virtual Truck Truck { get; set; }
 

@@ -16,7 +16,12 @@ export class AppComponent implements OnInit {
   items: MenuItem[] = [];
   user: SecUser | null = null; // Store user details for profile pop-up
   profileMenu: any;
+  isSidebarVisible: boolean = true;
+  isExpanded: boolean = true; // Start with sidebar expanded
 
+
+  // Toggle function to expand/collapse the sidebar
+ 
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -39,7 +44,9 @@ export class AppComponent implements OnInit {
       });
     });
   }
-  
+  toggleSidebar() {
+    this.isExpanded = !this.isExpanded;
+  }
   updateMenu(user: SecUser | null): void {
     if (user) {
       const role = user.role;

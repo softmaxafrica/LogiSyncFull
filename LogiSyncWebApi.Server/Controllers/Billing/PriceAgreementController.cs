@@ -91,8 +91,12 @@ namespace LogiSyncWebApi.Server.Controllers
                 PriceAgreementID = newPriceAgreement.PriceAgreementID,
                 CompanyPrice = (decimal)newPriceAgreement.CompanyPrice,
                 AgreedPrice = (decimal)newPriceAgreement.AgreedPrice,
-                CustomerPrice= newPriceAgreement.CustomerPrice
-             };
+                CustomerPrice= (decimal)newPriceAgreement.CustomerPrice,
+                CompanyID = newPriceAgreement.CompanyID,
+                JobRequestID = newPriceAgreement.JobRequestID,
+                CustomerID = newPriceAgreement.CustomerID
+  
+            };
             try
             {
                 _context.PriceAgreements.Add(priceDetails);

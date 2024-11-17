@@ -1,10 +1,15 @@
-<p-dock [model]="actionMenu" position="right">
+ 
+    
+  <p-dock [model]="actionMenu" position="left">
     <ng-template pTemplate="item" let-item>
         <img [src]="item.icon"  width="70%">
         <label>{{item.label}}</label>
 
     </ng-template>
 </p-dock>
+ 
+ 
+ 
 
 <div class="mb-3" id="CustomerList" *ngIf="Customers">          
     <p-button 

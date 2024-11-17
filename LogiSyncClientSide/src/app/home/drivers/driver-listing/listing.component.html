@@ -1,18 +1,12 @@
-<p-toolbar>
+
     
-    <p-dock [model]="actionMenu" position="top">
+    <p-dock [model]="actionMenu" position="left">
       <ng-template pTemplate="item" let-item>
           <img [src]="item.icon"  width="70%">
           <label>{{item.label}}</label>
   
       </ng-template>
   </p-dock>
-  <div class="p-toolbar-group-right">
-    <input pInputText type="text"  placeholder="Search" />
-    <p-button  label="Search" icon="pi pi-search"  ></p-button>
-  </div>
-   
-  </p-toolbar>
 
 <div class="mb-3" id="DriverList">
   

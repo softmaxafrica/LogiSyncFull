@@ -1,60 +1,63 @@
-﻿<!-- <p-menubar [model]="items">
-    <ng-template pTemplate="end">
-      <div class="profile-menu">
+﻿
+
+ 
+<div class="main-content">
+  <!-- Sidebar Component -->
+  <p-sidebar [(visible)]="isSidebarVisible"
+  [showCloseIcon]="true"
+  [dismissible]="true"
+  [ngStyle]="{ width: isExpanded ? '200px' : '100px', transition: 'width 0.2s' }">
+<div class="toggle-button" (click)="toggleSidebar()">
+<!-- <i class="pi" [ngClass]="isExpanded ? 'pi-angle-left' : 'pi-angle-right'"></i> -->
+ 
+</div>
+
+<p-menubar [model]="items" [style]="{ background: 'none', border: 'none', margin: '.2rem' }">
+<ng-template let-item pTemplate="item">
+<a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link">
+<img *ngIf="item.icon" [src]="item.icon" width="50px" style="margin-right: 2rem;">  
+<span *ngIf="isExpanded">{{ item.label }}</span>
+</a>
+</ng-template>
+</p-menubar>
+</p-sidebar>
+
+  <!-- Toggle Sidebar Button (visible when sidebar is closed) -->
+  <button *ngIf="!isSidebarVisible" class="sidebar-toggle-btn" (click)="isSidebarVisible = true">
+    <i class="pi pi-bars"></i>
+  </button>
+
+  <!-- Main Content Area -->
+  <div class="main-content" [ngStyle]="{ 'margin-left': isExpanded && isSidebarVisible ? '200px' : '100px' }">
+    <!-- <p-toolbar  *ngIf="!isSidebarVisible">
+      <div class="p-toolbar-group-right"> -->
+         
+<p-menubar  *ngIf="!isSidebarVisible" [model]="items" [style]="{ background: 'none', border: 'none',  }">
+  <ng-template let-item pTemplate="item">
+  <a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link">
+  <img *ngIf="item.icon" [src]="item.icon" width="30px" style="margin-right: .5rem;">
+  <span *ngIf="isExpanded">{{ item.label }}</span>
+ 
+   </a>
+ 
       
-           <p-avatar 
-  *ngIf="user"
-  label="{{ user.email.substring(0, 2).toUpperCase() }}"
-  class="profile-avatar" 
-  (click)="onAvatarClick($event)">
-</p-avatar>
-
-        <p-menu #profileMenu [popup]="true">
-          <ng-template pTemplate="content">
-            <div class="profile-details">
-              <h3>{{ user?.userID }}</h3>
-              <p>Email: {{ user?.email }}</p>
-              <p>Role: {{ user?.role }}</p>
-              <button (click)="logout()" pButton label="Logout" class="p-button-danger p-mt-2"></button>
-            </div>
-          </ng-template>
-        </p-menu>
-      </div>
-    </ng-template>
-  </p-menubar>
-  <p-toast></p-toast> --> 
-
-
-  <div style="display: flex; height: 100vh;" > 
-    <!-- Sidebar with Animated Gradient Background -->
-    <p-sidebar [visible]="true" 
-    closeOnEscape="true"
-    [style]="{ width: '250px', borderRadius: '12px' }" class="animated-gradient" >
-      <p-menubar [model]="items" [style]="{ background: 'none', border: 'none', margin: '1rem' }">
-        <ng-template let-item pTemplate="item">
-          <a *ngIf="!item.separator" [routerLink]="item.routerLink" class="p-menuitem-link">
-            <!-- Display image icon instead of default PrimeNG icon -->
-            <img *ngIf="item.icon" [src]="item.icon"   width="34px" style="margin-right: 2rem;">
-            <span>{{ item.label }}</span>
-          </a>
-        </ng-template>
-      </p-menubar>
-    </p-sidebar>
+   </ng-template>
+</p-menubar>
+      <!-- </div>
+       
+      </p-toolbar> -->
     
-  
-    <!-- Main Content Area with Animated Gradient Background -->
-    <div class="animated-gradient" style="flex-grow: 1; padding: 16px; margin-left: 250px; height: 100vh; overflow-y: auto;">
-      <router-outlet></router-outlet>
-    </div>
+    <router-outlet></router-outlet>
   </div>
-  
-  <style>
-  .animated-gradient {
-    background: linear-gradient(135deg, #fef24f, #00cbfe);
+</div>
+
+<style>
+  .main-content {
+    background: linear-gradient(135deg, #eee, #ff7cc4);
     background-size: 200% 200%;
     animation: gradientAnimation 10s ease infinite;
   }
-  
+
   @keyframes gradientAnimation {
     0% {
       background-position: 0% 50%;
@@ -66,12 +69,49 @@
       background-position: 0% 50%;
     }
   }
-  
-  /* Force the gradient to apply to p-sidebar's internal structure */
-  ::ng-deep .p-sidebar-content {
-    background: linear-gradient(135deg, #ffffff86, #fffdff);
-    background-size: 200% 200%;
-    animation: gradientAnimation 10s ease infinite;
-  }
-  </style>
-  
+
+  .main-content {
+  transition: margin-left 0.3s ease;
+  padding: auto;
+   height: 100vh;
+  overflow-y: auto;
+}
+
+.p-sidebar {
+  overflow: hidden;
+}
+
+.p-sidebar .p-menubar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toggle-button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle-btn {
+  position: fixed;
+  z-index: 1000;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+
+</style>

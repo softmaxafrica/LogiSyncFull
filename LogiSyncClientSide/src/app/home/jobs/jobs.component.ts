@@ -50,8 +50,26 @@ export class JobsComponent implements OnInit {
   selectedJobRequest: JobRequest | null = null;
   jobDialogVisible: boolean = false;
   columnDialogVisible: boolean = false;
-  agreementDialogVisible: boolean = false;
-  activeRequest: RequestWithPrice| null =null;
+  agreementDialogVisible: boolean = false; 
+
+  activeRequest: RequestWithPrice = {
+    jobRequestID: '',
+    pickupLocation: '',
+    deliveryLocation: '',
+    cargoDescription: '',
+    containerNumber: '',
+    status: '',
+    priceAgreementID: '',
+    truckType: '',
+    truckID: '',
+    driverID: '',
+    requestType: '',
+    customerID: '',
+    requestedPrice: undefined,  // Set as undefined
+    acceptedPrice: undefined,
+    customerPrice: undefined,
+    companyID:''
+  };
 
    
     
@@ -70,7 +88,8 @@ export class JobsComponent implements OnInit {
     customerPrice: 0,
     truckType: '',                        
     driverID: '',                              
-    requestType: ''     
+    requestType: '',
+    companyID:''     
   };
 
   jobSearchTerm: string = '';
@@ -89,6 +108,7 @@ requestDetailsVisible: boolean =false;
   ActiveCustomerName: string | undefined;
   isLoading: boolean= false;
   showDriverContent: boolean= false;
+showPriceContent: boolean= true;
   constructor(
      private dataServices: DataService,
     public functions: FunctionsService,
@@ -120,42 +140,7 @@ requestDetailsVisible: boolean =false;
         (response) => this.customersList = response.data,
         (error) => this.functions.displayInfo(error.error || error.message || 'An unknown error occurred')
       );
-    }   
-  loadColumns() {
-
-    this.sourceColumns = [
-      { field: 'jobRequestID', header: 'Job Request ID' },
-     
-       // PriceDetails (PriceAgreement)
-       { field: 'priceDetails.acceptedPrice', header: 'Accepted Price' },
-      { field: 'priceDetails.customerPrice', header: 'Customer Price' },
-  
-      // TruckDetails (TrucksPayload)
-       { field: 'truckDetails.model', header: 'Truck Model' },
-      { field: 'truckDetails.isTruckAvilableForBooking', header: 'Is Truck Available' },
-      { field: 'truckType', header: 'Truck Type' },
-
-      // CustomerDetails (Customer)
-      { field: 'customerDetails.email', header: 'Customer Email' },
-      { field: 'customerDetails.phone', header: 'Customer Phone' },
-      { field: 'customerDetails.address', header: 'Customer Address' },
-      { field: 'priceDetails.requestedPrice', header: 'Requested Price' },
-      { field: 'truckDetails.truckNumber', header: 'Truck Number' },
-      { field: 'customerDetails.fullName', header: 'Customer Name' }
-    ];
-  
-  // Initialize selected columns with default values
-  this.targetColumns = [
-    { field: 'cargoDescription', header: 'Cargo Description' },    
-     { field: 'pickupLocation', header: 'Pickup Location' },
-    { field: 'deliveryLocation', header: 'Delivery Location' },
-    { field: 'containerNumber', header: 'Refernce Number' },
-    { field: 'status', header: 'Status' },
-   
-  ];
-  
-
-}
+    }    
 
 loadActionMenu(){
   this.actionMenu = [
@@ -232,22 +217,7 @@ loadJobs(companyId: string): void {
     }
   );
 
-}
-  // loadJobs() {
-  //   this.dataServices.getCompanyJobs(this.companyId).subscribe(
-  //     (response) => {
-  //       if (Array.isArray(response.data)) {
-  //         this.jobRequests = response.data;
-  //       } else {
-  //         this.jobRequests = [response.data]; // If response.data is a single object
-  //       }
-  //     },
-  //     (error) => this.functions.displayInfo(error.error || error.message || 'An unknown error occurred')
-  //   );
-  //  }
-  //  resolveNestedField(obj: any, field: string): any {
-  //    return field.split('.').reduce((o, key) => o && o[key] ? o[key] : null, obj);
-  // }
+} 
   
   
     // Fetch available truck types
@@ -274,10 +244,10 @@ loadJobs(companyId: string): void {
   saveJob(job: RequestWithPrice) {
     
     this.newJobRequest = { ...job };
-
-    this.newJobRequest.requestedPrice = this.newJobRequest.requestedPrice || 0;
-  this.newJobRequest.acceptedPrice = this.newJobRequest.acceptedPrice || 0;
-  this.newJobRequest.customerPrice = this.newJobRequest.customerPrice || 0;
+this.newJobRequest.companyID=this.companyId;
+    this.newJobRequest.requestedPrice = this.newJobRequest.requestedPrice || 0.0;
+  this.newJobRequest.acceptedPrice = this.newJobRequest.acceptedPrice || 0.0;
+  this.newJobRequest.customerPrice = this.newJobRequest.customerPrice || 0.0;
 
      if (this.newJobRequest) {
       if (this.newJobRequest.jobRequestID) {
@@ -306,21 +276,18 @@ loadJobs(companyId: string): void {
   }
   updateRequest( ) {
  
-    console.log('price'+ this.activeRequest?.requestedPrice); // Check the value in the console
-
-    console.log( this.activeRequest!);
-
    
-
-    console.log( this.activeRequest!);
-    this.dataServices.updateJobRequest( this.activeRequest!).subscribe(() => {
-      this.loadJobs(this.companyId); // Refresh job list
+   this.activeRequest.companyID=this.companyId;
+      this.dataServices.updateJobRequest( this.activeRequest!).subscribe(() => {
+       // Refresh job list
       this.jobDialogVisible = false;
     }, error => {
       const errorMessage = error.error || error.message || 'An unknown error occurred';
       this.functions.displayError(errorMessage);
     });
-  }
+    this.jobDialogVisible=false;
+    this.reloadPage();
+   }
   closeJobDialog() {
     // this.jobDialogVisible = false;
     // this.activeRequest = null;
@@ -362,7 +329,8 @@ loadJobs(companyId: string): void {
       customerID: selectedJobRequest.customerID,
       requestedPrice: 0,  // Use defaults or extract from a relevant property
       acceptedPrice: 0,   // Default or extracted value
-      customerPrice: 0    // Default or extracted value
+      customerPrice: 0, 
+      companyID: this.companyId,
     };
    
     // Set active request
@@ -379,8 +347,19 @@ loadJobs(companyId: string): void {
         this.getAvailableDrivers(this.companyId);
         this.showDriverContent=true;
       }
+
+      if((ActiveReq.status =="CREATED")||(ActiveReq.status=="ON AGREEMENT"))
+      {
+        this.showDriverContent=false;
+        this.showTruckContent=false;
+      }
+      if((ActiveReq.status =="PENDING PAYMENTS")||(ActiveReq.status=="CANCELLED"))
+        {
+          this.showPriceContent=false;
+        }
     
         this.requestDetailsVisible = true;
+
   }
   
 
@@ -415,12 +394,7 @@ onTruckTypeChange() {
   this.getAvailableTrucks(this.selectedTruckTypeID);
   // this.showTruckContent=true;
 }
-// onRequestTypeChange() {
-// const selectedRequestType= this.newJobRequest.requestType;
-// if(selectedRequestType.includes("TRUCK")){
-
-// }
-// }
+ 
    
 onTruckChange() {
   const selectedTruck = this.avilableTruckLists.find(
@@ -474,4 +448,50 @@ getAvailableDrivers(type: any) {
 reloadPage() {
   window.location.reload();
 }
+
+//#region  TABLE DATA PREPARE
+
+loadColumns() {
+  this.sourceColumns = [
+    { field: 'cdate', header: 'Requested Time' },
+    { field: 'udate', header: 'Last Update' },
+
+  
+
+    // TruckDetails (Truck)
+    { field: 'truck.model', header: 'Truck Model' },
+    { field: 'truck.isTruckAvilableForBooking', header: 'Is Truck Available' },
+    { field: 'truckType', header: 'Truck Type' },
+    { field: 'truck.truckNumber', header: 'Truck Number' },
+
+    // CustomerDetails (Customer)
+    { field: 'customer.email', header: 'Customer Email' },
+    { field: 'customer.phone', header: 'Customer Phone' },
+    { field: 'customer.address', header: 'Customer Address' },
+    { field: 'customer.fullName', header: 'Customer Name' },
+  ];
+
+  // Initialize selected columns with default values
+  this.targetColumns = [
+    { field: 'jobRequestID', header: 'Job Request ID' },
+    { field: 'cargoDescription', header: 'Cargo Description' },
+    { field: 'pickupLocation', header: 'Pickup Location' },
+    { field: 'deliveryLocation', header: 'Delivery Location' },
+    { field: 'containerNumber', header: 'Reference Number' },
+      // PriceDetails (PriceAgreement)
+      { field: 'priceAgreement.priceAgreementID', header: 'Agreement ID' },
+
+      { field: 'priceAgreement.agreedPrice', header: 'Accepted Price' },
+      { field: 'priceAgreement.customerPrice', header: 'Customer Price' },
+   { field: 'priceAgreement.companyPrice', header: 'Company Price' },
+
+    { field: 'status', header: 'Status' },
+  ];
+}
+
+
+getNestedValue(rowData: any, field: string): any {
+  return field.split('.').reduce((acc, part) => acc && acc[part], rowData) || null;
+}
+//#endregion
 }

@@ -19,6 +19,8 @@ namespace LogiSyncWebApi.Server.Shared
         public DbSet<JobRequest> JobRequests { get; set; }
         public DbSet<RequestWithPayment> PriceAgreements { get; set; }
          public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<ChargableItem> ChargableItems { get; set; }
+        
         public DbSet<Payment> Payments { get; set; }
         public DbSet <SecUser> SecUsers { get;set; }
         public DbSet<Location> Locations { get; set; }
@@ -66,11 +68,12 @@ namespace LogiSyncWebApi.Server.Shared
             //    .OnDelete(DeleteBehavior.Cascade);
 
             // JobRequest and PriceAgreement
-            //modelBuilder.Entity<JobRequest>()
-            //    .HasOne(jr => jr.PriceAgreement)
-            //    .WithMany(pa => pa.JobRequests)
-            //    .HasForeignKey(jr => jr.PriceAgreementID)
-            //    .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<JobRequest>()
+            .HasOne(jr => jr.PriceAgreement)
+              .WithOne()
+              .HasForeignKey<JobRequest>(jr => jr.PriceAgreementID)
+                 .OnDelete(DeleteBehavior.Cascade);
+
 
             // Invoice and JobRequest
             modelBuilder.Entity<Invoice>()
@@ -78,6 +81,7 @@ namespace LogiSyncWebApi.Server.Shared
                  .WithMany(jr => jr.Invoices)
                  .HasForeignKey(i => i.JobRequestID)
                  .OnDelete(DeleteBehavior.Cascade);
+ 
 
             // JobRequest and Customer
             //modelBuilder.Entity<JobRequest>()
@@ -86,7 +90,7 @@ namespace LogiSyncWebApi.Server.Shared
             //    .HasForeignKey(jr => jr.CustomerID)
             //    .OnDelete(DeleteBehavior.NoAction);
 
-          
+
 
             // Payment and Invoice
             //modelBuilder.Entity<Payment>()

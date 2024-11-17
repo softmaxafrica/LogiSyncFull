@@ -40,10 +40,7 @@
     padding: 10px;
   }
   
-  .p-menu .p-menuitem {
-    padding: 10px;
-  }
-
+  
   .dashboard-container {
     padding: 15px;
   }
@@ -93,66 +90,7 @@
     vertical-align: middle;
     margin: 2rem;
 }
-  
-  /* Remove background and borders from the menubar */
-.p-menubar {
-  background: none !important; /* Removes the background color */
-  border: none !important; /* Removes any border */
-  box-shadow: none !important; /* Removes shadow */
-}
-
-/* Ensure all items within the menubar have no background */
-.p-menubar .p-menuitem {
-  background: none !important; /* No background */
-  border: none !important; /* No border */
-}
-
-/* Make menu items transparent on hover */
-.p-menubar .p-menuitem:hover {
-  background: none !important; /* No background on hover */
-  color: inherit !important; /* Retain original text color */
-}
-
-/* Active menu items */
-.p-menubar .p-menuitem-active {
-  background: none !important; /* No background on active */
-  color: inherit !important; /* Retain original text color */
-}
-
-/* Remove color from disabled menu items */
-.p-menubar .p-menuitem-disabled {
-  background: none !important; /* No background */
-  color: inherit !important; /* Retain original text color */
-}
-
-/* Remove any padding or margins from menubar */
-.p-menubar .p-menubar-root-list {
-  margin: 0 !important; /* Remove any margin */
-  padding: 0 !important; /* Remove any padding */
-}
-
-/* Remove line under the menubar */
-.p-menubar .p-menubar-root-list {
-  border-bottom: none !important; /* No border bottom */
-}
-
-/* Additional styling to remove potential shadows or outlines */
-.p-menu {
-  box-shadow: none !important; /* No shadow */
-  outline: none !important; /* No outline */
-}
-
-/* Specific class to ensure no color in submenu items */
-.p-menu .p-menuitem {
-  background-color: transparent !important; /* Make background transparent */
-  color: inherit !important; /* Use inherited color */
-}
-
- 
-.p-menu .p-menuitem:hover {
-  background: none !important;  
-  color: inherit !important; 
-} 
+   
 .carousel-item {
   margin: 0 15px; /* Adjust as needed for horizontal spacing */
 }
@@ -175,6 +113,52 @@ label {
   font-weight: bold;  
 }
 
+/* Side Menu Styling */
+ /* Styles for Main Content Area to Adjust Based on Sidebar State */
+ .p-sidebar {
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.p-sidebar .p-menubar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.p-sidebar .p-menuitem-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem;
+  transition: justify-content 0.3s ease;
+}
+
+.p-sidebar .p-menuitem-link img {
+  margin-right: 0;
+}
+
+.p-sidebar .p-menuitem-link span {
+  display: inline-block;
+  transition: opacity 0.3s;
+}
+
+.toggle-button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 100%;
+}
+
+
+/* End Side Menu Style */
+
+
+
+
 @keyframes gradientAnimation {
   0% {
     background-position: 0% 50%;
@@ -187,11 +171,7 @@ label {
   }
 } 
 
-p-dropdown {
-  width: 100% !important;
-  
-}
-
+ 
 
   @media (max-width: 768px) {
     .card-item, .large-card-item {

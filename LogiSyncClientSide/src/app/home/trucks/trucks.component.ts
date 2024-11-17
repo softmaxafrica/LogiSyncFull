@@ -132,13 +132,13 @@ this.updateTruckSubMenu()
       { label: 'DOUBLE CABIN', value: 'DOUBLE CABIN' }
     ];
     this.category = [
-      { label: 'HORSE TRUCK', value: 'HORSE' },
-      { label: 'TRAILER TRUCK', value: 'TRAILER' }
+      { label: 'HORSE', value: 'HORSE' },
+      { label: 'TRAILER', value: 'TRAILER' }
     ];
     this.fuelType = [
-      { label: 'DIESEL TYPE', value: 'DIESEL' },
-      { label: 'PETROL TYPE', value: 'PETROL' },
-      { label: 'ELECTRICAL TYPE', value: 'ELECTRICAL' }
+      { label: 'DIESEL', value: 'DIESEL' },
+      { label: 'PETROL', value: 'PETROL' },
+      { label: 'ELECTRICAL', value: 'ELECTRICAL' }
 
     ];
     this.drive = [

@@ -1,3 +1,4 @@
+using LogiSyncWebApi.Server.Services;
 using LogiSyncWebApi.Server.Shared;
 using Microsoft.EntityFrameworkCore;
  
@@ -16,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DB_Connection")));
 
+builder.Services.AddSingleton<IHostedService, ChargesTriggerService>();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 

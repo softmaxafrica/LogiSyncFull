@@ -32,6 +32,8 @@ namespace LogiSyncWebApi.Server.Models.DataPayloads
         public decimal? RequestedPrice { get; set; }
         public decimal? CustomerPrice { get; set; }
         public decimal? AcceptedPrice { get; set; }
+        public string? CompanyID { get; set; }
+
     }
 
 }

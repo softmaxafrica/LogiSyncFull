@@ -123,14 +123,14 @@ this.loadActionMenu();
   loadActionMenu() {
     this.actionMenu = [
       {
-        label: 'Customers',
+        label: 'All',
         icon: 'assets/images/icons/test-drive.png',
         command: () => {
           this.showCustomerRegistration=false;
         }
       },
       {
-        label: 'Add Customer',
+        label: 'Add',
         icon: 'assets/images/icons/add.png',
         command: () => {
           this.showCustomerRegistration=true;

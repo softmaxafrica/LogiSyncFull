@@ -1,22 +1,12 @@
  
-    <p-toast></p-toast>   
-    <p-toolbar  >
-    
-      <p-dock [model]="truckmenu" position="top">
+      <p-dock [model]="truckmenu" position="left">
         <ng-template pTemplate="item" let-item>
             <img [src]="item.icon" [alt]="item.label" width="70%">
             <label>{{item.label}}</label>
     
         </ng-template>
     </p-dock>
-    <div class="p-toolbar-group-right">
-      <input pInputText type="text"  placeholder="Search" />
-      <p-button  label="Search" icon="pi pi-search"  ></p-button>
-    </div>
-     
-    </p-toolbar>
- 
- 
+   
 <p-carousel 
 [numVisible]="2" 
 [numScroll]="1" 
