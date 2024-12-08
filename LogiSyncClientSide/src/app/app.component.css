@@ -68,37 +68,12 @@ p-table {
  }
 
 
-p-table th, p-table td {
-  padding: 5px; /* Reduce padding for a more compact table */
-}
-
+ 
 /* Adjust header text size */
-p-table th {
-  font-size: 0.65rem; /* Slightly larger than the table cells */
-}
-p-table {
-  font-size: 0.65rem; /* Slightly larger than the table cells */
-}
+ 
+ 
 
-p-table td {
-  font-size: 0.5rem; /* Slightly larger than the table cells */
-}
-/* Optional: Reduce the size of the table's borders */
-p-table .p-datatable-thead > tr > th {
-  border-bottom: 1px solid #ccc; /* Lighter borders */
-}
-
-p-table .p-datatable-tbody > tr > td {
-  border-bottom: 1px solid #f4f4f4; /* Lighter borders */
-}
-
-/* Optional: Adjust the hover effect for better visual experience */
-p-table .p-datatable-tbody > tr:hover {
-  background-color: #f7f7f7; /* Subtle hover effect */
-}
-
-
-label {
+/* label {
   background: linear-gradient(270deg, 
     #ff6a00,   
     #ee0979,    
@@ -113,7 +88,7 @@ label {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;  
-}
+} */
 
 span{
   background: linear-gradient(270deg, 

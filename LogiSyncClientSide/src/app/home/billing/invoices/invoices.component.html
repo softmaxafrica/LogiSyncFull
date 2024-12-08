@@ -1,6 +1,69 @@
+<div class="card">
+  <p-table [value]="filteredInvoices" [paginator]="true" [rows]="10" [responsive]="true" [scrollable]="true">
+    
+    <!-- Global Search -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th colspan="8">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            <!-- Manage Columns Button (Left-Aligned) -->
+            <p-button type="button" icon="pi pi-cog" (click)="columnDialogVisible = true" 
+                      label="Manage Columns" styleClass="p-button-text"></p-button>
+            
+            <!-- Search Input (Right-Aligned) -->
+            <input pInputText type="text" [(ngModel)]="searchTerm" 
+                   (input)="onSearch()" placeholder="Search" 
+                   class="p-inputtext-sm p-mb-3 p-ml-auto" />
+          </div>
+        </th>
+      </tr>
+      
+      <tr>
+        <th *ngFor="let column of targetColumns">
+          {{ column.header }}
+        </th>
+      </tr>
+    </ng-template>
 
-<div class="dashboard-container" id="backlayout">
-    <p-card>
-<p>invoices works!</p>
-</p-card>
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td *ngFor="let column of targetColumns">
+          <ng-container *ngIf="column.field === 'status'">
+            <p-tag [value]="item[column.field]" [severity]="functions.getSeverity(item[column.field])">
+            </p-tag>
+          </ng-container>
+          <ng-container *ngIf="column.field !== 'status'">
+          {{ globalColumnControlService.getNestedValue (item, column.field) }}
+          </ng-container>
+        </td>
+        <td class="p-d-flex p-ai-center">
+          <p-button icon="pi pi-finish" label="Finalize" [outlined]="true" [disabled]="item.status === 'PAYED'">
+            <img 
+                  src="assets/images/icons/edit.png" 
+                  width="25px"    
+                  style="margin-right: .5rem;"
+                />
+          </p-button>
+         </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+      <!-- Column Management Dialog -->
+      <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [responsive]="true" [style]="globalColumnControlService.getColumnDialogConfig()">
+        <p-fieldset legend="Columns" [toggleable]="true">
+          <p-pickList [source]="sourceColumns" [target]="targetColumns" sourceHeader="Available Columns" targetHeader="Selected Columns" 
+                      [dragdrop]="true" [responsive]="true" breakpoint="1400px">
+            <ng-template let-column pTemplate="item">
+              <div class="flex flex-wrap p-2 align-items-center gap-3">
+                <span class="font-bold">{{ column.header }}</span>
+              </div>
+            </ng-template>
+          </p-pickList>
+        </p-fieldset>
+        <p-footer>
+          <p-button label="Close" icon="pi pi-times" (click)="columnDialogVisible = false"></p-button>
+        </p-footer>
+      </p-dialog>
+   
 </div>

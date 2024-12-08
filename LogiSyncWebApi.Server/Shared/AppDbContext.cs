@@ -1,4 +1,5 @@
-﻿using LogiSyncWebApi.Server.Models;
+﻿using LogiSync.Models;
+using LogiSyncWebApi.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogiSyncWebApi.Server.Shared
@@ -29,7 +30,8 @@ namespace LogiSyncWebApi.Server.Shared
         public DbSet<GenTable> GenTables { get; set; }
         public DbSet<GenTableColumn> GenTableColumns { get; set; }
 
-
+        public DbSet<Contract> Contracts { get; set; }
+        
 
 
         #endregion

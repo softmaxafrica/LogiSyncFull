@@ -76,6 +76,7 @@ namespace LogiSyncWebApi.Server.Services
                                         DueDate = null,
                                         Status = "DRAFT",
                                         CustomerID = firstItem.CustomerID,
+                                        CompanyID= firstItem.JobRequest.AssignedCompany
                                     };
 
                                      var savedInvoice = await invoiceController.CreateInvoice(newInvoice);

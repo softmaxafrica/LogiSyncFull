@@ -10,6 +10,8 @@ export interface JobRequestPayload {
   status: string;                 
   truckID: string;                
   customerID: string;
+  contractId:string;
+
 }
 
 export interface RequestWithPrice {
@@ -25,6 +27,8 @@ export interface RequestWithPrice {
   driverID: string;                              
   requestType: string;                
   customerID: string;
+  contractId:string;
+  firstDepositAmount?: number;
 
   // Properties that may need default values for binding
   requestedPrice?: number;  // Use `?` to make it optional initially

@@ -15,12 +15,25 @@ import { JobRequestPayload, RequestWithPrice } from '../models/jobRequestPayload
 import { Customer } from '../models/customer';
 import { PriceAgreement } from '../models/priceAgreement';
 import { Truck } from '../models/Truck';
+import { Invoice } from '../models/invoices';
+import { Contract } from '../models/contract';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+  
+  getContractById(contractID: string): Observable<ApiResponse<Contract>> {
+    return this.http.get<ApiResponse<Contract>>(
+      `${this.baseUrl}Contracts/GetContractById/${contractID}`);
+  }
+  getCompanyInvoices(companyId: string): Observable<ApiResponse<Invoice[]>> {
+    return this.http.get<ApiResponse<Invoice[]>>(
+      `${this.baseUrl}Invoice/GetCompanyInvoice/${companyId}`
+    );
+  }
+
   postCustomer<T>(endpoint: string, customerRegData: Customer): Observable<T>{
  return this.http.post<T>(`${this.baseUrl}Customer/${endpoint}`,customerRegData);
   }

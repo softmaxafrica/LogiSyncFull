@@ -7,6 +7,8 @@ using LogiSyncWebApi.Server.Migrations;
 using System.Data.Common;
 using System.Transactions;
 using System.ComponentModel.Design;
+using LogiSync.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace LogiSyncWebApi.Server.Controllers
 {
@@ -87,55 +89,6 @@ namespace LogiSyncWebApi.Server.Controllers
         }
         #endregion
 
-        //#region GetCompanyJobRequest
-        //[HttpGet]
-        //[Route("GetCompanyJobRequest/{CompanyID}")]
-        //public IActionResult GetCompanyJobRequest(string CompanyID)
-        //{
-        //    var executionResult = new ExecutionResult();
-        //    string functionName = nameof(GetCompanyJobRequest);
-
-        //    try
-        //    {
-        //        using (var db = new AppDbContext(_config))
-        //        {
-
-        //            var jobRequests = db.JobRequests
-        //                .Include(jr => jr.PriceAgreement)
-        //                .Include(jr => jr.Truck)
-        //                .Include(jr => jr.Customer)
-        //                .Where((jr => jr.Status != "CANCELED" && (jr.Status != "PENDING PAYMENTS") || (jr.Status == "PENDING PAYMENTS" && jr.AssignedCompany == CompanyID))
-        //                )
-        //                 .ToList();
-        //            if (jobRequests == null || jobRequests.Count == 0)
-        //            {
-        //                return NotFound("No Job Requests Available For This Company");
-        //            }
-
-        //            foreach (var avilabeleJobs in jobRequests)
-        //            {
-        //                if(avilabeleJobs.PriceAgreement.CompanyID!= CompanyID)
-        //                {
-        //                    avilabeleJobs.PriceAgreement.CompanyPrice = 0;
-        //                    avilabeleJobs.PriceAgreement.CustomerPrice = 0;
-        //                    avilabeleJobs.PriceAgreement.AgreedPrice = 0;
-
-        //                 }
-
-        //                jobRequests= avilabeleJobs;  
-        //            }
-
-        //            executionResult.SetData(jobRequests); // Set the list of job requests
-        //            return Ok(executionResult.GetServerResponse());
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        executionResult.SetInternalServerError(nameof(JobRequestController), functionName, ex);
-        //        return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
-        //    }
-        //}
-        //#endregion
         #region GetCompanyJobRequest
         [HttpGet]
         [Route("GetCompanyJobRequest/{CompanyID}")]
@@ -277,7 +230,8 @@ namespace LogiSyncWebApi.Server.Controllers
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(UpdateJobRequestAsync);
-            
+            ContractsController contractContr = new ContractsController(_context, _config);
+
 
 
             try
@@ -323,6 +277,7 @@ namespace LogiSyncWebApi.Server.Controllers
                         if (existingPriceAgreement == null)
                         {
                             PriceAgreementController PriceCntrl = new PriceAgreementController(_context);
+
                             PriceAgreementPayload priceDetails = new PriceAgreementPayload
                             {
                                 PriceAgreementID = Functions.GeneratePriceAgreementId(),
@@ -353,9 +308,53 @@ namespace LogiSyncWebApi.Server.Controllers
                             if (updatedJobRequest.RequestedPrice.HasValue && updatedJobRequest.RequestedPrice > 0)
                                 existingPriceAgreement.CompanyPrice = updatedJobRequest.RequestedPrice.Value;
                             if (updatedJobRequest.AcceptedPrice.HasValue && updatedJobRequest.AcceptedPrice > 0)
+                            {
+
                                 existingPriceAgreement.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
+
+                                var existingContract = await _context.Contracts
+                                .FirstOrDefaultAsync(c => c.RequestID == updatedJobRequest.JobRequestID);
+                                if (existingContract == null)
+                                {
+                                    Contract newContr = new Contract();
+                                    newContr.RequestID = updatedJobRequest.JobRequestID;
+                                    newContr.CompanyID = updatedJobRequest.CompanyID;
+                                    newContr.CustomerID = updatedJobRequest.CustomerID;
+                                    newContr.AdvancePayment = updatedJobRequest.FirstDepositAmount;
+                                    newContr.ContractDate = DateTime.UtcNow.ToLocalTime();
+                                    newContr.AgreedPrice = updatedJobRequest.AcceptedPrice;
+                                    newContr.ContractID = Functions.GenerateContractId();
+
+                                    await contractContr.CreateContract(newContr);
+                                    existingJobRequest.ContractId = newContr.ContractID;
+
+                                }
+                                else
+                                {
+                                    // Update the existing contract's details
+                                    existingContract.CompanyID = updatedJobRequest.CompanyID;
+                                    //existingContract.CustomerID = updatedJobRequest.CustomerID;
+                                    //existingContract.AdvancePayment = updatedJobRequest.FirstDepositAmount;
+                                    existingContract.ContractDate = DateTime.UtcNow.ToLocalTime();
+                                    existingContract.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
+
+                                    // Save changes to the updated contract
+                                    _context.Contracts.Update(existingContract);
+                                    await _context.SaveChangesAsync();
+
+                                    // Update the contract ID in the job request if necessary
+                                    existingJobRequest.ContractId = existingContract.ContractID;
+
+                                    Console.WriteLine($"Updated existing contract for JobRequestID: {updatedJobRequest.JobRequestID}");
+                                }
+                            }
+                            else
+                            {
+                                 Console.WriteLine($"Contract already exists for JobRequestID: {updatedJobRequest.JobRequestID}");
+                            }
+
                             if (updatedJobRequest.CustomerPrice.HasValue && updatedJobRequest.CustomerPrice > 0)
-                                existingPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice.Value;
+                            existingPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice.Value;
                             existingPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
                             existingPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
                             existingPriceAgreement.CustomerID = updatedJobRequest.CustomerID;

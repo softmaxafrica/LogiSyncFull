@@ -205,7 +205,9 @@ import { CustomersComponent } from './home/customers/customers.component';
     CheckboxModule,
     RadioButtonModule,
     InputNumberModule,
-    PanelMenuModule
+    PanelMenuModule,
+    DataViewModule,
+    TabViewModule
     
     
   ],

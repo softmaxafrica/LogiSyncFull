@@ -28,7 +28,8 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
                 using (var db = new AppDbContext(_config))
                 {
                     return db.ChargableItems
-                        .Include(jr => jr.JobRequest)
+                    .Where(i=>i.Status=="PENDING")
+                    .Include(jr => jr.JobRequest)
                                       .ToList();
                 }
             

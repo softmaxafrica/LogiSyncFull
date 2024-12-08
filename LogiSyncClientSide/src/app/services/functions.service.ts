@@ -68,6 +68,12 @@ export class FunctionsService {
         return 'success';
         case 'PENDING PAYMENTS':
         return 'danger';  
+        case 'DRAFT':
+          return 'warning';  
+          case 'FINALIZED':
+            return 'success';  
+            case 'DISCARDED':
+        return 'danger';  
       case 'CANCELED':
         return 'danger';  
       default:
@@ -95,5 +101,5 @@ getFormatApiDateTime(date: string): string {
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`; // Returns 'YYYY-MM-DDTHH:mm:ss'
 }
 
-  
+
 }

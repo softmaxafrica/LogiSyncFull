@@ -19,18 +19,24 @@ import { AppConstants } from '../../services/shared/Constants';
 import { DriverModule } from '../drivers/driver.module';
 import { DriverPayload } from '../../models/drivers';
 import { ChangeDetectorRef } from '@angular/core';
+import { Contract } from '../../models/contract';
 
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
-  styleUrls: ['./jobs.component.css','../../app.component.css']
+  styleUrls: ['../../app.component.css']
 })
 export class JobsComponent implements OnInit {
+
+
+  showContract(_t34: any) {
+throw new Error('Method not implemented.');
+}
 
   deleteDialogVisible: boolean=false;
  
 
- 
+  contractDetails: Contract | null= null;
   avilableTruckLists: Truck[]=[];
   avilableDriverLists: DriverPayload[]=[];
   SelectedTruckavilableTruck: any;
@@ -68,7 +74,9 @@ export class JobsComponent implements OnInit {
     requestedPrice: undefined,  // Set as undefined
     acceptedPrice: undefined,
     customerPrice: undefined,
-    companyID:''
+    companyID:'',
+    contractId:'',
+    firstDepositAmount: undefined,
   };
 
    
@@ -89,10 +97,11 @@ export class JobsComponent implements OnInit {
     truckType: '',                        
     driverID: '',                              
     requestType: '',
-    companyID:''     
+    companyID:'',
+    contractId:''     
   };
 
-  jobSearchTerm: string = '';
+  searchTerm: string = '';
   companyId!: string;
   customersList: Customer[] = [];
   request: JobRequest|undefined;
@@ -109,7 +118,9 @@ requestDetailsVisible: boolean =false;
   isLoading: boolean= false;
   showDriverContent: boolean= false;
 showPriceContent: boolean= true;
-  constructor(
+  filteredJobs: JobRequest[]=[];
+ 
+   constructor(
      private dataServices: DataService,
     public functions: FunctionsService,
     private authServices: AuthService,
@@ -127,6 +138,7 @@ showPriceContent: boolean= true;
     this.getTruckTypes();
     this.loadActionMenu();
     this.preLoads();
+    this.filteredJobs=this.jobRequests;
    }
   preLoads() {
     this.requestType = [
@@ -138,9 +150,29 @@ showPriceContent: boolean= true;
   loadCustomers() {
        this.dataServices.GetCustomersByCompany(this.companyId).subscribe(
         (response) => this.customersList = response.data,
-        (error) => this.functions.displayInfo(error.error || error.message || 'An unknown error occurred')
-      );
+        (error) => {
+          const errorMessage =
+          error.error?.message ||  
+          (typeof error.error === 'string' ? error.error : null) ||  
+          error.message || // General HTTP error message
+          'An unknown error occurred';
+        this.functions.displayError(errorMessage);
+        }      );
     }    
+    loadContractDetails(ContrId: string) {
+      if (ContrId) {
+        this.dataService.getContractById(this.activeRequest.contractId).subscribe(
+          (response)  => this.contractDetails = response.data,
+          (error) => {
+            const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+          }         );
+      }
+    }
 
 loadActionMenu(){
   this.actionMenu = [
@@ -206,14 +238,20 @@ loadJobs(companyId: string): void {
       this.isLoading = false;
       if (response.data) {
         this.jobRequests = response.data;
+        this.filteredJobs=this.jobRequests;
+
  console.log(response.data);
       } else {
         this.functions.displayError('No job requests found.');
       }
     },
     (error) => {
-      this.isLoading = false;
-      this.functions.displayError('No job requests found.');
+      const errorMessage =
+      error.error?.message ||  
+      (typeof error.error === 'string' ? error.error : null) ||  
+      error.message || // General HTTP error message
+      'An unknown error occurred';
+    this.functions.displayError(errorMessage);
     }
   );
 
@@ -227,8 +265,12 @@ loadJobs(companyId: string): void {
           this.truckTypes = response.data;
         },
         (error) => {
-          const errorMessage = error.error || error.message || 'An unknown error occurred';
-          this.functions.displayError(errorMessage);
+          const errorMessage =
+          error.error?.message ||  
+          (typeof error.error === 'string' ? error.error : null) ||  
+          error.message || // General HTTP error message
+          'An unknown error occurred';
+        this.functions.displayError(errorMessage);
         }
       );
     }
@@ -288,25 +330,15 @@ this.newJobRequest.companyID=this.companyId;
     this.jobDialogVisible=false;
     this.reloadPage();
    }
-  closeJobDialog() {
-    // this.jobDialogVisible = false;
-    // this.activeRequest = null;
-    // this.activeRequest!.truckID='';  
-    // this.changeDetector.detectChanges(); // Force change detection
-
+  
+   closeJobDialog() {
+     
     this.reloadPage();
     this.getAvailableTrucks('');
 
      }
 
-  searchJobs() {
-    // this.dataServices.searchJobs(this.jobSearchTerm).subscribe(jobs => {
-    //   this.jobRequests = jobs;
-    // }, error => {
-    //   const errorMessage = error.error || error.message || 'An unknown error occurred';
-    //   this.functions.displayError(errorMessage);
-    // });
-  }
+ 
 
   editRequests(event: JobRequest) {
       this.showTruckContent=false;
@@ -331,7 +363,9 @@ this.newJobRequest.companyID=this.companyId;
       acceptedPrice: 0,   // Default or extracted value
       customerPrice: 0, 
       companyID: this.companyId,
+      contractId: selectedJobRequest.contractId
     };
+
    
     // Set active request
     this.activeRequest = { ...ActiveReq };
@@ -341,6 +375,9 @@ this.newJobRequest.companyID=this.companyId;
       this.showTruckContent=true;
     }
  
+    if(ActiveReq.contractId !=null){
+       this.loadContractDetails(ActiveReq.contractId);
+    }
         
      
       if(this.activeRequest.requestType.includes(AppConstants.DRIVER_REQUEST_TYPE)){
@@ -427,8 +464,12 @@ getAvailableTrucks(type: any) {
       console.log(this.avilableTruckLists);
     },
     (error) => {
-      const errorMessage = error.error?.message || error.message || 'An unknown error occurred'; // Optional chaining for safety
-      this.functions.displayError(errorMessage);
+      const errorMessage =
+      error.error?.message ||  
+      (typeof error.error === 'string' ? error.error : null) ||  
+      error.message || // General HTTP error message
+      'An unknown error occurred';
+    this.functions.displayError(errorMessage);
     }
   );
 }
@@ -455,6 +496,7 @@ loadColumns() {
   this.sourceColumns = [
     { field: 'cdate', header: 'Requested Time' },
     { field: 'udate', header: 'Last Update' },
+    { field: 'jobRequestID', header: 'Job Request ID' },
 
   
 
@@ -473,7 +515,6 @@ loadColumns() {
 
   // Initialize selected columns with default values
   this.targetColumns = [
-    // { field: 'jobRequestID', header: 'Job Request ID' },
     { field: 'cargoDescription', header: 'Cargo Description' },
     { field: 'pickupLocation', header: 'Pickup Location' },
     { field: 'deliveryLocation', header: 'Delivery Location' },
@@ -493,5 +534,15 @@ loadColumns() {
 getNestedValue(rowData: any, field: string): any {
   return field.split('.').reduce((acc, part) => acc && acc[part], rowData) || null;
 }
+
+onSearch() {
+  // Extract fields from targetColumns dynamically
+  const fieldsToSearch = this.targetColumns.map(column => column.field);
+
+  // Filter the data based on the fields
+  this.filteredJobs = this.globalColumnControlService.filterData(this.jobRequests, this.searchTerm, fieldsToSearch);
+}
+   
+
 //#endregion
 }

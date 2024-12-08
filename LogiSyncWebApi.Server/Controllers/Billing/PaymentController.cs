@@ -11,7 +11,8 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _context; 
+        private readonly IConfiguration _config;
 
         public PaymentController(AppDbContext context)
         {
@@ -72,21 +73,41 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
         }
         #endregion
 
-        #region AddPayment
+         
+
+
+         #region AddPayment
         [HttpPost]
         [Route("AddPayment")]
         public async Task<IActionResult> AddPayment([FromBody] Payment newPayment)
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(AddPayment);
+            InvoiceController invController = new InvoiceController(_context, _config);
+
 
             try
             {
-                _context.Payments.Add(newPayment);
+                // Check if the invoice exists
+                var invoiceToBePaid = await _context.Invoices
+                    .FirstOrDefaultAsync(p => p.InvoiceNumber == newPayment.InvoiceNumber);
+
+                if (invoiceToBePaid == null)
+                {
+                    return NotFound("Invoice not found! Please provide a valid invoice.");
+                }
+
+                // Add the new payment
+                await _context.Payments.AddAsync(newPayment);
+
+                // Update the invoice payment details
+                await invController.UpdateInvoicePaymentDetails(newPayment.InvoiceNumber);
+                // Save all changes to the database
                 await _context.SaveChangesAsync();
 
+                // Set the result and return success response
                 executionResult.SetData(newPayment);
-                return Ok(executionResult.GetServerResponse());
+                return Ok("Payment added successfully.");
             }
             catch (Exception ex)
             {

@@ -32,16 +32,16 @@ namespace LogiSyncWebApi.Server.Models
 
         [Column("REGISTRATION_COMMENT")]
         public string? RegstrationComment { get; set; }
+        
         [Column("LICENSE_CLASSES")]
         public string? LicenseClasses { get; set; }
+
         [Column("LICENSE_EXPIRE_DATE")]
         public DateOnly? LicenseExpireDate { get; set; }
         [Column("IS_AVILABLE_FOR_BOOKING")]
         public bool? isAvilableForBooking { get; set; }
         [Column("IMAGE_URL")]
         public string? ImageUrl { get; set; }
-
-
 
         // Navigation properties
         public virtual Company Company { get; set; }

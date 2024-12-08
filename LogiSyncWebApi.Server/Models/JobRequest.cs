@@ -40,7 +40,8 @@ namespace LogiSyncWebApi.Server.Models
        
         [Column("TRUCK_TYPE")]
         public string? TruckType { get; set; }
-
+       
+        
         [ForeignKey("TruckID")]
         public string? TruckID { get; set; }
 
@@ -50,6 +51,11 @@ namespace LogiSyncWebApi.Server.Models
 
         [Column("LAST_UPDATE_TIME")]
         public DateTime? Udate { get; set; }
+        [Column("FIRST_DEPOSIT_AMOUNT")]
+        public decimal? FirstDepositAmount { get; set; }
+
+        [Column("CONTRACT_ID")]
+        public string? ContractId { get; set; }
 
 
         // Navigation properties

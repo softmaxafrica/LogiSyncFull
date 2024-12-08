@@ -13,6 +13,11 @@
             return GenerateId("CMP");
         }
 
+        public static string GenerateContractId()
+        {
+            return GenerateId("CNT");
+
+        }
         public static string GenerateCustomerId()
         {
             return GenerateId("CST");

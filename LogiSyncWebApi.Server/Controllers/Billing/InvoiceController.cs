@@ -31,6 +31,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var invoices = db.Invoices
+                                .Include(i => i.Payments)
                                       .ToList();
                     executionResult.SetData(invoices);
                     return Ok(executionResult.GetServerResponse());
@@ -43,6 +44,38 @@ namespace LogiSyncWebApi.Server.Controllers
             }
         }
         #endregion
+
+
+        #region GetCompanyInvoice
+        [HttpGet]
+        [Route("GetCompanyInvoice/{CompanyId}")]
+        public IActionResult GetInvoiceById(string CompanyId)
+        {
+            var executionResult = new ExecutionResult();
+            string functionName = nameof(GetInvoiceById);
+
+            try
+            {
+                using (var db = new AppDbContext(_config))
+                {
+                    var invoice = db.Invoices
+                                     .Where(i => i.CompanyID == CompanyId).ToList();
+                    if (invoice == null)
+                    {
+                        return NotFound("No Invoice Avilable");
+                    }
+                    executionResult.SetData(invoice);
+                    return Ok(executionResult.GetServerResponse());
+                }
+            }
+            catch (Exception ex)
+            {
+                executionResult.SetInternalServerError(nameof(InvoiceController), functionName, ex);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+            }
+        }
+        #endregion
+
 
         #region GetInvoiceById
         [HttpGet]
@@ -133,6 +166,43 @@ namespace LogiSyncWebApi.Server.Controllers
             }
         }
         #endregion
+
+        #region UpdateInvoicePaymentDetails
+        [HttpPut]
+        [Route("UpdateInvoicePaymentDetails/{invoiceNumber}")]
+        public async Task UpdateInvoicePaymentDetails(int invoiceNumber)
+        {
+            // Retrieve the invoice with its associated payments
+            var invoice = await _context.Invoices
+                .Include(i => i.Payments)
+                .FirstOrDefaultAsync(i => i.InvoiceNumber == invoiceNumber);
+            if (invoice == null)
+                throw new Exception("Invoice not found.");
+            // Sum the total payments for the invoice
+            double totalPaid = invoice.Payments?.Sum(p => p.AmountPaid) ?? 0;
+            // Determine and set the invoice status
+            if (totalPaid == 0)
+            {
+                invoice.Status = "DRAFT"; // No payments made
+            }
+            else if (totalPaid < invoice.TotalAmount)
+            {
+                invoice.Status = "PARTIAL"; // Payments made but not fully paid
+            }
+            else if (totalPaid >= invoice.TotalAmount)
+            {
+                invoice.Status = "PAID"; // Fully paid
+            }
+
+            // Update financial details
+            invoice.TotalPaidAmount = totalPaid;
+            invoice.OwedAmount = invoice.TotalAmount - totalPaid;
+
+            // Save the updated invoice status
+            await _context.SaveChangesAsync();
+        }
+        #endregion
+
 
         #region DeleteInvoice
         [HttpDelete]

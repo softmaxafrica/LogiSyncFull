@@ -10,26 +10,32 @@
   </p-dock>
   
 
-    <!-- Manage Columns Button -->
-    <p-button type="button" icon="pi pi-cog" (click)="columnDialogVisible = true" label="Manage Columns" styleClass="p-button-text"></p-button>
-
-    <!-- Job Requests Table -->
-     <div class="card">
-      <!-- <p-table #dt [value]="jobRequests" (onRowSelect)="onRowSelect($event)" selectionMode="single"> -->
-       
-        <p-table #dt [value]="jobRequests" [paginator]="true" [rows]="10" >
+       <div class="card">
+         <p-table  [value]="filteredJobs" [paginator]="true" [rows]="10" >
           <ng-template pTemplate="header">
             <tr>
-              <th *ngFor="let col of targetColumns" [pSortableColumn]="col.field">
-                {{ col.header }}
-                <p-sortIcon [field]="col.field"></p-sortIcon>
-                
-                <p-columnFilter [field]="col.field" type="text" display="menu"></p-columnFilter>
+              <th colspan="8">
+                <div class="p-d-flex p-jc-between p-ai-center">
+                  <!-- Manage Columns Button (Left-Aligned) -->
+                  <p-button type="button" icon="pi pi-cog" (click)="columnDialogVisible = true" 
+                            label="Manage Columns" styleClass="p-button-text"></p-button>
+                  
+                  <!-- Search Input (Right-Aligned) -->
+                  <input pInputText type="text" [(ngModel)]="searchTerm" 
+                         (input)="onSearch()" placeholder="Search" 
+                         class="p-inputtext-sm p-mb-3 p-ml-auto" />
+                </div>
               </th>
-              <th>{{ 'actions' | translate }}</th>
+            </tr>
+            
+            <tr>
+              <th *ngFor="let column of targetColumns">
+                {{ column.header }}
+
+              </th>
             </tr>
           </ng-template>
-        
+ 
           <!-- Table body template to display the data -->
           <ng-template pTemplate="body" let-job let-columns="targetColumns">
             <tr [pSelectableRow]="job">
@@ -46,15 +52,15 @@
                   {{ getNestedValue(job, col.field) }}
                 </ng-container>
               </td>
-              <td>
-                <img 
-                  src="assets/images/icons/edit.png" 
-                  width="50px" 
-                  (click)="editRequests(job)"   
-                  style="margin-right: 1rem;"
-                />
-                 
-              </td>
+              <td class="p-d-flex p-ai-center">
+                <p-button icon="pi pi-finish" label="Details" [outlined]="true" (click)="editRequests(job)">
+                  <img 
+                        src="assets/images/icons/more-info.png" 
+                        width="30px"    
+                        style="margin-right: .5rem;"
+                      />
+                </p-button>
+               </td>
             </tr>
           </ng-template>
         </p-table>
@@ -156,8 +162,14 @@
  
  
 <!-- REQUEST DETAILS DIALOG -->
-<p-dialog [(visible)]="requestDetailsVisible" [header]="'request_details' | translate" [modal]="true" [responsive]="true"  (onHide)="requestDetailsVisible = false" [closable]="false">
-  <p-card>
+<p-dialog [(visible)]="requestDetailsVisible" [header]="'request_details' | translate" 
+[modal]="true" [responsive]="true" (onHide)="requestDetailsVisible = false" [closable]="false"
+  >
+  <p-tabView>
+    <!-- Job Request Details Tab -->
+     <!-- Job Request Details Tab -->
+<p-tabPanel [header]="'job_request_details' | translate">
+  <p-card >
     <div class="flex">
       <!-- Left Column: Display Request Details -->
       <div class="flex flex-column w-6 p-4">
@@ -240,36 +252,91 @@
             </div>
           </div>
 
-
-<!-- Accepted Price -->
-<div class="mb-3 d-flex align-items-center"  *ngIf="showPriceContent">
-  <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'request_price' | translate }}:</label>
-  <input pInputText id="requestedPrice" type="number"    [(ngModel)]="activeRequest.requestedPrice"   class="w-60" />
-  <!-- <input pInputText id="requestedPrice" type="number" [(ngModel)]="activeRequest.requestedPrice" class="w-60" /> -->
-
-</div>
-
-
-<!-- Customer Price -->
-<div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-  <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
- </div>
-
-<!-- Accepted Price -->
-<div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-  <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
-  <input pInputText id="acceptedPrice" type="number" [(ngModel)]="activeRequest.acceptedPrice"   class="w-60" />
-  
-</div>
-          <!-- Apply and Close Buttons -->
-          <div class="mt-4 d-flex justify-content-end">
-            <p-button label="{{ 'Apply' | translate }}" icon="pi pi-check" class="p-button-primary mr-2" (onClick)="updateRequest()"></p-button>
-            <p-button label="{{ 'Close' | translate }}" icon="pi pi-times" class="p-button-secondary" (onClick)="closeJobDialog()"></p-button>
+          <!-- Pricing Information -->
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
+            <label for="requestedPrice" class="w-40 text-left font-bold mr-2">{{ 'request_price' | translate }}:</label>
+            <input pInputText id="requestedPrice" type="number" [(ngModel)]="activeRequest.requestedPrice" class="w-60" />
           </div>
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
+            <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
+            <input pInputText id="customerPrice" type="number" [(ngModel)]="activeRequest.customerPrice" class="w-60" />
+          </div>
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
+            <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
+            <input pInputText id="acceptedPrice" type="number" [(ngModel)]="activeRequest.acceptedPrice" class="w-60" />
+          </div>
+       
+
+        <!-- Action Buttons -->
+        <div class="mt-4 d-flex justify-content-end">
+          <p-button 
+            label="{{ 'Apply' | translate }}" 
+            icon="pi pi-check" 
+            class="p-button-primary mr-2" 
+            (onClick)="updateRequest()">
+          </p-button>
+          <p-button 
+            label="{{ 'Close' | translate }}" 
+            icon="pi pi-times" 
+            class="p-button-secondary" 
+            (onClick)="closeJobDialog()">
+          </p-button>
         </div>
       </div>
     </div>
+    </div>
   </p-card>
+</p-tabPanel>
+
+
+    <!-- Contract Details Tab -->
+<p-tabPanel [header]="'contract_details' | translate">
+  <p-card *ngIf="contractDetails">
+    <div class="myform">
+      <!-- Contract Date -->
+      <div class="mb-3 d-flex align-items-center">
+        <label class="w-40 text-left font-bold mr-2">{{ 'contract_date' | translate }}:</label>
+        <p class="w-60">{{ contractDetails.contractDate }}</p>
+      </div>
+
+      <!-- Agreed Price -->
+      <div class="mb-3 d-flex align-items-center">
+        <label class="w-40 text-left font-bold mr-2">{{ 'agreed_price' | translate }}:</label>
+        <p class="w-60">{{ contractDetails.agreedPrice || 'N/A' }}</p>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="mb-3 d-flex align-items-center">
+        <label class="w-40 text-left font-bold mr-2">{{ 'terms_and_conditions' | translate }}:</label>
+        <p class="w-60">{{ contractDetails.termsAndConditions || 'N/A' }}</p>
+      </div>
+
+      <!-- Advance Payment -->
+      <div class="mb-3 d-flex align-items-center">
+        <label class="w-40 text-left font-bold mr-2">{{ 'advance_payment' | translate }}:</label>
+        <p class="w-60">{{ contractDetails.advancePayment || 'N/A' }}</p>
+      </div>
+
+      <!-- Advance Payment Date -->
+      <div class="mb-3 d-flex align-items-center">
+        <label class="w-40 text-left font-bold mr-2">{{ 'advance_payment_date' | translate }}:</label>
+        <p class="w-60">{{ contractDetails.advancePaymentDate ? (contractDetails.advancePaymentDate | date:'longDate') : 'N/A' }}</p>
+      </div>
+
+      <!-- Status -->
+      <div class="mb-3 d-flex align-items-center">
+        <label class="w-40 text-left font-bold mr-2">{{ 'status' | translate }}:</label>
+        <p class="w-60">{{ contractDetails.status || 'N/A' }}</p>
+      </div>
+
+    </div>
+  </p-card>
+
+  <!-- No contract details found message -->
+  <p *ngIf="!contractDetails">{{ 'no_contract_found' | translate }}</p>
+</p-tabPanel>
+
+  </p-tabView>
 </p-dialog>
 
     <!-- Agreement Document Preview Dialog -->

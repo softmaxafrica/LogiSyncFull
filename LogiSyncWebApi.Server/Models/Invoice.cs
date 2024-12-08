@@ -10,6 +10,9 @@ namespace LogiSyncWebApi.Server.Models
         [Column("INVOICE_NUMBER")]
         public int InvoiceNumber { get; set; }
 
+        [Column("COMPANY_ID")]
+        public string? CompanyID { get; set; }
+
         [Column("CUSTOMER_ID")]
         public string CustomerID { get; set; }
 
@@ -21,6 +24,12 @@ namespace LogiSyncWebApi.Server.Models
 
         [Column("TOTAL_AMOUNT")]
         public double TotalAmount { get; set; }
+
+        [Column("TOTAL_PAID_AMOUNT")]
+        public double? TotalPaidAmount { get; set; }
+
+        [Column("OWED_AMOUNT")]
+        public double? OwedAmount { get; set; }
 
         [Column("SERVICE_CHARGE")]
         public double ServiceCharge { get; set; }
@@ -37,11 +46,9 @@ namespace LogiSyncWebApi.Server.Models
         [Column("STATUS")]
         public string Status { get; set; } // e.g., "Pending", "Paid", "Overdue","Cancelled"
 
-        //    // Navigation properties
-        //    [ForeignKey("CustomerID")]
-        //    public virtual Customer Customer { get; set; }
-        //    public virtual ICollection<Payment> Payments { get; set; }
-        //}
+
+        // Navigation properties
+        public virtual ICollection<Payment>? Payments { get; set; } // Allows null if no payments exist
 
     }
 }

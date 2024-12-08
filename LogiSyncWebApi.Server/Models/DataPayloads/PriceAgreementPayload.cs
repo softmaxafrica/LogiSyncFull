@@ -33,6 +33,8 @@ namespace LogiSyncWebApi.Server.Models.DataPayloads
         public decimal? CustomerPrice { get; set; }
         public decimal? AcceptedPrice { get; set; }
         public string? CompanyID { get; set; }
+        public decimal? FirstDepositAmount { get; set; }
+        public string? ContractId { get; set; }
 
     }
 

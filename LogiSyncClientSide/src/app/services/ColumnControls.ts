@@ -44,6 +44,11 @@ export class GlobalColumnControlService {
   setTargetColumns(columns: any[]) {
     this.targetColumns = columns;
   }
+
+  getNestedValue(rowData: any, field: string): any {
+    return field.split('.').reduce((acc, part) => acc && acc[part], rowData) || null;
+  }
+  
   pageChange(event: any): void {
     this.first = event.first;
     this.rows = event.rows;
@@ -66,4 +71,19 @@ export class GlobalColumnControlService {
   }
 
   
+//#region  TableFilter
+filterData<T extends Record<string, any>>(data: T[], searchTerm: string, fields: string[]): T[] {
+  if (!searchTerm) {
+    return data;
+  }
+  return data.filter((item: T) =>
+    fields.some(field => {
+      const fieldValue = item[field];
+      return fieldValue && fieldValue.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    })
+  );
+}
+
+//#endregion
+
 }

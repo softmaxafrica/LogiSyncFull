@@ -4,6 +4,7 @@ using LogiSyncWebApi.Server.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogiSyncWebApi.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241118071150_InvoiceAddCompanyId")]
+    partial class InvoiceAddCompanyId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,57 +24,6 @@ namespace LogiSyncWebApi.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("LogiSync.Models.Contract", b =>
-                {
-                    b.Property<string>("ContractID")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("CONTRACT_ID");
-
-                    b.Property<decimal?>("AdvancePayment")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("ADVANCE_PAYMENT");
-
-                    b.Property<DateTime?>("AdvancePaymentDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("ADVANCE_PAYMENT_DATE");
-
-                    b.Property<decimal?>("AgreedPrice")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("AGREED_PRICE");
-
-                    b.Property<string>("CompanyID")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("COMPANY_ID");
-
-                    b.Property<DateTime?>("ContractDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CONTRACT_DATE");
-
-                    b.Property<string>("CustomerID")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("CUSTOMER_ID");
-
-                    b.Property<string>("RequestID")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("REQUEST_ID");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("STATUS");
-
-                    b.Property<string>("TermsAndConditions")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("TERMS_AND_CONDITIONS");
-
-                    b.HasKey("ContractID");
-
-                    b.HasIndex("CompanyID");
-
-                    b.HasIndex("CustomerID");
-
-                    b.ToTable("Contracts");
-                });
 
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.ChargableItem", b =>
                 {
@@ -501,10 +453,6 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("float")
                         .HasColumnName("OPERATIONAL_CHARGE");
 
-                    b.Property<double?>("OwedAmount")
-                        .HasColumnType("float")
-                        .HasColumnName("OWED_AMOUNT");
-
                     b.Property<string>("PaymentId")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("PAYMENT_ID");
@@ -521,10 +469,6 @@ namespace LogiSyncWebApi.Server.Migrations
                     b.Property<double>("TotalAmount")
                         .HasColumnType("float")
                         .HasColumnName("TOTAL_AMOUNT");
-
-                    b.Property<double?>("TotalPaidAmount")
-                        .HasColumnType("float")
-                        .HasColumnName("TOTAL_PAID_AMOUNT");
 
                     b.HasKey("InvoiceNumber");
 
@@ -560,10 +504,6 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("CONTAINER_NUMBER");
 
-                    b.Property<string>("ContractId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("CONTRACT_ID");
-
                     b.Property<string>("CustomerID")
                         .HasColumnType("nvarchar(450)");
 
@@ -573,10 +513,6 @@ namespace LogiSyncWebApi.Server.Migrations
 
                     b.Property<string>("DriverID")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal?>("FirstDepositAmount")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("FIRST_DEPOSIT_AMOUNT");
 
                     b.Property<string>("PickupLocation")
                         .HasColumnType("nvarchar(max)")
@@ -606,10 +542,6 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnName("LAST_UPDATE_TIME");
 
                     b.HasKey("JobRequestID");
-
-                    b.HasIndex("ContractId")
-                        .IsUnique()
-                        .HasFilter("[CONTRACT_ID] IS NOT NULL");
 
                     b.HasIndex("CustomerID");
 
@@ -664,10 +596,6 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("float")
                         .HasColumnName("AMOUNT_PAID");
 
-                    b.Property<string>("Currency")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CURRENCY");
-
                     b.Property<int>("InvoiceNumber")
                         .HasColumnType("int")
                         .HasColumnName("INVOICE_NUMBER");
@@ -682,12 +610,11 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnName("PAYMENT_METHOD");
 
                     b.Property<string>("ReferenceNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("REFERENCE_NUMBER");
 
                     b.HasKey("PaymentID");
-
-                    b.HasIndex("InvoiceNumber");
 
                     b.ToTable("Payments");
                 });
@@ -864,21 +791,6 @@ namespace LogiSyncWebApi.Server.Migrations
                     b.ToTable("TruckTypes");
                 });
 
-            modelBuilder.Entity("LogiSync.Models.Contract", b =>
-                {
-                    b.HasOne("LogiSyncWebApi.Server.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyID");
-
-                    b.HasOne("LogiSyncWebApi.Server.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID");
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.ChargableItem", b =>
                 {
                     b.HasOne("LogiSyncWebApi.Server.Models.JobRequest", "JobRequest")
@@ -933,10 +845,6 @@ namespace LogiSyncWebApi.Server.Migrations
 
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.JobRequest", b =>
                 {
-                    b.HasOne("LogiSync.Models.Contract", null)
-                        .WithOne("JobRequest")
-                        .HasForeignKey("LogiSyncWebApi.Server.Models.JobRequest", "ContractId");
-
                     b.HasOne("LogiSyncWebApi.Server.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID");
@@ -974,17 +882,6 @@ namespace LogiSyncWebApi.Server.Migrations
                     b.Navigation("Truck");
                 });
 
-            modelBuilder.Entity("LogiSyncWebApi.Server.Models.Payment", b =>
-                {
-                    b.HasOne("LogiSyncWebApi.Server.Models.Invoice", "Invoice")
-                        .WithMany("Payments")
-                        .HasForeignKey("InvoiceNumber")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-                });
-
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.Truck", b =>
                 {
                     b.HasOne("LogiSyncWebApi.Server.Models.Company", "Company")
@@ -1010,20 +907,9 @@ namespace LogiSyncWebApi.Server.Migrations
                     b.Navigation("TruckType");
                 });
 
-            modelBuilder.Entity("LogiSync.Models.Contract", b =>
-                {
-                    b.Navigation("JobRequest")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.Customer", b =>
                 {
                     b.Navigation("Invoices");
-                });
-
-            modelBuilder.Entity("LogiSyncWebApi.Server.Models.Invoice", b =>
-                {
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("LogiSyncWebApi.Server.Models.JobRequest", b =>
