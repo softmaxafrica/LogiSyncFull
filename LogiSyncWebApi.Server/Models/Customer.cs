@@ -61,6 +61,7 @@ namespace LogiSyncWebApi.Server.Models
         public string? MobileNumber { get; set; } // Nullable for Mobile Money Transfer
 
         // Navigation properties (not required to be nullable, but can be set to null if not relevant)
-        public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        //public virtual List<Invoice> Invoices { get; set; } = new List<Invoice>();
+
     }
 }

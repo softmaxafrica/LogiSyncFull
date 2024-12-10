@@ -55,24 +55,30 @@ throw new Error('Method not implemented.');
    this.loadColumns();
     this.loadActionMenu();
 
-   }
+   } 
    loadColumns() {
-    // Initialize target columns with default values (these will be the visible columns in the table)
+    // Initialize target columns with default values (these will be the visible columns in the table initially)
     this.targetColumns = [
-      { field: 'invoiceNumber', header: 'Invoice Number' },
-      { field: 'totalAmount', header: 'Total Amount' },
-      { field: 'status', header: 'Status' },
- 
+        { field: 'invoiceNumber', header: 'Invoice Number' },
+        { field: 'customerID', header: 'Customer ID' }, // Added missing field
+        { field: 'totalAmount', header: 'Total Amount' },
+        { field: 'status', header: 'Status' },
     ];
-  
-     this.sourceColumns = [
-      { field: 'issueDate', header: 'Issue Date' },
-      { field: 'dueDate', header: 'Due Date' },  // Optional field
-      { field: 'paymentId', header: 'Payment ID' },
-      { field: 'serviceCharge', header: 'Service Charge' },
-      { field: 'operationalCharge', header: 'Operational Charge' }
-     ];  
-  }
+
+    // Source columns include optional and less frequently displayed fields
+    this.sourceColumns = [
+        { field: 'companyID', header: 'Company ID' }, // Added missing field
+        { field: 'jobRequestID', header: 'Job Request ID' }, // Added missing field
+        { field: 'paymentId', header: 'Payment ID' },
+        { field: 'totalPaidAmount', header: 'Total Paid Amount' }, // Added missing field
+        { field: 'owedAmount', header: 'Owed Amount' }, // Added missing field
+        { field: 'serviceCharge', header: 'Service Charge' },
+        { field: 'operationalCharge', header: 'Operational Charge' },
+        { field: 'issueDate', header: 'Issue Date' },
+        { field: 'dueDate', header: 'Due Date' }, // Optional field
+    ];
+}
+
   
   
    loadCompanyInvoices(companyId: string): void {

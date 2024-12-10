@@ -1,2 +1,166 @@
+<p-toast></p-toast>
 
-<p>payments works!</p>
+<div class="card">
+    <p-toolbar>
+        <div class="p-toolbar-group-left">
+            <button pButton label="Add Payment" icon="pi pi-plus" class="p-button-success" (click)="onAddPayment()"></button>
+        </div>
+    </p-toolbar>
+
+    <p-table [value]="payments" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'" selectionMode="single" [(selection)]="selectedPayment">
+        <ng-template pTemplate="header">
+            <tr>
+                <th colspan="8">
+                  <div class="p-d-flex p-jc-between p-ai-center">
+                    <!-- Manage Columns Button (Left-Aligned) -->
+                    <p-button type="button" icon="pi pi-cog" (click)="columnDialogVisible = true" 
+                              label="Manage Columns" styleClass="p-button-text"></p-button>
+                    
+                    <!-- Search Input (Right-Aligned) -->
+                    <input pInputText type="text" [(ngModel)]="searchTerm" 
+                           (input)="onSearch()" placeholder="Search" 
+                           class="p-inputtext-sm p-mb-3 p-ml-auto" />
+                  </div>
+                </th>
+              </tr>
+            <tr>
+                <th *ngFor="let column of targetColumns">
+                    {{ column.header }}
+    
+                  </th>
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+     <!-- Table body template to display the data -->
+     <ng-template pTemplate="body" let-payment let-columns="targetColumns">
+        <tr [pSelectableRow]="payments">
+          <td *ngFor="let col of targetColumns">
+            <!-- Use getNestedValue method to handle nested fields -->
+            <ng-container *ngIf="col.field === 'status'">
+              <!-- <p-tag [value]="payment[col.field]" [severity]="functions.getSeverity(payment[col.field])">
+              </p-tag> -->
+            </ng-container>
+    
+            <!-- For all other columns, use the getNestedValue method -->
+            <ng-container *ngIf="col.field !== 'status'">
+              <!-- Get the value of the field dynamically using getNestedValue -->
+              {{ getNestedValue(payment, col.field) }}
+            </ng-container>
+          </td>
+          <!-- <td class="p-d-flex p-ai-center">
+            <p-button icon="pi pi-finish" label="Details" [outlined]="true" (click)="editRequests(job)">
+              <img 
+                    src="assets/images/icons/more-info.png" 
+                    width="30px"    
+                    style="margin-right: .5rem;"
+                  />
+            </p-button>
+           </td> -->
+        </tr>
+      </ng-template>
+    </p-table>
+</div>
+   <!-- Column Management Dialog -->
+   <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [responsive]="true" [style]="globalColumnControlService.getColumnDialogConfig()">
+    <p-fieldset legend="Columns" [toggleable]="true">
+      <p-pickList [source]="sourceColumns" [target]="targetColumns" sourceHeader="Available Columns" targetHeader="Selected Columns" 
+                  [dragdrop]="true" [responsive]="true" breakpoint="1400px">
+        <ng-template let-column pTemplate="item">
+          <div class="flex flex-wrap p-2 align-items-center gap-3">
+            <span class="font-bold">{{ column.header }}</span>
+          </div>
+        </ng-template>
+      </p-pickList>
+    </p-fieldset>
+    <p-footer>
+      <p-button label="Close" icon="pi pi-times" (click)="columnDialogVisible = false"></p-button>
+    </p-footer>
+  </p-dialog>
+<p-dialog [(visible)]="displayDialog" header="Payment Details" [modal]="true" [style]="{ width: '30vw',height:'550px' }">
+    <div class="p-fluid">
+        <!-- Invoice Number Input -->
+        <div class="field"  *ngIf="!showPaymentFormDetails">
+            <label for="invoiceNumber">{{ 'invoice_number' | translate }}</label>
+            <div class="p-inputgroup">
+                <input 
+                    id="invoiceNumber" 
+                    pInputText 
+                    [(ngModel)]="payment.invoiceNumber" 
+                    type="number" 
+                    placeholder="Enter Invoice Number"
+                />
+                <button 
+                    pButton 
+                    type="button" 
+                    label="{{ 'search' | translate }}" 
+                    (click)="loadCompanyInvoicesDetails(payment.invoiceNumber)"
+                    class="p-button-outlined">
+                </button>
+            </div>
+        </div>
+    
+        <!-- Other Form Details -->
+        <div *ngIf="showPaymentFormDetails">
+
+            <div class="field">
+                <label for="invoiceNumber">{{ 'invoice_number' | translate }}</label>
+                <input 
+                    id="amountPaid" 
+                    pInputText 
+                    [(ngModel)]="payment.invoiceNumber" 
+                    type="number" 
+                    disabled="true"
+                    />
+            </div>
+            <!-- Amount Paid Input -->
+            <div class="field">
+                <label for="amountPaid">{{ 'amount_paid' | translate }}</label>
+                <input 
+                    id="amountPaid" 
+                    pInputText 
+                    [(ngModel)]="payment.amountPaid" 
+                    type="number" 
+                    placeholder="Enter Amount Paid"
+                />
+            </div>
+    
+            <!-- Payment Method Dropdown -->
+            <div class="field">
+                <label for="paymentMethod">{{ 'payment_method' | translate }}</label>
+                <p-dropdown 
+                    id="paymentMethod" 
+                    [options]="paymentMethods" 
+                    [(ngModel)]="payment.paymentMethod" 
+                    placeholder="Select Payment Method">
+                </p-dropdown>
+            </div>
+    
+            <!-- Reference Number Input -->
+            <div class="field">
+                <label for="referenceNumber">{{ 'reference_number' | translate }}</label>
+                <input 
+                    id="referenceNumber" 
+                    pInputText 
+                    [(ngModel)]="payment.referenceNumber" 
+                    placeholder="Enter Reference Number (Optional)"
+                />
+            </div>
+    
+            <!-- Currency Input -->
+            <div class="field">
+                <label for="currency">{{ 'currency' | translate }}</label>
+                <p-dropdown 
+                    id="currency" 
+                    [options]="currencies" 
+                    [(ngModel)]="payment.currency" 
+                    placeholder="Select Currency Type">
+                </p-dropdown>
+            </div>
+        </div>
+    </div>
+    
+    <p-footer>
+        <button pButton label="Save" icon="pi pi-check" (click)="savePayment()"></button>
+        <button pButton label="Cancel" icon="pi pi-times" class="p-button-secondary" (click)="closePaymentDialog()"></button>
+    </p-footer>
+</p-dialog>

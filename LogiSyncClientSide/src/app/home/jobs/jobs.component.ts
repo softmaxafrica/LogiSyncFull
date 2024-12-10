@@ -76,7 +76,7 @@ throw new Error('Method not implemented.');
     customerPrice: undefined,
     companyID:'',
     contractId:'',
-    firstDepositAmount: undefined,
+    firstDepositAmount: undefined
   };
 
    
@@ -98,7 +98,8 @@ throw new Error('Method not implemented.');
     driverID: '',                              
     requestType: '',
     companyID:'',
-    contractId:''     
+    contractId:'',
+    invoiceNumber:undefined     
   };
 
   searchTerm: string = '';
@@ -118,6 +119,8 @@ requestDetailsVisible: boolean =false;
   isLoading: boolean= false;
   showDriverContent: boolean= false;
 showPriceContent: boolean= true;
+showPriceLabels: boolean=false;
+
   filteredJobs: JobRequest[]=[];
  
    constructor(
@@ -365,8 +368,6 @@ this.newJobRequest.companyID=this.companyId;
       companyID: this.companyId,
       contractId: selectedJobRequest.contractId
     };
-
-   
     // Set active request
     this.activeRequest = { ...ActiveReq };
      if(ActiveReq.requestType.includes(AppConstants.TRUCK_REQUEST_TYPE))
@@ -390,9 +391,10 @@ this.newJobRequest.companyID=this.companyId;
         this.showDriverContent=false;
         this.showTruckContent=false;
       }
-      if((ActiveReq.status =="PENDING PAYMENTS")||(ActiveReq.status=="CANCELLED")|| (ActiveReq.status.includes("PENDING")))
+      if((ActiveReq.status =="PENDING PAYMENTS")||(ActiveReq.status=="CANCELLED")|| (ActiveReq.status.includes("PENDING"))|| (ActiveReq.status.includes("DRAFT")))
         {
           this.showPriceContent=false;
+          this.showPriceLabels=true;
         }
     
         this.requestDetailsVisible = true;
@@ -497,7 +499,9 @@ loadColumns() {
     { field: 'cdate', header: 'Requested Time' },
     { field: 'udate', header: 'Last Update' },
     { field: 'jobRequestID', header: 'Job Request ID' },
+    { field: 'invoiceNumber', header: 'Invoice Number'},
 
+    
   
 
     // TruckDetails (Truck)

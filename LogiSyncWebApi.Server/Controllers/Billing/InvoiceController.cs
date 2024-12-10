@@ -32,7 +32,8 @@ namespace LogiSyncWebApi.Server.Controllers
                 {
                     var invoices = db.Invoices
                                 .Include(i => i.Payments)
-                                      .ToList();
+                                .Include(c => c.CustomerDetails)
+                                .ToList();
                     executionResult.SetData(invoices);
                     return Ok(executionResult.GetServerResponse());
                 }
@@ -59,7 +60,39 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var invoice = db.Invoices
-                                     .Where(i => i.CompanyID == CompanyId).ToList();
+                        .Include(c=> c.CustomerDetails)
+                        .Where(i => i.CompanyID == CompanyId).ToList();
+                    if (invoice == null)
+                    {
+                        return NotFound("No Invoice Avilable");
+                    }
+                    executionResult.SetData(invoice);
+                    return Ok(executionResult.GetServerResponse());
+                }
+            }
+            catch (Exception ex)
+            {
+                executionResult.SetInternalServerError(nameof(InvoiceController), functionName, ex);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+            }
+        }
+        #endregion
+
+        #region GetCompanyInvoiceDetails
+        [HttpGet]
+        [Route("GetCompanyInvoiceDetails/{CompanyId}/{InvoiceNumber}")]
+        public IActionResult GetCompanyInvoiceDetails(string CompanyId,int InvoiceNumber)
+        {
+            var executionResult = new ExecutionResult();
+            string functionName = nameof(GetInvoiceById);
+
+            try
+            {
+                using (var db = new AppDbContext(_config))
+                {
+                    var invoice = db.Invoices
+                                     .Include(c => c.CustomerDetails)
+                                     .Where(i => i.CompanyID == CompanyId && i.InvoiceNumber==InvoiceNumber).FirstOrDefault();
                     if (invoice == null)
                     {
                         return NotFound("No Invoice Avilable");
@@ -90,7 +123,8 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var invoice = db.Invoices
-                                     .FirstOrDefault(i => i.InvoiceNumber == invoiceNumber);
+                        .Include(c => c.CustomerDetails)
+                        .FirstOrDefault(i => i.InvoiceNumber == invoiceNumber);
                     if (invoice == null)
                     {
                         return NotFound("Invoice not found");

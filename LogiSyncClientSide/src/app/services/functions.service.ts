@@ -67,15 +67,22 @@ export class FunctionsService {
       case 'APPROVED':
         return 'success';
         case 'PENDING PAYMENTS':
-        return 'danger';  
+        return 'danger'; 
+        //INVOICE
+
         case 'DRAFT':
           return 'warning';  
-          case 'FINALIZED':
-            return 'success';  
             case 'DISCARDED':
         return 'danger';  
       case 'CANCELED':
         return 'danger';  
+//payments
+        case 'PAID':
+        return 'success';
+        case 'PARTIAL':
+          return 'contrast'; 
+          case 'CANCELLED':
+            return 'danger'; 
       default:
         return undefined;  
     }

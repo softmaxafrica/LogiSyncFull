@@ -76,14 +76,16 @@ namespace LogiSyncWebApi.Server.Services
                                         DueDate = null,
                                         Status = "DRAFT",
                                         CustomerID = firstItem.CustomerID,
-                                        CompanyID= firstItem.JobRequest.AssignedCompany
+                                        CompanyID= firstItem.JobRequest.AssignedCompany,
+                                        TotalPaidAmount=0,
+                                        OwedAmount= totalAmount
                                     };
 
                                      var savedInvoice = await invoiceController.CreateInvoice(newInvoice);
                                     int generatedInvoiceNumber = savedInvoice.InvoiceNumber;
 
                                     // Update JobRequest Status
-                                    await jobRequestController.UpdateRequestStatus(jobRequestId, "DRAFT");
+                                    await jobRequestController.UpdateRequestStatus(jobRequestId, "DRAFT", generatedInvoiceNumber);
                                     //await chargableItemController.UpdateChargableItemsStatus(jobRequestId, "DRAFT");
                                     await chargableItemController.UpdateChargableItemsStatusAndInvoiceNumber(jobRequestId, "DRAFT", generatedInvoiceNumber);
 

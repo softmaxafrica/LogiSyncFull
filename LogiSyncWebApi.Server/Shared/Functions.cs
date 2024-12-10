@@ -42,6 +42,11 @@
         {
             return GenerateId("PAG");
         }
+        public static string GeneratePaymentId()
+        {
+            return GenerateId("PYM");
+        }
+
         public static string GenerateLocationId()
         {
             return GenerateId("LCN");

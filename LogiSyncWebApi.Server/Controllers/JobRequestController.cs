@@ -430,7 +430,7 @@ namespace LogiSyncWebApi.Server.Controllers
         #region UpdateRequestStatus
         [HttpPut]
         [Route("UpdateRequestStatus/{jobRequestID}")]
-        public async Task<IActionResult> UpdateRequestStatus(string jobRequestID, string newStatus)
+        public async Task<IActionResult> UpdateRequestStatus(string jobRequestID, string newStatus,int? InvoiceNumber)
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(UpdateRequestStatus);
@@ -447,6 +447,7 @@ namespace LogiSyncWebApi.Server.Controllers
 
                     #region Updating Existing JobRequest
                     existingJobRequest.Status = newStatus;
+                    existingJobRequest.InvoiceNumber = InvoiceNumber;
                     existingJobRequest.Udate = DateTime.UtcNow.ToLocalTime();
                     #endregion
 

@@ -21,6 +21,7 @@ export interface JobRequest {
     firstDepositAmount: number;
     truckType: string; // Added
     driverID: string; // Added
+    invoiceNumber:number;
     priceDetails: PriceAgreement;
     truckDetails: TrucksPayload;
     customerDetails: Customer;

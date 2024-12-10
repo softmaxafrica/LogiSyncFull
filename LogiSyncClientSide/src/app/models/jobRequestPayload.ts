@@ -15,6 +15,7 @@ export interface JobRequestPayload {
 }
 
 export interface RequestWithPrice {
+invoiceNumber?: number;
   jobRequestID: string;            
   pickupLocation: string;         
   deliveryLocation: string;       

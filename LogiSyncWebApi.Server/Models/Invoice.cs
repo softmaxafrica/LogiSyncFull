@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace LogiSyncWebApi.Server.Models
 {
@@ -48,7 +49,10 @@ namespace LogiSyncWebApi.Server.Models
 
 
         // Navigation properties
+        [JsonIgnore]
         public virtual ICollection<Payment>? Payments { get; set; } // Allows null if no payments exist
+        [ForeignKey("CustomerID")]
+        public virtual Customer? CustomerDetails { get; set; }
 
     }
 }

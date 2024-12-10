@@ -73,10 +73,39 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
         }
         #endregion
 
-         
+        #region GetCompanyPayments
+        [HttpGet]
+        [Route("GetCompanyPayments/{companyId}")]
+        public IActionResult GetCompanyPayments(string companyId)
+        {
+            var executionResult = new ExecutionResult();
+            string functionName = nameof(GetCompanyPayments);
+
+            try
+            {
+                var payment = _context.Payments
+                    .Include(p => p.Invoice)
+                    .Include(C => C.Invoice.CustomerDetails)
+                     .Where(p => p.Invoice.CompanyID == companyId).ToList();
+
+                if (payment == null)
+                {
+                    return NotFound("Sorry ! You Do Not have Any Payment Record");
+                }
+
+                executionResult.SetData(payment);
+                return Ok(executionResult.GetServerResponse());
+            }
+            catch (Exception ex)
+            {
+                executionResult.SetInternalServerError(nameof(PaymentController), functionName, ex);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+            }
+        }
+        #endregion
 
 
-         #region AddPayment
+        #region AddPayment
         [HttpPost]
         [Route("AddPayment")]
         public async Task<IActionResult> AddPayment([FromBody] Payment newPayment)
@@ -84,7 +113,6 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
             var executionResult = new ExecutionResult();
             string functionName = nameof(AddPayment);
             InvoiceController invController = new InvoiceController(_context, _config);
-
 
             try
             {
@@ -94,25 +122,27 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
 
                 if (invoiceToBePaid == null)
                 {
-                    return NotFound("Invoice not found! Please provide a valid invoice.");
+                     return NotFound(executionResult.GetServerResponse());
                 }
 
-                // Add the new payment
+                // Generate PaymentID and add payment
+                newPayment.PaymentID = Functions.GeneratePaymentId();
                 await _context.Payments.AddAsync(newPayment);
 
-                // Update the invoice payment details
+                // Update invoice payment details
                 await invController.UpdateInvoicePaymentDetails(newPayment.InvoiceNumber);
-                // Save all changes to the database
+
+                // Save changes
                 await _context.SaveChangesAsync();
 
-                // Set the result and return success response
+                // Set success data and return
                 executionResult.SetData(newPayment);
-                return Ok("Payment added successfully.");
+                return Ok(executionResult.GetServerResponse());
             }
             catch (Exception ex)
             {
                 executionResult.SetInternalServerError(nameof(PaymentController), functionName, ex);
-                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse());
             }
         }
         #endregion

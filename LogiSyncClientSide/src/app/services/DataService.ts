@@ -17,12 +17,25 @@ import { PriceAgreement } from '../models/priceAgreement';
 import { Truck } from '../models/Truck';
 import { Invoice } from '../models/invoices';
 import { Contract } from '../models/contract';
+import { Payment } from '../models/payments';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+  
+ 
+  getCompanyPayments(companyId: string): Observable<ApiResponse<Payment[]>> {
+    return this.http.get<ApiResponse<Payment[]>>(
+      `${this.baseUrl}Payment/GetCompanyPayments/${companyId}`
+    );
+  }
+  addPayment<T>(newPayment: Payment): Observable<T>{
+    return this.http.post<T>(`${this.baseUrl}Payment/AddPayment`,newPayment);
+     }
+
+  
   
   getContractById(contractID: string): Observable<ApiResponse<Contract>> {
     return this.http.get<ApiResponse<Contract>>(
@@ -31,6 +44,12 @@ export class DataService {
   getCompanyInvoices(companyId: string): Observable<ApiResponse<Invoice[]>> {
     return this.http.get<ApiResponse<Invoice[]>>(
       `${this.baseUrl}Invoice/GetCompanyInvoice/${companyId}`
+    );
+  }
+
+  getCompanyInvoiceDetails(companyId: string,InvoiceNumber: number): Observable<ApiResponse<Invoice>> {
+    return this.http.get<ApiResponse<Invoice>>(
+      `${this.baseUrl}Invoice/getCompanyInvoiceDetails/${companyId}/${InvoiceNumber}`
     );
   }
 

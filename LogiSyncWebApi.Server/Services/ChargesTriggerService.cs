@@ -72,7 +72,7 @@ namespace LogiSyncWebApi.Server.Services
                                     await chargableItemController.AddChargableItem(newItem2);
 
                                     // Update JobRequest Status
-                                    await jobRequestController.UpdateRequestStatus(item.JobRequestID, "PENDING AWAITING INVOICE");
+                                    await jobRequestController.UpdateRequestStatus(item.JobRequestID, "PENDING AWAITING INVOICE",item.InvoiceNumber);
                                 }
                             }
 

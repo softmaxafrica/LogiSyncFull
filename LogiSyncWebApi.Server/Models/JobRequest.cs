@@ -57,6 +57,9 @@ namespace LogiSyncWebApi.Server.Models
         [Column("CONTRACT_ID")]
         public string? ContractId { get; set; }
 
+        [Column("INVOICE_NUMBER")]
+        public int? InvoiceNumber { get; set; }
+
 
         // Navigation properties
         public virtual Truck Truck { get; set; }

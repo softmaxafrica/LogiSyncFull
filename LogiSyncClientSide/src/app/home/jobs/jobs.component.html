@@ -164,7 +164,8 @@
 <!-- REQUEST DETAILS DIALOG -->
 <p-dialog [(visible)]="requestDetailsVisible" [header]="'request_details' | translate" 
 [modal]="true" [responsive]="true" (onHide)="requestDetailsVisible = false" [closable]="false"
-  >
+[style]="{ width: '50vw' }" 
+>
   <p-tabView>
     <!-- Job Request Details Tab -->
      <!-- Job Request Details Tab -->
@@ -257,16 +258,25 @@
             <label for="requestedPrice" class="w-40 text-left font-bold mr-2">{{ 'request_price' | translate }}:</label>
             <input pInputText id="requestedPrice" type="number" [(ngModel)]="activeRequest.requestedPrice" class="w-60" />
           </div>
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-            <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
-            <input pInputText id="customerPrice" type="number" [(ngModel)]="activeRequest.customerPrice" class="w-60" />
-          </div>
+          
           <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
             <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
             <input pInputText id="acceptedPrice" type="number" [(ngModel)]="activeRequest.acceptedPrice" class="w-60" />
           </div>
        
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceLabels">
+            <div class="mb-3 d-flex align-items-center"> 
+            <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
+               <p class="w-60">{{ activeRequest.customerPrice || 'N/A' }}</p>
+               <p class="w-60">{{ activeRequest.invoiceNumber || 'N/A' }}</p>
 
+               </div>
+
+               <div class="mb-3 d-flex align-items-center"> 
+                <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
+                   <p class="w-60">{{ activeRequest.acceptedPrice || 'N/A' }}</p>
+                   </div>
+            </div>
         <!-- Action Buttons -->
         <div class="mt-4 d-flex justify-content-end">
           <p-button 
@@ -340,7 +350,7 @@
 </p-dialog>
 
     <!-- Agreement Document Preview Dialog -->
-    <p-dialog [(visible)]="agreementDialogVisible" header="Agreement Document" [modal]="true" [style]="{width: '50vw'}">
+    <p-dialog [(visible)]="agreementDialogVisible" header="Agreement Document" [modal]="true" [style]="{ width: '30vw',height:'550px' }">
       <div>
         <p>Document preview not available. Click the button below to download the agreement.</p>
       </div>

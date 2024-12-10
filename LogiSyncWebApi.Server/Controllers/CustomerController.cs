@@ -107,8 +107,7 @@ namespace LogiSyncWebApi.Server.Controllers
             try
             {
                 var customers = _context.Customers
-                    .Include(c => c.Invoices) // Include navigation properties
-                    //.Include(c => c.JobRequests)
+                     //.Include(c => c.JobRequests)
                     .ToList();
                 executionResult.SetData(customers);
                 return Ok(executionResult.GetServerResponse());
@@ -169,8 +168,7 @@ namespace LogiSyncWebApi.Server.Controllers
             try
             {
                 var customer = _context.Customers
-                    .Include(c => c.Invoices) // Include navigation properties
-                    //.Include(c => c.JobRequests)
+                     //.Include(c => c.JobRequests)
                     .FirstOrDefault(c => c.CustomerID == id);
 
                 if (customer == null)
