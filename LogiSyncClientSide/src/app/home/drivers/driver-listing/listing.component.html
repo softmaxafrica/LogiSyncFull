@@ -94,6 +94,14 @@
                        />
                   <!-- </p-button> -->
                       
+                  <img 
+  src="assets/images/icons/endorsement.png" 
+  width="50px" 
+  (click)="openAssignTruckDialog(driver)" 
+  style="margin-left: 1rem;"
+/>
+
+
                     </td>
                 </tr>
             </ng-template>
@@ -256,4 +264,61 @@
                 <p-button label="No" icon="pi pi-times" (click)="deleteDialogVisible = false" class="p-button-secondary"></p-button>
             </p-footer>
         </p-dialog>
+
+        <!-- ASSIGN TRUCKTYPES TO DRIVE -->
+        <p-dialog
+        [(visible)]="assignTruckDialogVisible"
+        [header]="'Assign Truck Types'"
+        [modal]="true"
+        [closable]="true"
+        [dismissableMask]="true"
+        [style]="{  height: '80vh'}"
+        [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+        [baseZIndex]="10000"
+        [styleClass]="'assign-truck-dialog'"
+      >
+        <div class="dialog-body">
+          <div class="dialog-header">
+            <h2>Assign Truck Types</h2>
+            <p>Assign one or more truck types for <strong>{{ selectedDriverForAssignment?.fullName }}</strong>.</p>
+          </div>
+      
+          <form [formGroup]="assignTruckForm" class="form-container" >
+            <div class="form-group" style="margin-top: .5rem;"> 
+              <label for="truckTypes" class="form-label">Truck Types</label>
+              <p-multiSelect
+              id="truckTypes"
+              [options]="availableTruckTypes"
+              formControlName="truckTypes"
+              optionLabel="label"
+              placeholder="Select Truck Types"
+              class="multi-select"
+              [filter]="true">
+              
+              <!-- Option Template to display image and label -->
+              <ng-template let-item pTemplate="item">
+                <div class="truck-type-option">
+                  <!-- <img [src]="baseUrl +item.imageUrl" alt="{{ item.label }}" style="width: 20px; height: 20px; margin-right: 10px;" /> -->
+                  <span>{{ item.label }}</span>
+                </div>
+              </ng-template>
+            
+            </p-multiSelect>
+            
+            </div>
+          </form>
+        </div>
+      
+        <p-footer class="dialog-footer">
+          <p-button
+            label="Assign"
+             (click)="assignTruckTypes()"
+           ></p-button>
+          <p-button
+            label="Cancel"
+             (click)="assignTruckDialogVisible = false"
+           ></p-button>
+        </p-footer>
+      </p-dialog>
+      
  </div>

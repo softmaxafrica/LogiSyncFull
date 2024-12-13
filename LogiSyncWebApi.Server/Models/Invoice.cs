@@ -50,8 +50,10 @@ namespace LogiSyncWebApi.Server.Models
 
         // Navigation properties
         [JsonIgnore]
-        public virtual ICollection<Payment>? Payments { get; set; } // Allows null if no payments exist
+        public virtual ICollection<Payment>? Payments { get; set; } = new List<Payment>();
+      
         [ForeignKey("CustomerID")]
+        
         public virtual Customer? CustomerDetails { get; set; }
 
     }

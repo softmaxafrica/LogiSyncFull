@@ -12,17 +12,15 @@ namespace LogiSyncWebApi.Server.Models
 
         [Required]
         [Column("FULL_NAME")]
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
 
-        [Required]
         [EmailAddress]
         [Column("EMAIL")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        [Required]
-        [Phone]
+       
         [Column("PHONE")]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         [Column("ADDRESS")]
         public string? Address { get; set; }

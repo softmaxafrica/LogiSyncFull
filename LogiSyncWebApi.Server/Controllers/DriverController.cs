@@ -109,6 +109,7 @@ namespace LogiSyncWebApi.Server.Controllers
             {
                 var drivers = _context.Drivers
                     .Include(d => d.Company)
+                    .Include(d => d.TruckTypes)
                     .ToList();
                 executionResult.SetData(drivers);
                 return Ok(executionResult.GetServerResponse());
@@ -135,6 +136,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 {
                     var drivers = db.Drivers
                                     .Include(d => d.Company)
+                                    .Include(d => d.TruckTypes)
                                     .Where(d => d.Company.CompanyID == CompanyId)
                                     .ToList();
 
@@ -170,6 +172,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 {
                     var drivers = db.Drivers
                                     .Include(d => d.Company)
+                                    .Include(d => d.TruckTypes)
                                     .Where(d => d.Company.CompanyID == CompanyId && d.isAvilableForBooking==true && d.Status=="APPROVED")
                                     .ToList();
 
@@ -203,6 +206,7 @@ namespace LogiSyncWebApi.Server.Controllers
             {
                 var driver = _context.Drivers
                     .Include(d => d.Company)
+                    .Include(d => d.TruckTypes)
                     .FirstOrDefault(d => d.DriverID == id);
 
                 if (driver == null)
@@ -354,5 +358,54 @@ namespace LogiSyncWebApi.Server.Controllers
             }
         }
         #endregion
+
+        #region Assign TruckTypes To Driver
+        [HttpPost("assignTruckTypesToDrive/{driverId}")]
+        public async Task<IActionResult> AssignTruckTypes(string driverId, [FromBody] List<string> truckTypeIds)
+        {
+            var executionResult = new ExecutionResult();
+            string functionName = nameof(AssignTruckTypes);
+
+            try
+            {
+                // Validate input
+                if (truckTypeIds == null || !truckTypeIds.Any())
+                {
+                    return BadRequest(new { Message = "Truck type IDs are required." });
+                }
+
+                var driver = await _context.Drivers
+                    .FirstOrDefaultAsync(d => d.DriverID == driverId);
+
+                if (driver == null)
+                {
+                    return NotFound(new { Message = "Driver not found." });
+                }
+
+                // Fetch the TruckTypes by IDs
+                var truckTypes = await _context.TruckTypes
+                    .Where(t => truckTypeIds.Contains(t.TruckTypeID))
+                    .ToListAsync();
+
+                if (!truckTypes.Any())
+                {
+                    return BadRequest(new { Message = "No valid truck types found." });
+                }
+
+                // Assign truck types to the driver
+                driver.TruckTypes = truckTypes;
+                await _context.SaveChangesAsync();
+
+                executionResult.SetData(new { Message = "Truck types assigned successfully." });
+                return Ok(executionResult.GetServerResponse());
+            }
+            catch (Exception ex)
+            {
+                executionResult.SetInternalServerError(nameof(DriverController), functionName, ex);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+            }
+        }
+        #endregion
+
     }
 }

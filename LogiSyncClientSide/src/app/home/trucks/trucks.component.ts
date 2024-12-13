@@ -223,8 +223,7 @@ this.updateTruckSubMenu()
       // this.truckPayload.cabinType = this.truckForm.value.cabinType  ; 
       // this.truckPayload.category = this.truckForm.value.category; 
       // this.truckPayload.drive = this.truckForm.value.drive; 
-console.log(this.truckPayload);
-
+ 
       this.dataService.postTruck<TrucksPayload>('AddTruck', this.truckPayload)
         .subscribe({
           next: (response: any) => {
@@ -316,17 +315,28 @@ console.log(this.truckPayload);
 
   }
   onDeleteTruck(truckID: string) {
-    // this.dataService.deleteTruck(truckID).subscribe({
-    //   next: () => {
-    //     this.functions.displayDeleteSuccess();
-    //     this.GetTruckByCompanyId();
-    //   },
-    //   error: (err) => {
-    //     const errorMessage = err.error || 'unknown_error';
-    //     this.functions.displayError('deletion_failed \n' + errorMessage);
-    //   }
-    // });
-  }
+       this.dataService.deleteTruck(truckID).subscribe(
+        (response: any) => {
+          if (response && response.success) {
+            this.reloadPage();
+            this.functions.displaySuccess('Truck deleted successfully');
+            // this.reloadPage();
+            this.functions.displayDeleteSuccess();
+           } else {
+            this.functions.displayInfo('Received an unexpected response format');
+          }
+        },
+        (error) => {
+          const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+        }
+      );
+    }
+  
   updateTruckSubMenu() {
     this.truckmenu = [
       {
@@ -347,7 +357,9 @@ console.log(this.truckPayload);
      
     ];
   }
-
+  reloadPage() {
+    window.location.reload();
+  }
 
   
 }

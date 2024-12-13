@@ -18,6 +18,7 @@ namespace LogiSyncWebApi.Server.Controllers
             _config = config;
         }
 
+   
         #region GetAllInvoices
         [HttpGet]
         [Route("GetAllInvoices")]
@@ -31,7 +32,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var invoices = db.Invoices
-                                .Include(i => i.Payments)
+                                //.Include(i => i.Payments)
                                 .Include(c => c.CustomerDetails)
                                 .ToList();
                     executionResult.SetData(invoices);
@@ -206,10 +207,14 @@ namespace LogiSyncWebApi.Server.Controllers
         [Route("UpdateInvoicePaymentDetails/{invoiceNumber}")]
         public async Task UpdateInvoicePaymentDetails(int invoiceNumber)
         {
+            JobRequestController jrCntr = new JobRequestController(_context, _config);
+
             // Retrieve the invoice with its associated payments
             var invoice = await _context.Invoices
                 .Include(i => i.Payments)
                 .FirstOrDefaultAsync(i => i.InvoiceNumber == invoiceNumber);
+
+
             if (invoice == null)
                 throw new Exception("Invoice not found.");
             // Sum the total payments for the invoice
@@ -229,14 +234,26 @@ namespace LogiSyncWebApi.Server.Controllers
             }
 
             // Update financial details
+            // Update financial details
             invoice.TotalPaidAmount = totalPaid;
             invoice.OwedAmount = invoice.TotalAmount - totalPaid;
+            if (invoice.OwedAmount < 0)
+                invoice.OwedAmount = 0;
 
+            var Job = _context.JobRequests.FirstOrDefault(jr => jr.JobRequestID == invoice.JobRequestID);
+
+            if(Job.FirstDepositAmount<= invoice.TotalPaidAmount)
+            {
+                Job.Status = "READY TO SERVE";
+            }
+            else
+            {
+                Job.Status = "INCOMPLETE ADVANCE PAYMENT";
+            }
             // Save the updated invoice status
             await _context.SaveChangesAsync();
         }
         #endregion
-
 
         #region DeleteInvoice
         [HttpDelete]
@@ -249,7 +266,7 @@ namespace LogiSyncWebApi.Server.Controllers
             try
             {
                 var invoice = await _context.Invoices.FindAsync(invoiceNumber);
-                if (invoice == null)
+                if(invoice == null)
                 {
                     return NotFound("Invoice not found");
                 }
@@ -266,6 +283,52 @@ namespace LogiSyncWebApi.Server.Controllers
                 return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
             }
         }
+
+
         #endregion
+
+        #region UPDATE TO DELETE PAYMENT FROM INVOICE
+        [HttpPut]
+        [Route("RemovePaymentFromInvoice/{invoiceNumber}/{Amount}")]
+        public async Task RemovePaymentFromInvoice(int invoiceNumber,double Amount)
+        {
+            // Retrieve the invoice with its associated payments
+            var invoice = await _context.Invoices
+                .Include(i => i.Payments)
+                .FirstOrDefaultAsync(i => i.InvoiceNumber == invoiceNumber);
+
+
+            if (invoice == null)
+                throw new Exception("Invoice not found.");
+            // Sum the total payments for the invoice
+            double totalPaid = invoice.Payments?.Sum(p => p.AmountPaid) ?? 0;
+            // Determine and set the invoice status
+            totalPaid -= Amount;
+
+            if (totalPaid == 0)
+            {
+                invoice.Status = "DRAFT"; // No payments made
+            }
+            else if (totalPaid < invoice.TotalAmount)
+            {
+                invoice.Status = "PARTIAL"; // Payments made but not fully paid
+            }
+            else if (totalPaid >= invoice.TotalAmount)
+            {
+                invoice.Status = "PAID"; // Fully paid
+            }
+
+            // Update financial details
+            invoice.TotalPaidAmount = totalPaid;
+            invoice.OwedAmount = invoice.TotalAmount - totalPaid;
+            if (invoice.OwedAmount < 0)
+                invoice.OwedAmount = 0;
+
+            // Save the updated invoice status
+            await _context.SaveChangesAsync();
+        }
+        #endregion
+
+
     }
 }

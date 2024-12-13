@@ -8,6 +8,7 @@ import { FunctionsService } from '../../../services/functions.service';
 import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
 import { AppConstants } from '../../../services/shared/Constants';
+import { TruckType } from '../../../models/TruckTypes';
 
 @Component({
   selector: 'app-driver-vetting',
@@ -16,6 +17,7 @@ import { AppConstants } from '../../../services/shared/Constants';
   providers: [DataService]
 })
 export class DriverListingComponent implements OnInit {
+ 
   drivers: DriverPayload[] = [];
   companyId!: string;
   driverForm!: FormGroup;
@@ -29,6 +31,12 @@ export class DriverListingComponent implements OnInit {
   deleteDialogVisible: boolean = false;
   actionMenu: MenuItem[] | null | undefined;
   public baseUrl = AppConstants.API_SERVER_URL;
+
+  assignTruckDialogVisible: boolean = false;
+  assignTruckForm!: FormGroup;
+  availableTruckTypes: { label: string, value: string }[] = [];
+  selectedDriverForAssignment: DriverPayload | null = null;
+  
 
   constructor(
     private dataService: DataService,
@@ -44,8 +52,11 @@ export class DriverListingComponent implements OnInit {
     this.companyId = this.authService.getCompanyId() || '';
     this.getCompanyDrivers();
     this.loadActionMenu();
+    this.initializeAssignTruckForm();
+
     this.editDialogVisible = false;
 
+    
     // Initialize the form with validations
     this.driverForm = this.fb.group({
       fullName: ['', Validators.required],
@@ -61,6 +72,11 @@ export class DriverListingComponent implements OnInit {
     });
   }
 
+  initializeAssignTruckForm(): void {
+    this.assignTruckForm = this.fb.group({
+      truckTypes: [[], Validators.required],
+    });
+  }
   loadActionMenu() {
     this.actionMenu = [
       {
@@ -209,4 +225,60 @@ export class DriverListingComponent implements OnInit {
       }
     );
   }
+  assignTruckTypes(): void {
+    if (this.assignTruckForm.valid && this.selectedDriverForAssignment) {
+      const selectedTruckTypes = this.assignTruckForm.value.truckTypes;
+      const assignedTruckTypes = selectedTruckTypes.map((truckType: { value: string }) => truckType.value);
+      const driverId = this.selectedDriverForAssignment.driverID;
+  
+      // Send the truckTypes directly as an array (not wrapped in an object)
+      this.dataService.assignTruckTypesToDriver(driverId, assignedTruckTypes).subscribe(
+        () => {
+          this.assignTruckDialogVisible = false;
+          this.functions.displaySuccess("Truck types assigned to");
+          this.getCompanyDrivers(); // Reload drivers to reflect updates
+        },
+        (error) => {
+          const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+        }
+      );
+    }
+  }
+  
+  
+  
+  
+
+  fetchTruckTypes(): void {
+
+    this.dataService.GetTruckTypes().subscribe(
+      (response) => {
+        this.availableTruckTypes = response.data.map((type: TruckType) => ({
+          label: type.typeName, // Display text
+          value: type.truckTypeID // Value submitted
+      }));      },
+      (error) => {
+        const errorMessage =
+        error.error?.message ||  
+        (typeof error.error === 'string' ? error.error : null) ||  
+        error.message || // General HTTP error message
+        'An unknown error occurred';
+      this.functions.displayInfo(errorMessage);
+      }
+    );
+}
+
+ 
+openAssignTruckDialog(driver: DriverPayload): void {
+  this.selectedDriverForAssignment = driver;
+  this.fetchTruckTypes(); // Ensure this is called before showing the dialog
+  this.assignTruckForm.reset();
+  this.assignTruckDialogVisible = true;
+}
+
 }

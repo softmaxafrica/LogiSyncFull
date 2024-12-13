@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace LogiSyncWebApi.Server.Models
 {
@@ -19,8 +20,8 @@ namespace LogiSyncWebApi.Server.Models
         public string Description { get; set; }
 
         [Column("SAMPLE_IMAGE_URL")]
-        public string? SampleImageUrl { get; set; }  // Field for storing the URL of the sample truck image
-
-        //public ICollection<Truck> Trucks { get; set; }
+        public string? SampleImageUrl { get; set; }
+        [JsonIgnore]
+        public virtual List<Driver>? Drivers { get; set; } // Relationship to Driver
     }
 }

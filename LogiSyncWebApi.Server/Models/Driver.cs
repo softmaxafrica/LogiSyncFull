@@ -47,6 +47,8 @@ namespace LogiSyncWebApi.Server.Models
         public virtual Company Company { get; set; }
         [ForeignKey("CompanyID")]
         public string CompanyID { get; set; }
+        public virtual List<TruckType>? TruckTypes { get; set; } // Relationship to TruckType
+
     }
 
 }

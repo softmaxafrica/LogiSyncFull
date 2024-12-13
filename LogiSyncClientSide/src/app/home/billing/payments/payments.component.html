@@ -2,17 +2,17 @@
 
 <div class="card">
     <p-toolbar>
-        <div class="p-toolbar-group-left">
-            <button pButton label="Add Payment" icon="pi pi-plus" class="p-button-success" (click)="onAddPayment()"></button>
-        </div>
+       
     </p-toolbar>
 
-    <p-table [value]="payments" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'" selectionMode="single" [(selection)]="selectedPayment">
+    <p-table [value]="filteredPayments" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'" selectionMode="single" [(selection)]="selectedPayment">
         <ng-template pTemplate="header">
             <tr>
                 <th colspan="8">
                   <div class="p-d-flex p-jc-between p-ai-center">
                     <!-- Manage Columns Button (Left-Aligned) -->
+                        <p-button type="button" icon="pi pi-cog" label="{{'add_payment' | translate}}" styleClass="p-button-text" (click)="onAddPayment()"></p-button>
+
                     <p-button type="button" icon="pi pi-cog" (click)="columnDialogVisible = true" 
                               label="Manage Columns" styleClass="p-button-text"></p-button>
                     
@@ -28,38 +28,102 @@
                     {{ column.header }}
     
                   </th>
-                <th>Actions</th>
-            </tr>
+                  
+             </tr>
+             
         </ng-template>
      <!-- Table body template to display the data -->
      <ng-template pTemplate="body" let-payment let-columns="targetColumns">
         <tr [pSelectableRow]="payments">
-          <td *ngFor="let col of targetColumns">
-            <!-- Use getNestedValue method to handle nested fields -->
-            <ng-container *ngIf="col.field === 'status'">
-              <!-- <p-tag [value]="payment[col.field]" [severity]="functions.getSeverity(payment[col.field])">
-              </p-tag> -->
+          <td *ngFor="let column of targetColumns">
+            <ng-container *ngIf="column.field === 'invoice.status'">
+              <p-tag [value]="payment[column.field]" [severity]="functions.getSeverity(payment[column.field])">
+              </p-tag>
             </ng-container>
     
             <!-- For all other columns, use the getNestedValue method -->
-            <ng-container *ngIf="col.field !== 'status'">
+            <ng-container *ngIf="column.field !== 'invoice.status'">
               <!-- Get the value of the field dynamically using getNestedValue -->
-              {{ getNestedValue(payment, col.field) }}
+              {{ getNestedValue(payment, column.field) }}
             </ng-container>
           </td>
-          <!-- <td class="p-d-flex p-ai-center">
-            <p-button icon="pi pi-finish" label="Details" [outlined]="true" (click)="editRequests(job)">
+          <td class="p-d-flex p-ai-center">
+            <!-- <p-button icon="pi pi-finish" label="{{' preview' |translate }}" [outlined]="true" [disabled]="item.status === 'PAYED'"> -->
               <img 
                     src="assets/images/icons/more-info.png" 
-                    width="30px"    
+                    width="50px"    
                     style="margin-right: .5rem;"
+                    (click)="showDetails(payment)"
                   />
-            </p-button>
-           </td> -->
+            <!-- </p-button> -->
+            <img 
+            src="assets/images/icons/delete.png" 
+             width="50px" 
+             (click)="deletePayment(payment.paymentID)" 
+             />
+       
+           </td>
         </tr>
       </ng-template>
     </p-table>
 </div>
+
+<!-- PAYMENT INSPECTION DETAILS -->
+<p-dialog header="Payment Details" [(visible)]="displayPaymentDialog" [modal]="true" [style]="{ width: '60vw' }" [closable]="true" class="invoice-dialog">
+  <div *ngIf="selectedPayment" class="invoice-content">
+    <!-- Payment Header Section -->
+    <div class="header-section">
+      <h2>Payment ID: {{ selectedPayment.paymentID ?? 'N/A' }}</h2>
+      <p><b>Payment Date:</b> {{ selectedPayment.paymentDate | date:'long' }}</p>
+      <p><b>Amount Paid:</b> {{ selectedPayment.amountPaid | currency:selectedPayment.currency }}</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Payment Details Section -->
+    <div class="details-section">
+      <h3>Payment Details</h3>
+      <div class="grid">
+        <div class="grid-item"><b>Invoice Number:</b> {{ selectedPayment.invoiceNumber }}</div>
+        <div class="grid-item"><b>Payment Method:</b> {{ selectedPayment.paymentMethod }}</div>
+        <div class="grid-item"><b>Reference Number:</b> {{ selectedPayment.referenceNumber || 'N/A' }}</div>
+        <div class="grid-item"><b>Currency:</b> {{ selectedPayment.currency }}</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Linked Invoice Section -->
+    <div class="details-section">
+      <h3>Linked Invoice</h3>
+      <div class="grid">
+        <div class="grid-item"><b>Total Amount:</b> {{ selectedPayment.invoice.totalAmount | currency:selectedPayment.currency }}</div>
+        <div class="grid-item"><b>Total Paid Amount:</b> {{ selectedPayment.invoice.totalPaidAmount | currency:selectedPayment.currency }}</div>
+        <div class="grid-item"><b>Owed Amount:</b> {{ selectedPayment.invoice.owedAmount | currency:selectedPayment.currency }}</div>
+        <div class="grid-item"><b>Service Charge:</b> {{ selectedPayment.invoice.serviceCharge | currency:selectedPayment.currency }}</div>
+        <div class="grid-item"><b>Operational Charge:</b> {{ selectedPayment.invoice.operationalCharge | currency:selectedPayment.currency }}</div>
+        <div class="grid-item"><b>Status:</b> <span class="status">{{ selectedPayment.invoice.status }}</span></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Customer Details Section -->
+    <div class="details-section">
+      <h3>Customer Details</h3>
+      <div class="grid">
+        <div class="grid-item"><b>Name:</b> {{ selectedPayment.invoice.customerDetails.fullName }}</div>
+        <div class="grid-item"><b>Email:</b> {{ selectedPayment.invoice.customerDetails.email }}</div>
+        <div class="grid-item"><b>Phone:</b> {{ selectedPayment.invoice.customerDetails.phone }}</div>
+        <div class="grid-item"><b>Address:</b> {{ selectedPayment.invoice.customerDetails.address }}</div>
+        <div class="grid-item"><b>Payment Method:</b> {{ selectedPayment.invoice.customerDetails.paymentMethod }}</div>
+        <div class="grid-item"><b>Mobile Number:</b> {{ selectedPayment.invoice.customerDetails.mobileNumber }}</div>
+      </div>
+    </div>
+  </div>
+</p-dialog>
+
+
    <!-- Column Management Dialog -->
    <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [responsive]="true" [style]="globalColumnControlService.getColumnDialogConfig()">
     <p-fieldset legend="Columns" [toggleable]="true">

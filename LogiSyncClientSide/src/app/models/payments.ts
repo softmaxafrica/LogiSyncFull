@@ -4,7 +4,7 @@ export interface Payment {
     paymentID: string;
     invoiceNumber: number;
     amountPaid: number;
-    paymentDate: Date; // ISO Date string
+    paymentDate: Date; //ISO Date string
     paymentMethod: string;
     referenceNumber: string | null;
     currency: string;

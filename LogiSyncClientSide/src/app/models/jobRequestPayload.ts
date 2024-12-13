@@ -30,7 +30,7 @@ invoiceNumber?: number;
   customerID: string;
   contractId:string;
   firstDepositAmount?: number;
-
+  companyAdvanceAmountRequred?:  number;
   // Properties that may need default values for binding
   requestedPrice?: number;  // Use `?` to make it optional initially
   acceptedPrice?: number;

@@ -43,7 +43,7 @@ export class FunctionsService {
   }
 
   public displayDeleteSuccess() {
-    this.displaySuccess('msg_delete_success');
+    this.displaySuccess('delete_success');
   }
 
   public displayCancelSuccess() {
@@ -56,20 +56,25 @@ export class FunctionsService {
 
   getSeverity(status: string): "success" | "secondary" | "info" | "warning" | "danger" | "contrast"    | undefined {
     switch (status) {
+     //request
       case 'CREATED':
         return 'info';
         case 'ON AGREEMENT':
-        return 'warning';  
+        return 'secondary';  
       case 'PENDING':
         return 'warning';  
       case 'COMPLETED':
         return 'success'; 
       case 'APPROVED':
         return 'success';
+
         case 'PENDING PAYMENTS':
         return 'danger'; 
-        //INVOICE
+        case 'INCOMPLETE ADVANCE PAYMENT':
+        return 'danger';
 
+        //INVOICE
+     
         case 'DRAFT':
           return 'warning';  
             case 'DISCARDED':
@@ -79,6 +84,10 @@ export class FunctionsService {
 //payments
         case 'PAID':
         return 'success';
+
+        case 'READY TO SERVE':
+          return 'success';
+
         case 'PARTIAL':
           return 'contrast'; 
           case 'CANCELLED':

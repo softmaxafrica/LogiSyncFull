@@ -27,14 +27,19 @@ import { Contract } from '../../models/contract';
   styleUrls: ['../../app.component.css']
 })
 export class JobsComponent implements OnInit {
+  RequestToDelete: any;
 
 
-  showContract(_t34: any) {
-throw new Error('Method not implemented.');
-}
 
+ 
   deleteDialogVisible: boolean=false;
  
+activeCustomerPrice: any;
+activeCustomerAdvanceAmount:any;
+activeCompanyAdvanceAmount: any;
+activeFinalRequestPrice: any;
+activeReqPrice:any;
+
 
   contractDetails: Contract | null= null;
   avilableTruckLists: Truck[]=[];
@@ -122,6 +127,8 @@ showPriceContent: boolean= true;
 showPriceLabels: boolean=false;
 
   filteredJobs: JobRequest[]=[];
+  PriceDetails: PriceAgreement | null = null;
+payment: any;
  
    constructor(
      private dataServices: DataService,
@@ -176,7 +183,20 @@ showPriceLabels: boolean=false;
           }         );
       }
     }
-
+    loadPriceDetails(priceAgreementID: string) {
+      if (priceAgreementID) {
+        this.dataService.getPriceDataById(this.activeRequest.priceAgreementID).subscribe(
+          (response)  => this.PriceDetails = response.data,
+          (error) => {
+            const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+          }         );
+      }
+    }
 loadActionMenu(){
   this.actionMenu = [
     {
@@ -214,11 +234,37 @@ loadActionMenu(){
   
 }
  
-  confirmDelete(request: JobRequest): void {
+DeleteRequest(request: JobRequest): void {
     this.selectedJobRequest = request;
     this.deleteDialogVisible = true;
+    this.RequestToDelete= request.jobRequestID;
   }
+
   
+    confirmDelete(): void {
+      
+      this.dataServices.DeleteJobRequest(this.RequestToDelete).subscribe(
+        (response: any) => {
+          if (response && response.success) {
+            // this.payments = this.payments.filter((p) => p.paymentID !== paymentID);
+            this.functions.displaySuccess('Job Request deleted successfully');
+            this.reloadPage();
+            this.functions.displayDeleteSuccess();
+           } else {
+            this.functions.displayInfo('Received an unexpected response format');
+          }
+        },
+        (error) => {
+          const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+        }
+      );
+    }
+    
     
 isFormValid(): boolean {
   return this.newJobRequest.requestType && 
@@ -273,7 +319,7 @@ loadJobs(companyId: string): void {
           (typeof error.error === 'string' ? error.error : null) ||  
           error.message || // General HTTP error message
           'An unknown error occurred';
-        this.functions.displayError(errorMessage);
+        this.functions.displayInfo(errorMessage);
         }
       );
     }
@@ -348,8 +394,8 @@ this.newJobRequest.companyID=this.companyId;
       this.showDriverContent=false;
       
     const selectedJobRequest = event;  // Assuming event.data contains JobRequest
-     
-     const ActiveReq: RequestWithPrice = {
+     this.activeReqPrice= event.priceDetails?.companyPrice;
+      const ActiveReq: RequestWithPrice = {
       jobRequestID: selectedJobRequest.jobRequestID,
       pickupLocation: selectedJobRequest.pickupLocation,
       deliveryLocation: selectedJobRequest.deliveryLocation,
@@ -362,11 +408,14 @@ this.newJobRequest.companyID=this.companyId;
       driverID: selectedJobRequest.driverID || '',  // Set this if you can get driverID from the JobRequest
       requestType: selectedJobRequest.requestType ||'',  // Set this if available
       customerID: selectedJobRequest.customerID,
-      requestedPrice: 0,  // Use defaults or extract from a relevant property
-      acceptedPrice: 0,   // Default or extracted value
-      customerPrice: 0, 
+      requestedPrice: selectedJobRequest.priceDetails?.companyPrice ||0 ,  // Use defaults or extract from a relevant property
+      acceptedPrice: selectedJobRequest.priceDetails?.agreedPrice ||0,   // Default or extracted value
+      customerPrice: selectedJobRequest.priceDetails?.customerPrice||0, 
       companyID: this.companyId,
-      contractId: selectedJobRequest.contractId
+      contractId: selectedJobRequest.contractId || 'N/A',
+      companyAdvanceAmountRequred: selectedJobRequest.companyAdvanceAmountRequred || 0,
+      firstDepositAmount: selectedJobRequest.firstDepositAmount || 0
+
     };
     // Set active request
     this.activeRequest = { ...ActiveReq };
@@ -386,13 +435,16 @@ this.newJobRequest.companyID=this.companyId;
         this.showDriverContent=true;
       }
 
-      if((ActiveReq.status =="CREATED")||(ActiveReq.status=="ON AGREEMENT"))
+      if((ActiveReq.status =="CREATED")||(ActiveReq.status=="ON AGREEMENT") || (ActiveReq.status=='DRAFT'))
       {
         this.showDriverContent=false;
         this.showTruckContent=false;
       }
-      if((ActiveReq.status =="PENDING PAYMENTS")||(ActiveReq.status=="CANCELLED")|| (ActiveReq.status.includes("PENDING"))|| (ActiveReq.status.includes("DRAFT")))
+      if((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE")||
+      (ActiveReq.status=="CANCELLED") || (ActiveReq.status.includes("PENDING"))|| 
+      (ActiveReq.status.includes("DRAFT"))  || (ActiveReq.status.includes("INCOMPLETE ADVANCE PAYMENT")))
         {
+          this.loadPriceDetails(ActiveReq.priceAgreementID);
           this.showPriceContent=false;
           this.showPriceLabels=true;
         }
@@ -471,7 +523,7 @@ getAvailableTrucks(type: any) {
       (typeof error.error === 'string' ? error.error : null) ||  
       error.message || // General HTTP error message
       'An unknown error occurred';
-    this.functions.displayError(errorMessage);
+    this.functions.displayInfo(errorMessage);
     }
   );
 }

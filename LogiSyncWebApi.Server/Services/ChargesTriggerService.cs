@@ -24,8 +24,7 @@ namespace LogiSyncWebApi.Server.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                Console.WriteLine("Trigger Service Is Running At " + DateTime.Now.ToLocalTime());
-
+ 
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -42,8 +41,7 @@ namespace LogiSyncWebApi.Server.Services
                             {
                                 foreach (var item in jrItemsToBill)
                                 {
-                                    Console.WriteLine($"Processing item: {item.JobRequestID}");
-
+ 
                                     var newItem1 = new ChargableItemPayload
                                     {
                                         JobRequestID = item.JobRequestID,
@@ -72,7 +70,7 @@ namespace LogiSyncWebApi.Server.Services
                                     await chargableItemController.AddChargableItem(newItem2);
 
                                     // Update JobRequest Status
-                                    await jobRequestController.UpdateRequestStatus(item.JobRequestID, "PENDING AWAITING INVOICE",item.InvoiceNumber);
+                                    await jobRequestController.UpdateRequestStatus(item.JobRequestID, "ONGOING INVOICE GENERATION",item.InvoiceNumber);
                                 }
                             }
 

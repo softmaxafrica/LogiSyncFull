@@ -207,7 +207,8 @@ import { CustomersComponent } from './home/customers/customers.component';
     InputNumberModule,
     PanelMenuModule,
     DataViewModule,
-    TabViewModule
+    TabViewModule,
+    MultiSelectModule 
     
     
   ],
@@ -314,7 +315,7 @@ import { CustomersComponent } from './home/customers/customers.component';
     IconFieldModule,
     InputIconModule,
     AutoFocusModule,
-    
+    MultiSelectModule 
   ],
  
   providers: [ 

@@ -53,13 +53,18 @@
                 </ng-container>
               </td>
               <td class="p-d-flex p-ai-center">
-                <p-button icon="pi pi-finish" label="Details" [outlined]="true" (click)="editRequests(job)">
-                  <img 
+                   <img 
                         src="assets/images/icons/more-info.png" 
-                        width="30px"    
-                        style="margin-right: .5rem;"
+                        width="50px"    
+                        style="margin-right: 1rem;"
+                        (click)="editRequests(job)"
                       />
-                </p-button>
+ 
+                <img 
+                src="assets/images/icons/delete.png" 
+                 width="50px" 
+                 (click)="DeleteRequest(job)" 
+                 />
                </td>
             </tr>
           </ng-template>
@@ -113,9 +118,6 @@
             <p-dropdown [options]="customersList" optionLabel="fullName" optionValue="customerID" [(ngModel)]="newJobRequest.customerID"
                         placeholder="{{'Requesting Customer' | translate}}" styleClass="dropdown-width"></p-dropdown>
           </div>
-
-         
-
           <!-- Save Button -->
           <div class="mb-3">
             <p-button label="{{ 'save_request' | translate }}" icon="pi pi-save" class="p-button-primary" [disabled]="!isFormValid()" (click)="saveJob(newJobRequest)"></p-button>
@@ -159,8 +161,40 @@
 </p-dialog>
 
 
- 
- 
+ <!-- DELETE REQUEST  -->
+ <p-dialog 
+  [(visible)]="deleteDialogVisible" 
+  [header]="'delete_confirmation' | translate" 
+  [modal]="true" 
+  [closable]="false" 
+  [responsive]="true" 
+  [style]="{ width: '30vw' }" 
+  class="warning-dialog">
+  
+  <div class="p-text-center">
+    <i class="pi pi-exclamation-triangle p-text-warning" style="font-size: 3rem;"></i>
+    <p class="mt-3">
+      {{ 'delete_job_request_warning' | translate }}
+    </p>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4">
+    <p-button 
+      label="{{ 'yes' | translate }}" 
+      icon="pi pi-check" 
+      class="p-button-danger mr-2" 
+      (onClick)="confirmDelete()">
+    </p-button>
+    <p-button 
+      label="{{ 'no' | translate }}" 
+      icon="pi pi-times" 
+      class="p-button-secondary" 
+      (onClick)="deleteDialogVisible = false">
+    </p-button>
+  </div>
+</p-dialog>
+
+
 <!-- REQUEST DETAILS DIALOG -->
 <p-dialog [(visible)]="requestDetailsVisible" [header]="'request_details' | translate" 
 [modal]="true" [responsive]="true" (onHide)="requestDetailsVisible = false" [closable]="false"
@@ -260,6 +294,20 @@
           </div>
           
           <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
+            <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
+            <input pInputText id="customerPrice" type="number" [(ngModel)]="activeRequest.customerPrice" class="w-60" />
+          </div> 
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
+          <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customers_price' | translate }}:</label>
+          <p class="w-60">{{ activeRequest.customerPrice || 'N/A' }}</p>
+          </div>
+
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
+            <label for="companyAdvanceAmountRequred" class="w-40 text-left font-bold mr-2">{{ 'company_advance_amount_requred' | translate }}:</label>
+            <input pInputText id="companyAdvanceAmountRequred" type="number" [(ngModel)]="activeRequest.companyAdvanceAmountRequred" class="w-60" />
+          </div>
+
+          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
             <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
             <input pInputText id="acceptedPrice" type="number" [(ngModel)]="activeRequest.acceptedPrice" class="w-60" />
           </div>
@@ -267,14 +315,17 @@
           <div class="mb-3 d-flex align-items-center" *ngIf="showPriceLabels">
             <div class="mb-3 d-flex align-items-center"> 
             <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
-               <p class="w-60">{{ activeRequest.customerPrice || 'N/A' }}</p>
-               <p class="w-60">{{ activeRequest.invoiceNumber || 'N/A' }}</p>
-
+               <p class="w-60">{{ PriceDetails!.customerPrice || 'N/A' }}</p>
+ 
                </div>
-
                <div class="mb-3 d-flex align-items-center"> 
-                <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
-                   <p class="w-60">{{ activeRequest.acceptedPrice || 'N/A' }}</p>
+                   <label for="companyPrice" class="w-40 text-left font-bold mr-2">{{ 'company_price' | translate }}:</label>
+                   <p class="w-60">{{ PriceDetails!.companyPrice || 'N/A' }}</p>
+                </div>
+        
+                <div class="mb-3 d-flex align-items-center"> 
+                <label for="agreedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
+                   <p class="w-60">{{ PriceDetails!.agreedPrice || 'N/A' }}</p>
                    </div>
             </div>
         <!-- Action Buttons -->

@@ -22,6 +22,8 @@ namespace LogiSyncWebApi.Server.Shared
         public IEnumerable<object>? ObjectList1 { get; set; }
         [JsonIgnore]
         public IEnumerable<object>? ObjectList2 { get; set; }
+        public Dictionary<string, string>? Errors { get; set; } // For validation errors
+
     }
     public class ExecutionResult
     {
@@ -193,5 +195,24 @@ namespace LogiSyncWebApi.Server.Shared
         Success = false;
         Message = message;
     }
+
+        public void SetSuccess(string message)
+        {
+            Success = true;
+            Message = message;
+        }
+
+
+        public void SetValidationError(string errorMessage, string field = null)
+        {
+            _serverResponse.Success = false;
+            Message = errorMessage;
+
+        
+            _serverResponse.Message = errorMessage;
+
+
+        }
+
     }
 }

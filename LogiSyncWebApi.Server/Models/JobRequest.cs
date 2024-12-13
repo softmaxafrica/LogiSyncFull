@@ -52,7 +52,10 @@ namespace LogiSyncWebApi.Server.Models
         [Column("LAST_UPDATE_TIME")]
         public DateTime? Udate { get; set; }
         [Column("FIRST_DEPOSIT_AMOUNT")]
-        public decimal? FirstDepositAmount { get; set; }
+        public double? FirstDepositAmount { get; set; }
+
+        [Column("COMPANY_ADVANCE_AMOUNT_REQUIRED")]
+        public double? CompanyAdvanceAmountRequred { get; set; }
 
         [Column("CONTRACT_ID")]
         public string? ContractId { get; set; }
@@ -71,8 +74,9 @@ namespace LogiSyncWebApi.Server.Models
         [ForeignKey("CustomerID")]
         public string? CustomerID { get; set; }
         public virtual Customer Customer { get; set; }
+        [ForeignKey("InvoiceNumber")]
 
-        public virtual ICollection<Invoice> Invoices { get; set; }
+        public virtual  Invoice? InvoiceDetails { get; set; }
     }
 
 }

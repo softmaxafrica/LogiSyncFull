@@ -1,0 +1,80 @@
+/* Global Dialog Styles */
+.invoice-dialog {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  .dialog-content {
+    padding: 20px;
+  }
+  
+  .header-section {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .header-section h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #0056b3;
+  }
+  
+  .header-section p {
+    margin: 5px 0;
+  }
+  
+  .status {
+    padding: 5px 10px;
+    background-color: #ffc107;
+    color: #fff;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  .divider {
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
+  }
+  
+  .details-section {
+    margin-bottom: 20px;
+  }
+  
+  .details-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    color: #444;
+    border-bottom: 2px solid #0056b3;
+    padding-bottom: 5px;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+  }
+  
+  .grid-item {
+    background-color: #e6e4e4;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: rgb(168, 0, 137);
+  }
+  
+  .grid-item b {
+    color: #0056b3;
+  }
+  
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .header-section h2 {
+      font-size: 1.5rem;
+    }
+  }
+  

@@ -37,17 +37,74 @@
           </ng-container>
         </td>
         <td class="p-d-flex p-ai-center">
-          <p-button icon="pi pi-finish" label="Finalize" [outlined]="true" [disabled]="item.status === 'PAYED'">
+          <!-- <p-button icon="pi pi-finish" label="{{' preview' |translate }}" [outlined]="true" [disabled]="item.status === 'PAYED'"> -->
             <img 
-                  src="assets/images/icons/edit.png" 
-                  width="25px"    
+                  src="assets/images/icons/more-info.png" 
+                  width="50px"    
                   style="margin-right: .5rem;"
+                  (click)="showInvoiceDetails(item)"
                 />
-          </p-button>
+          <!-- </p-button> -->
          </td>
       </tr>
     </ng-template>
   </p-table>
+
+  <!-- INVOICE INSPECTION -->
+  <p-dialog header="Invoice Details" [(visible)]="displayDialog" [modal]="true" [style]="{ width: '80vw' }" [closable]="true" class="invoice-dialog">
+    <div *ngIf="selectedInvoice" class="invoice-content">
+      <!-- Invoice Header Section -->
+      <div class="header-section">
+        <h2>Invoice #{{ selectedInvoice.invoiceNumber }}</h2>
+        <p><b>Issue Date:</b> {{ selectedInvoice.issueDate | date:'long' }}</p>
+        <p><b>Status:</b> <span class="status">{{ selectedInvoice.status }}</span></p>
+      </div>
+  
+      <div class="divider"></div>
+  
+      <!-- Invoice Details Section -->
+      <div class="details-section">
+        <h3>Invoice Details</h3>
+        <div class="grid">
+          <div class="grid-item"><b>Total Amount:</b> {{ selectedInvoice.totalAmount | currency }}</div>
+          <div class="grid-item"><b>Paid Amount:</b> {{ selectedInvoice.totalPaidAmount | currency }}</div>
+          <div class="grid-item"><b>Owed Amount:</b> {{ selectedInvoice.owedAmount | currency }}</div>
+          <div class="grid-item"><b>Service Charge:</b> {{ selectedInvoice.serviceCharge | currency }}</div>
+          <div class="grid-item"><b>Operational Charge:</b> {{ selectedInvoice.operationalCharge | currency }}</div>
+          <div class="grid-item"><b>Due Date:</b> {{ selectedInvoice.dueDate ? (selectedInvoice.dueDate | date:'long') : 'N/A' }}</div>
+        </div>
+      </div>
+  
+      <div class="divider"></div>
+  
+      <!-- Customer Details Section -->
+      <div class="details-section">
+        <h3>Customer Details</h3>
+        <div class="grid">
+          <div class="grid-item"><b>Name:</b> {{ selectedInvoice.customerDetails.fullName }}</div>
+          <div class="grid-item"><b>Email:</b> {{ selectedInvoice.customerDetails.email }}</div>
+          <div class="grid-item"><b>Phone:</b> {{ selectedInvoice.customerDetails.phone }}</div>
+          <div class="grid-item"><b>Address:</b> {{ selectedInvoice.customerDetails.address }}</div>
+          <div class="grid-item"><b>Payment Method:</b> {{ selectedInvoice.customerDetails.paymentMethod }}</div>
+          <div class="grid-item"><b>Mobile Number:</b> {{ selectedInvoice.customerDetails.mobileNumber }}</div>
+        </div>
+      </div>
+  
+      <div class="divider"></div>
+  
+      <!-- Additional Information Section -->
+      <div class="details-section">
+        <h3>Additional Information</h3>
+        <div class="grid">
+          <div class="grid-item"><b>Company ID:</b> {{ selectedInvoice.companyID }}</div>
+          <div class="grid-item"><b>Job Request ID:</b> {{ selectedInvoice.jobRequestID }}</div>
+          <div class="grid-item"><b>Payment ID:</b> {{ selectedInvoice.paymentId || 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+  </p-dialog>
+  
+
 
       <!-- Column Management Dialog -->
       <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [responsive]="true" [style]="globalColumnControlService.getColumnDialogConfig()">

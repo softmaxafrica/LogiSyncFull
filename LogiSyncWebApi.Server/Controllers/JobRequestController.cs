@@ -42,7 +42,8 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Include(jr => jr.PriceAgreement)
                         .Include(jr => jr.Truck)
                         .Include(jr => jr.Customer)
-                        .Where(jr => jr.Status !="CANCELED")
+                        .Include(jr=>jr.InvoiceDetails)
+                        .Where(jr => jr.Status !="CANCELLED")
                         .ToList();
                     executionResult.SetData(jobRequests);
                     return Ok(executionResult.GetServerResponse());
@@ -72,6 +73,8 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Include(jr => jr.PriceAgreement)
                         .Include(jr => jr.Truck)
                         .Include(jr => jr.Customer)
+                        .Include(jr => jr.InvoiceDetails)
+                         .Where(jr => jr.Status != "CANCELLED")
                         .FirstOrDefault(jr => jr.JobRequestID == jobRequestID);
                     if (jobRequest == null)
                     {
@@ -106,10 +109,11 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Include(jr => jr.PriceAgreement)
                         .Include(jr => jr.Truck)
                         .Include(jr => jr.Customer)
+                        .Include(jr => jr.InvoiceDetails)
                         .Where(jr =>
-                            jr.Status != "CANCELED" &&
-                            (jr.Status != "PENDING PAYMENTS" ||
-                            (((jr.Status == "PENDING PAYMENTS") ||(jr.Status == "PENDING AWAITING INVOICE")) && jr.AssignedCompany == CompanyID)))
+                            jr.Status != "CANCELLED" &&
+                            (jr.Status != "READY FOR INVOICE" ||
+                            (((jr.Status == "READY FOR INVOICE") ||(jr.Status == "ONGOING INVOICE GENERATION")) && jr.AssignedCompany == CompanyID)))
                         .ToList();
 
                     // Check if any job requests exist
@@ -252,13 +256,21 @@ namespace LogiSyncWebApi.Server.Controllers
                         existingJobRequest.CargoDescription = string.IsNullOrEmpty(updatedJobRequest.CargoDescription) ? existingJobRequest.CargoDescription : updatedJobRequest.CargoDescription;
                         existingJobRequest.ContainerNumber = string.IsNullOrEmpty(updatedJobRequest.ContainerNumber) ? existingJobRequest.ContainerNumber : updatedJobRequest.ContainerNumber;
 
-                        if ((updatedJobRequest.RequestedPrice != 0) && (updatedJobRequest.AcceptedPrice == 0))
+
+                        if (updatedJobRequest.CompanyAdvanceAmountRequred !=null && updatedJobRequest.CompanyAdvanceAmountRequred > 0)
+                            existingJobRequest.CompanyAdvanceAmountRequred = updatedJobRequest.CompanyAdvanceAmountRequred.Value;
+
+                        if (updatedJobRequest.FirstDepositAmount.HasValue && updatedJobRequest.FirstDepositAmount != existingJobRequest.FirstDepositAmount)
+                            existingJobRequest.FirstDepositAmount = updatedJobRequest.FirstDepositAmount.Value;
+
+                        if ((updatedJobRequest.RequestedPrice > 0) && (updatedJobRequest.AcceptedPrice == 0|| updatedJobRequest.AcceptedPrice==null))
                         {
                             updatedJobRequest.Status = "ON AGREEMENT";
                         }
-                        if (updatedJobRequest.AcceptedPrice != 0)
+                        //update The Request Status if all agreement done( Price and initial Deposit / after assigned price agreement id)
+                        if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID!= null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
                         {
-                            updatedJobRequest.Status = "PENDING PAYMENTS";
+                            updatedJobRequest.Status = "READY FOR INVOICE";
                             existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
                             existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
                         }
@@ -268,6 +280,7 @@ namespace LogiSyncWebApi.Server.Controllers
 
                         existingJobRequest.TruckID = string.IsNullOrEmpty(updatedJobRequest.TruckID) ? existingJobRequest.TruckID : updatedJobRequest.TruckID;
                         existingJobRequest.CustomerID = string.IsNullOrEmpty(updatedJobRequest.CustomerID) ? existingJobRequest.CustomerID : updatedJobRequest.CustomerID;
+                      
 
                         existingJobRequest.Udate = SysDate;
 
@@ -320,7 +333,7 @@ namespace LogiSyncWebApi.Server.Controllers
                                     newContr.RequestID = updatedJobRequest.JobRequestID;
                                     newContr.CompanyID = updatedJobRequest.CompanyID;
                                     newContr.CustomerID = updatedJobRequest.CustomerID;
-                                    newContr.AdvancePayment = updatedJobRequest.FirstDepositAmount;
+                                    newContr.AdvancePayment = (decimal?)updatedJobRequest.FirstDepositAmount;
                                     newContr.ContractDate = DateTime.UtcNow.ToLocalTime();
                                     newContr.AgreedPrice = updatedJobRequest.AcceptedPrice;
                                     newContr.ContractID = Functions.GenerateContractId();
@@ -340,7 +353,7 @@ namespace LogiSyncWebApi.Server.Controllers
 
                                     // Save changes to the updated contract
                                     _context.Contracts.Update(existingContract);
-                                    await _context.SaveChangesAsync();
+                                  //  await _context.SaveChangesAsync();
 
                                     // Update the contract ID in the job request if necessary
                                     existingJobRequest.ContractId = existingContract.ContractID;
@@ -350,15 +363,17 @@ namespace LogiSyncWebApi.Server.Controllers
                             }
                             else
                             {
-                                 Console.WriteLine($"Contract already exists for JobRequestID: {updatedJobRequest.JobRequestID}");
+                                Console.WriteLine($"Contract already exists for JobRequestID: {updatedJobRequest.JobRequestID}");
                             }
 
                             if (updatedJobRequest.CustomerPrice.HasValue && updatedJobRequest.CustomerPrice > 0)
-                            existingPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice.Value;
+                                existingPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice.Value;
                             existingPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
                             existingPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
                             existingPriceAgreement.CustomerID = updatedJobRequest.CustomerID;
                         }
+
+                    
 
                         // Save changes to both JobRequest and PriceAgreement
                         db.SaveChanges();
@@ -384,16 +399,32 @@ namespace LogiSyncWebApi.Server.Controllers
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(DeleteJobRequest);
+            InvoiceController invController = new InvoiceController(_context, _config);
 
             try
             {
+ 
                 var jobRequest = await _context.JobRequests.FindAsync(jobRequestID);
                 if (jobRequest == null)
                 {
                     return NotFound("Job Request not found");
                 }
+                // Check if the invoice exists
 
-                _context.JobRequests.Remove(jobRequest);
+                var invoiceOnRequest = await _context.Invoices
+                      .FirstOrDefaultAsync(i => i.InvoiceNumber == jobRequest.InvoiceNumber);
+
+                if (invoiceOnRequest != null)
+                {
+                    if (invoiceOnRequest.Status != "PAID" && invoiceOnRequest.Status != "PARTIAL")
+                    {
+                        invoiceOnRequest.Status = "DISCARDED";
+                    }
+                }
+
+                //_context.JobRequests.Remove(jobRequest);
+                jobRequest.Status = "CANCELLED";
+
                 await _context.SaveChangesAsync();
 
                 executionResult.SetData(jobRequest);
@@ -420,7 +451,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     .Include(jr => jr.PriceAgreement)
                     .Include(jr => jr.Truck)
                     .Include(jr => jr.Customer)
-                    .Where(jr => jr.Status == "PENDING PAYMENTS")
+                    .Where(jr => jr.Status == "READY FOR INVOICE")
                     .ToList();
             }
         }

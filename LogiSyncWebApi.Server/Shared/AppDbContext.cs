@@ -139,7 +139,25 @@ namespace LogiSyncWebApi.Server.Shared
                 .WithMany()
                 .HasForeignKey(cc => cc.CompanyId);
 
-
+            //Driver And TruckType ManyToMany
+            modelBuilder.Entity<Driver>()
+              .HasMany(d => d.TruckTypes)
+              .WithMany(t => t.Drivers)
+              .UsingEntity<Dictionary<string, object>>(
+                  "DriverTruckType",
+                  j => j
+                      .HasOne<TruckType>()
+                      .WithMany()
+                      .HasForeignKey("TruckTypeID")
+                      .HasConstraintName("FK_DriverTruckType_TruckType")
+                      .OnDelete(DeleteBehavior.Cascade),
+                  j => j
+                      .HasOne<Driver>()
+                      .WithMany()
+                      .HasForeignKey("DriverID")
+                      .HasConstraintName("FK_DriverTruckType_Driver")
+                      .OnDelete(DeleteBehavior.Cascade)
+              );
         }
 
         #endregion

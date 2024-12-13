@@ -17,8 +17,6 @@ export interface JobRequest {
     priceAgreementID: string;        
     truckID: string;                
     customerID: string;
-    contractId:string;
-    firstDepositAmount: number;
     truckType: string; // Added
     driverID: string; // Added
     invoiceNumber:number;
@@ -28,4 +26,7 @@ export interface JobRequest {
     invoices: Invoice[]; // Added
     cdate:Date,
     udate :Date,
+    contractId:string;
+    firstDepositAmount: number;
+    companyAdvanceAmountRequred:number;
 }

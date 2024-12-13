@@ -76,9 +76,12 @@ filterData<T extends Record<string, any>>(data: T[], searchTerm: string, fields:
   if (!searchTerm) {
     return data;
   }
+
   return data.filter((item: T) =>
     fields.some(field => {
-      const fieldValue = item[field];
+      // Resolve nested fields dynamically
+      const fieldValue = field.split('.').reduce((acc, part) => acc && acc[part], item);
+
       return fieldValue && fieldValue.toString().toLowerCase().includes(searchTerm.toLowerCase());
     })
   );

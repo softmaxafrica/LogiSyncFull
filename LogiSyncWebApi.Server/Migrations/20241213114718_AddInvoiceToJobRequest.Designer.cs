@@ -4,6 +4,7 @@ using LogiSyncWebApi.Server.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogiSyncWebApi.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241213114718_AddInvoiceToJobRequest")]
+    partial class AddInvoiceToJobRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace LogiSyncWebApi.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DriverTruckType", b =>
-                {
-                    b.Property<string>("DriverID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TruckTypeID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("DriverID", "TruckTypeID");
-
-                    b.HasIndex("TruckTypeID");
-
-                    b.ToTable("DriverTruckType");
-                });
 
             modelBuilder.Entity("LogiSync.Models.Contract", b =>
                 {
@@ -883,23 +871,6 @@ namespace LogiSyncWebApi.Server.Migrations
                     b.HasKey("TruckTypeID");
 
                     b.ToTable("TruckTypes");
-                });
-
-            modelBuilder.Entity("DriverTruckType", b =>
-                {
-                    b.HasOne("LogiSyncWebApi.Server.Models.Driver", null)
-                        .WithMany()
-                        .HasForeignKey("DriverID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_DriverTruckType_Driver");
-
-                    b.HasOne("LogiSyncWebApi.Server.Models.TruckType", null)
-                        .WithMany()
-                        .HasForeignKey("TruckTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_DriverTruckType_TruckType");
                 });
 
             modelBuilder.Entity("LogiSync.Models.Contract", b =>

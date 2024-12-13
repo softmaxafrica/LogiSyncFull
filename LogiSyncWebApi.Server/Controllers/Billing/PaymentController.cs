@@ -4,6 +4,7 @@ using LogiSyncWebApi.Server.Models;
  using System.Threading.Tasks;
 using System.Linq;
 using LogiSyncWebApi.Server.Shared;
+using LogiSyncWebApi.Server.Models.DataPayloads;
 
 namespace LogiSyncWebApi.Server.Controllers.Billing
 {
@@ -103,26 +104,54 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
             }
         }
         #endregion
-
-
         #region AddPayment
         [HttpPost]
         [Route("AddPayment")]
-        public async Task<IActionResult> AddPayment([FromBody] Payment newPayment)
+        public async Task<IActionResult> AddPayment([FromBody] PaymentDto dtoPYMT)
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(AddPayment);
             InvoiceController invController = new InvoiceController(_context, _config);
 
+            Payment newPayment = new Payment();
+
+            newPayment.AmountPaid = dtoPYMT.AmountPaid;
+            newPayment.PaymentMethod = dtoPYMT.PaymentMethod;
+            newPayment.PaymentDate = dtoPYMT.PaymentDate;
+            newPayment.ReferenceNumber = dtoPYMT.ReferenceNumber;
+            newPayment.Currency = dtoPYMT.ReferenceNumber;
+            newPayment.InvoiceNumber = dtoPYMT.InvoiceNumber;
+            newPayment.PaymentID = dtoPYMT.PaymentID;
+            
+
             try
             {
+
                 // Check if the invoice exists
                 var invoiceToBePaid = await _context.Invoices
-                    .FirstOrDefaultAsync(p => p.InvoiceNumber == newPayment.InvoiceNumber);
-
+                    .FirstOrDefaultAsync(i => i.InvoiceNumber == newPayment.InvoiceNumber);
                 if (invoiceToBePaid == null)
                 {
-                     return NotFound(executionResult.GetServerResponse());
+                    return NotFound(executionResult.GetServerResponse());
+                }
+
+                newPayment.Invoice = invoiceToBePaid;
+                // Check if the invoice's customer ID matches the one provided in the payment
+                if (invoiceToBePaid.CustomerID != newPayment.Invoice.CustomerID)
+                {
+                    executionResult.SetValidationError("Customer ID does not match the invoice.");
+                    return BadRequest(executionResult.GetServerResponse());
+                }
+                if (newPayment.AmountPaid <= 0)
+                {
+                    executionResult.SetValidationError("INVALID AMAOUNT \n The Amount Paid must be greater than zero.");
+                    return BadRequest(executionResult.GetServerResponse());
+                }
+
+                if (newPayment.AmountPaid > invoiceToBePaid.OwedAmount)
+                {
+                    executionResult.SetValidationError("Invalid Amount.");
+                    return BadRequest(executionResult.GetServerResponse());
                 }
 
                 // Generate PaymentID and add payment
@@ -146,6 +175,61 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
             }
         }
         #endregion
+
+
+        //#region AddPayment
+        //[HttpPost]
+        //[Route("AddPayment")]
+        //public async Task<IActionResult> AddPayment([FromBody] Payment newPayment)
+        //{
+        //    var executionResult = new ExecutionResult();
+        //    string functionName = nameof(AddPayment);
+        //    InvoiceController invController = new InvoiceController(_context, _config);
+
+        //    try
+        //    {
+        //        // Check if the invoice exists
+        //        var invoiceToBePaid = await _context.Invoices
+        //     .FirstOrDefaultAsync(i => i.InvoiceNumber == newPayment.InvoiceNumber);
+
+        //        if (invoiceToBePaid == null)
+        //        {
+        //            return NotFound(executionResult.GetServerResponse());
+        //        }
+        //        if (invoiceToBePaid.CustomerID != newPayment.Invoice.CustomerDetails.CustomerID)
+        //        {
+        //            executionResult.SetValidationError("Customer ID does not match the invoice.");
+        //            return BadRequest(executionResult.GetServerResponse());
+        //        }
+
+        //        if (newPayment.AmountPaid <= 0)
+        //        {
+        //            executionResult.SetValidationError("AmountPaid must be greater than zero.");
+        //            return BadRequest(executionResult.GetServerResponse());
+        //        }
+
+
+        //        // Generate PaymentID and add payment
+        //        newPayment.PaymentID = Functions.GeneratePaymentId();
+        //        await _context.Payments.AddAsync(newPayment);
+
+        //        // Update invoice payment details
+        //        await invController.UpdateInvoicePaymentDetails(newPayment.InvoiceNumber);
+
+        //        // Save changes
+        //        await _context.SaveChangesAsync();
+
+        //        // Set success data and return
+        //        executionResult.SetData(newPayment);
+        //        return Ok(executionResult.GetServerResponse());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        executionResult.SetInternalServerError(nameof(PaymentController), functionName, ex);
+        //        return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse());
+        //    }
+        //}
+        //#endregion
 
         #region UpdatePayment
         [HttpPut]
@@ -190,6 +274,7 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(DeletePayment);
+            InvoiceController invController = new InvoiceController(_context, _config);
 
             try
             {
@@ -199,11 +284,13 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
                 {
                     return NotFound("Payment not found");
                 }
+                   await invController.RemovePaymentFromInvoice(payment.InvoiceNumber,payment.AmountPaid);
 
                 _context.Payments.Remove(payment);
                 await _context.SaveChangesAsync();
 
-                executionResult.SetData(payment);
+                //executionResult.SetData(payment);
+                executionResult.SetSuccess("Payment Deleted Successfully");
                 return Ok(executionResult.GetServerResponse());
             }
             catch (Exception ex)

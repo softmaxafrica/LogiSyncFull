@@ -24,7 +24,27 @@ import { Payment } from '../models/payments';
   providedIn: 'root'
 })
 export class DataService {
+   
   
+
+  DeleteJobRequest(reqID: string) {
+    return this.http.delete(`${this.baseUrl}JobRequest/DeleteJobRequest/${reqID}`);
+  }   
+
+ 
+  getPriceDataById(priceAgreementID: string): Observable<ApiResponse<PriceAgreement>> {
+    return this.http.get<ApiResponse<PriceAgreement>>(
+      `${this.baseUrl}PriceAgreement/GetPriceAgreementById/${priceAgreementID}`);
+  }
+
+  deleteTruck(truckID: string) {
+      return this.http.delete(`${this.baseUrl}Truck/DeleteTruckByTruckId/${truckID}`);
+       }   
+
+ 
+  deletePayment<T>(paymentID: string): Observable<T>{
+    return this.http.delete<T>(`${this.baseUrl}Payment/DeletePayment/${paymentID}`);
+     }
  
   getCompanyPayments(companyId: string): Observable<ApiResponse<Payment[]>> {
     return this.http.get<ApiResponse<Payment[]>>(
@@ -81,6 +101,12 @@ export class DataService {
       `${this.baseUrl}Truck/GetAvailableTrucksByTruckType/${type}/${companyId}`
     );
   }
+ 
+  
+  
+  assignTruckTypesToDriver(driverId: string, truckTypes: string[]): Observable<DriverPayload> {
+    return this.http.post<DriverPayload>(`${this.baseUrl}Driver/assignTruckTypesToDrive/${driverId}`, truckTypes);
+  }
   
 
   getCustomers(): Observable<ApiResponse<Customer[]>> {
@@ -93,8 +119,6 @@ export class DataService {
       `${this.baseUrl}Customer/GetCustomersByCompany/${companyId}`
     );
   }
- 
-
   
   updateJobRequest( requestUpdates: RequestWithPrice  ) {
   return this.http.put<void>(`${this.baseUrl}JobRequest/UpdateJobRequest/${requestUpdates.jobRequestID}`, requestUpdates);

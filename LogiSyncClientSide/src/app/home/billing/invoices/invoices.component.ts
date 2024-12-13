@@ -13,6 +13,7 @@ import { MenuItem } from 'primeng/api';
   styleUrl: './invoices.component.css'
 })
 export class InvoicesComponent {
+
 columnDialogVisible: boolean= false;
 getNestedValue(_t23: any,arg1: any) {
 throw new Error('Method not implemented.');
@@ -39,8 +40,7 @@ throw new Error('Method not implemented.');
 
    
   constructor(
-    private dataServices: DataService,
-   public functions: FunctionsService,
+    public functions: FunctionsService,
    private authServices: AuthService,
    public globalColumnControlService: GlobalColumnControlService,
    private dataService: DataService, 
@@ -104,7 +104,13 @@ throw new Error('Method not implemented.');
     );
   }
   
-  
+  displayDialog = false;
+  selectedInvoice: any = null;
+
+  showInvoiceDetails(invoice: Invoice) {
+    this.selectedInvoice = invoice;
+    this.displayDialog = true;
+  }
 
   //#region Menu
   loadActionMenu(){
