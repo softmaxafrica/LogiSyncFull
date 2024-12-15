@@ -55,7 +55,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 data.RegstrationComment = newDriver.RegstrationComment;
                 data.LicenseClasses = newDriver.LicenseClasses;
                 data.LicenseExpireDate = newDriver.LicenseExpireDate;
-                data.isAvilableForBooking = newDriver.isAvilableForBooking;
+                data.isAvilableForBooking = false;
 
                 // Save the image file if provided
                 if (file != null)
@@ -173,7 +173,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     var drivers = db.Drivers
                                     .Include(d => d.Company)
                                     .Include(d => d.TruckTypes)
-                                    .Where(d => d.Company.CompanyID == CompanyId && d.isAvilableForBooking==true && d.Status=="APPROVED")
+                                    .Where(d => d.Company.CompanyID == CompanyId && d.isAvilableForBooking==true && d.Status=="ACTIVE")
                                     .ToList();
 
                     if (!drivers.Any())
@@ -375,6 +375,7 @@ namespace LogiSyncWebApi.Server.Controllers
                 }
 
                 var driver = await _context.Drivers
+                    .Include(d => d.TruckTypes) // Include current TruckTypes
                     .FirstOrDefaultAsync(d => d.DriverID == driverId);
 
                 if (driver == null)
@@ -392,11 +393,18 @@ namespace LogiSyncWebApi.Server.Controllers
                     return BadRequest(new { Message = "No valid truck types found." });
                 }
 
-                // Assign truck types to the driver
+                // Remove existing truck types assigned to the driver
+                driver.TruckTypes.Clear();
+
+                // Assign new truck types to the driver
                 driver.TruckTypes = truckTypes;
+
+                // Update driver's status to ACTIVE
+                driver.Status = "ACTIVE";
+
                 await _context.SaveChangesAsync();
 
-                executionResult.SetData(new { Message = "Truck types assigned successfully." });
+                executionResult.SetData(new { Message = "Truck types assigned and driver status updated to ACTIVE." });
                 return Ok(executionResult.GetServerResponse());
             }
             catch (Exception ex)
@@ -406,6 +414,7 @@ namespace LogiSyncWebApi.Server.Controllers
             }
         }
         #endregion
+
 
     }
 }

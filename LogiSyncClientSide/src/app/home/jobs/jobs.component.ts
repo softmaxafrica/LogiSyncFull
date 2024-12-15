@@ -24,7 +24,7 @@ import { Contract } from '../../models/contract';
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
-  styleUrls: ['../../app.component.css']
+  styleUrls: ['../billing/invoices/invoices.component.css']
 })
 export class JobsComponent implements OnInit {
   RequestToDelete: any;
@@ -42,6 +42,10 @@ activeReqPrice:any;
 
 
   contractDetails: Contract | null= null;
+  TruckDetails: Truck|null = null;
+  DriverDetails: DriverPayload | null = null;
+
+
   avilableTruckLists: Truck[]=[];
   avilableDriverLists: DriverPayload[]=[];
   SelectedTruckavilableTruck: any;
@@ -183,6 +187,36 @@ payment: any;
           }         );
       }
     }
+    loadTruckDetails(TruckId: string) {
+      if (TruckId) {
+        this.dataService.getTruckById(this.activeRequest.truckID).subscribe(
+          (response)  => this.TruckDetails = response.data,
+          (error) => {
+            const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+          }         );
+      }
+    }
+
+    loadDriverDetails(DriverId: string) {
+      if (DriverId) {
+        this.dataService.getDriverById(this.activeRequest.driverID).subscribe(
+          (response)  => this.DriverDetails = response.data,
+          (error) => {
+            const errorMessage =
+            error.error?.message ||  
+            (typeof error.error === 'string' ? error.error : null) ||  
+            error.message || // General HTTP error message
+            'An unknown error occurred';
+          this.functions.displayError(errorMessage);
+          }         );
+      }
+    }
+
     loadPriceDetails(priceAgreementID: string) {
       if (priceAgreementID) {
         this.dataService.getPriceDataById(this.activeRequest.priceAgreementID).subscribe(
@@ -428,14 +462,22 @@ this.newJobRequest.companyID=this.companyId;
     if(ActiveReq.contractId !=null){
        this.loadContractDetails(ActiveReq.contractId);
     }
-        
+       
+    if(ActiveReq.truckID !=null){
+      this.loadTruckDetails(ActiveReq.truckID);
+   }
+       
+   if(ActiveReq.driverID !=null){
+    this.loadDriverDetails(ActiveReq.contractId);
+ }
+     
      
       if(this.activeRequest.requestType.includes(AppConstants.DRIVER_REQUEST_TYPE)){
         this.getAvailableDrivers(this.companyId);
         this.showDriverContent=true;
       }
 
-      if((ActiveReq.status =="CREATED")||(ActiveReq.status=="ON AGREEMENT") || (ActiveReq.status=='DRAFT'))
+      if((ActiveReq.status =="CREATED")||(ActiveReq.status=="ON AGREEMENT") || (ActiveReq.status=='DRAFT') || (ActiveReq.status=='INCOMPLETE ADVANCE PAYMENT'))
       {
         this.showDriverContent=false;
         this.showTruckContent=false;

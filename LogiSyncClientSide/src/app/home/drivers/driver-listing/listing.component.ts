@@ -17,6 +17,7 @@ import { TruckType } from '../../../models/TruckTypes';
   providers: [DataService]
 })
 export class DriverListingComponent implements OnInit {
+
  
   drivers: DriverPayload[] = [];
   companyId!: string;
@@ -279,6 +280,30 @@ openAssignTruckDialog(driver: DriverPayload): void {
   this.fetchTruckTypes(); // Ensure this is called before showing the dialog
   this.assignTruckForm.reset();
   this.assignTruckDialogVisible = true;
+}
+
+ResendDriverRegistration() {
+  if (this.driverForm.valid) {
+    const driverToReRegister = { ...this.selectedDriver, ...this.driverForm.value };
+
+  const licenseExpireDate = this.driverForm.get('licenseExpireDate')?.value;
+  driverToReRegister.licenseExpireDate = this.functions.getFormatApiDateOnly(licenseExpireDate);
+
+  driverToReRegister.registrationComment = this.selectedDriver?.registrationComment ?? 'RE-REGISTRATION'; // Set default comment
+  driverToReRegister.status='PENDING';
+
+    this.dataService.updateDriver(driverToReRegister).subscribe({
+      next: (response: any) => {
+        this.functions.displaySuccess(response.message);
+          
+      },
+      error: (err) => {
+        this.functions.displayError('Failed to update truck status: ' + err.message);
+      }
+    });
+     this.functions.reloadPage();
+  }
+
 }
 
 }

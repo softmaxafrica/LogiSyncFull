@@ -74,7 +74,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     Email = payload.Email, // Use payload for the email
                     PasswordHash = Functions.HashPassword("defaultPassword@123"), // Default password
                     Role = "CUSTOMER",
-                    Status = "APPROVED"
+                    Status = "ACTIVE"
                 };
 
                 // Add SecUser to the context

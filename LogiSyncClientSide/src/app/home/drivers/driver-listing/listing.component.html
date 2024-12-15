@@ -186,7 +186,7 @@
                              <input pInputText id="phone" formControlName="phone" />
                      </div>
                         <!-- Is Available For Booking -->
-            <div class="card flex justify-content-left">  
+            <div class="card flex justify-content-left" *ngIf= "selectedDriver?.status !== 'REJECTED' ">  
                 <label for="isAvilableForBooking">{{ 'is_avilable_for_booking' | translate }}</label>
                 <div class="card flex justify-content-right" style="margin-left: 2rem;">
                   <p-checkbox formControlName="isAvilableForBooking" binary="true" 
@@ -239,7 +239,7 @@
               
                     <p-footer>
                         <div class="flex flex-column w-full">
-
+                            <p-button *ngIf= "selectedDriver?.status == 'REJECTED' " label="{{'resend_registration' | translate}}" icon="pi pi-refresh" (click)="ResendDriverRegistration()" class="p-button-danger"></p-button>
                         <p-button label="Save" icon="pi pi-check" (click)="saveDriver()" class="p-button-success"></p-button>
                         <p-button label="Cancel" icon="pi pi-times" (click)="editDialogVisible = false" class="p-button-secondary"></p-button>
                    

@@ -76,7 +76,7 @@
   
 </p-card>
     
-    <p-dialog [(visible)]="displayDialog" [header]="'driver_approval_header' | translate" [modal]="true" [closable]="false" [style]="{width: '80vw'}">
+    <p-dialog [(visible)]="displayDialog" [header]="'driver_approval_header' | translate" [modal]="true" [closable]="false" >
       <form [formGroup]="driverForm">
         <div class="flex">
           <!-- Left Side with Form Fields -->
@@ -161,7 +161,7 @@
      [responsive]="true"
      [style]="globalColumnControlService.getColumnDialogConfig()"> -->
 
-     <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [style]="{width: '50hw'}">
+     <p-dialog [(visible)]="columnDialogVisible" [header]="'Manage Columns'" [modal]="true" [style]="{ }">
 
      <p-fieldset legend="Columns" [toggleable]="true">
          <p-pickList 

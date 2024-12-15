@@ -24,8 +24,18 @@ import { Payment } from '../models/payments';
   providedIn: 'root'
 })
 export class DataService {
+ 
    
-  
+  getDriverById(DriverId: string): Observable<ApiResponse<DriverPayload>> {
+    return this.http.get<ApiResponse<DriverPayload>>(
+      `${this.baseUrl}Contracts/GetDriverById/${DriverId}`);
+  }
+
+  getTruckById(contractID: string): Observable<ApiResponse<Truck>> {
+    return this.http.get<ApiResponse<Truck>>(
+      `${this.baseUrl}Truck/GetTruckById/${contractID}`);
+  }
+
 
   DeleteJobRequest(reqID: string) {
     return this.http.delete(`${this.baseUrl}JobRequest/DeleteJobRequest/${reqID}`);

@@ -60,14 +60,20 @@ export class FunctionsService {
       case 'CREATED':
         return 'info';
         case 'ON AGREEMENT':
-        return 'secondary';  
+        return 'contrast';
+        
+        case 'REJECTED':
+        return 'danger';
+
+
       case 'PENDING':
         return 'warning';  
       case 'COMPLETED':
         return 'success'; 
       case 'APPROVED':
         return 'success';
-
+        case 'ACTIVE':
+            return 'success';
         case 'PENDING PAYMENTS':
         return 'danger'; 
         case 'INCOMPLETE ADVANCE PAYMENT':
@@ -117,5 +123,7 @@ getFormatApiDateTime(date: string): string {
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`; // Returns 'YYYY-MM-DDTHH:mm:ss'
 }
 
-
+reloadPage() {
+  window.location.reload();
+}
 }

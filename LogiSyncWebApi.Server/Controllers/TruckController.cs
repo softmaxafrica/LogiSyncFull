@@ -58,7 +58,7 @@ namespace LogiSyncWebApi.Server.Controllers
             {
                 var truck = _context.Trucks
                     .Include(t => t.Company)
-                    .Include(t => t.JobRequests)
+                    //.Include(t => t.JobRequests)
                     .FirstOrDefault(t => t.TruckID == id);
 
                 if (truck == null)

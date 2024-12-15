@@ -126,7 +126,7 @@
       </div>
 
       <!-- Divider -->
-      <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+      <!-- <p-divider layout="vertical" styleClass="mx-4"></p-divider> -->
 
       <!-- Right Column: Truck Type Details with Image and Description -->
       <div class="flex flex-column w-6 p-4">
@@ -197,205 +197,312 @@
 
 <!-- REQUEST DETAILS DIALOG -->
 <p-dialog [(visible)]="requestDetailsVisible" [header]="'request_details' | translate" 
-[modal]="true" [responsive]="true" (onHide)="requestDetailsVisible = false" [closable]="false"
+[modal]="true" [responsive]="true" (onHide)="requestDetailsVisible = false" [closable]="true" class="invoice-dialog"
 [style]="{ width: '50vw' }" 
 >
-  <p-tabView>
-    <!-- Job Request Details Tab -->
-     <!-- Job Request Details Tab -->
+<div class="header-section">
+  <h2>{{'request_id#'|translate}} {{ activeRequest.jobRequestID }}</h2>
+  <p><b>{{'invoice_number'| translate}}:</b> {{ activeRequest.invoiceNumber }}</p>
+  <p><b>{{'status'| translate}}:</b> <span class="status">{{ activeRequest.status }}</span></p>
+</div>
+
+   <p-tabView>
+ <!-- Job Request Details Tab -->
 <p-tabPanel [header]="'job_request_details' | translate">
-  <p-card >
-    <div class="flex">
-      <!-- Left Column: Display Request Details -->
-      <div class="flex flex-column w-6 p-4">
-        <div class="myform">
-          <!-- Request Details -->
-          <div class="mb-3 d-flex align-items-center">
-            <label class="w-40 text-left font-bold mr-2">{{ 'type_of_request' | translate }}:</label>
-            <p class="w-60">{{ activeRequest.requestType || 'N/A' }}</p>
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <label class="w-40 text-left font-bold mr-2">{{ 'truck_type' | translate }}:</label>
-            <p class="w-60">{{ activeRequest.truckType || 'N/A' }}</p>
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <label class="w-40 text-left font-bold mr-2">{{ 'requesting_Customer' | translate }}:</label>
-            <p class="w-60">{{ getCustomerName(activeRequest.customerID) || 'N/A' }}</p>
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <label class="w-40 text-left font-bold mr-2">{{ 'pickup_Location' | translate }}:</label>
-            <p class="w-60">{{ activeRequest.pickupLocation || 'N/A' }}</p>
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <label class="w-40 text-left font-bold mr-2">{{ 'delivery_location' | translate }}:</label>
-            <p class="w-60">{{ activeRequest.deliveryLocation || 'N/A' }}</p>
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <label class="w-40 text-left font-bold mr-2">{{ 'cargo_description' | translate }}:</label>
-            <p class="w-60">{{ activeRequest.cargoDescription || 'N/A' }}</p>
-          </div>
-          <div class="mb-3 d-flex align-items-center" *ngIf="activeRequest.containerNumber">
-            <label class="w-40 text-left font-bold mr-2">{{ 'reference_number' | translate }}:</label>
-            <p class="w-60">{{ activeRequest.containerNumber || 'N/A' }}</p>
-          </div>
-        </div>
+  <p-card>
+    <!-- Section Heading -->
+    <h3 class="card-title">{{ 'job_request_details' | translate }}</h3>
+
+    <!-- Details Section -->
+    <div class="grid details-section">
+      <!-- Request Details -->
+      <div class="grid-item">
+        <b>{{ 'type_of_request' | translate }}:</b> {{ activeRequest.requestType || 'N/A' }}
+      </div>
+      <div class="grid-item">
+        <b>{{ 'truck_type' | translate }}:</b> {{ activeRequest.truckType || 'N/A' }}
+      </div>
+      <div class="grid-item">
+        <b>{{ 'requesting_customer' | translate }}:</b> {{ getCustomerName(activeRequest.customerID) || 'N/A' }}
+      </div>
+      <div class="grid-item">
+        <b>{{ 'pickup_location' | translate }}:</b> {{ activeRequest.pickupLocation || 'N/A' }}
+      </div>
+      <div class="grid-item">
+        <b>{{ 'delivery_location' | translate }}:</b> {{ activeRequest.deliveryLocation || 'N/A' }}
+      </div>
+      <div class="grid-item">
+        <b>{{ 'cargo_description' | translate }}:</b> {{ activeRequest.cargoDescription || 'N/A' }}
+      </div>
+      <div class="grid-item" *ngIf="activeRequest.containerNumber">
+        <b>{{ 'reference_number' | translate }}:</b> {{ activeRequest.containerNumber || 'N/A' }}
       </div>
 
-      <!-- Divider -->
-      <p-divider layout="vertical" styleClass="mx-4"></p-divider>
+      <!-- Truck Selection -->
+      <div class="grid-item" *ngIf="showTruckContent">
+        <b>{{ 'truck' | translate }}:</b>
+        <ng-container *ngIf="!activeRequest.truckID; else truckAssigned">
+          <p-dropdown 
+            [options]="avilableTruckLists" 
+            optionValue="truckID" 
+            [(ngModel)]="activeRequest.truckID" 
+            placeholder="{{ 'select_truck' | translate }}" 
+            styleClass="dropdown-width">
+            <ng-template let-truck pTemplate="selectedItem">
+              {{ truck.truckNumber }} - {{ truck.model }}
+            </ng-template>
+            <ng-template let-truck pTemplate="item">
+              {{ truck.truckNumber }} - {{ truck.model }}
+            </ng-template>
+          </p-dropdown>
+        </ng-container>
+        <ng-template #truckAssigned>
+          Assigned Truck: {{ activeRequest.truckID }}
+        </ng-template>
+      </div>
 
-      <!-- Right Column: Input Fields for Updating -->
-      <div class="flex flex-column w-6 p-4">
-        <div class="myform">
-          <!-- Truck Selection -->
-          <div class="mb-3 d-flex align-items-center" *ngIf="showTruckContent">
-            <label class="w-40 text-left font-bold mr-2">{{ 'truck' | translate }}:</label>
-            <div class="w-60">
-              <ng-container *ngIf="!activeRequest!.truckID; else truckAssigned">
-                <p-dropdown 
-                  [options]="avilableTruckLists" 
-                  optionLabel="truckNumber" 
-                  optionValue="truckID" 
-                  [(ngModel)]="activeRequest!.truckID"
-                  placeholder="{{ 'Select Truck' | translate }}" 
-                  styleClass="dropdown-width">
-                </p-dropdown>
-              </ng-container>
-              <ng-template #truckAssigned>
-                <p>Assigned Truck ID: {{ activeRequest.truckID }}</p>
-              </ng-template>
-            </div>
-          </div>
-
-          <!-- Driver Selection -->
-          <div class="mb-3 d-flex align-items-center" *ngIf="showDriverContent">
-            <label class="w-40 text-left font-bold mr-2">{{ 'Driver' | translate }}:</label>
-            <div class="w-60">
-              <ng-container *ngIf="!activeRequest!.driverID; else driverAssigned">
-                <p-dropdown 
-                  [options]="avilableDriverLists" 
-                  optionLabel="fullName" 
-                  optionValue="driverID" 
-                  [(ngModel)]="activeRequest!.driverID"
-                  placeholder="{{ '_select_driver' | translate }}" 
-                  styleClass="dropdown-width">
-                </p-dropdown>
-              </ng-container>
-              <ng-template #driverAssigned>
-                <p>Assigned Driver ID: {{ activeRequest.driverID }}</p>
-              </ng-template>
-            </div>
-          </div>
-
-          <!-- Pricing Information -->
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-            <label for="requestedPrice" class="w-40 text-left font-bold mr-2">{{ 'request_price' | translate }}:</label>
-            <input pInputText id="requestedPrice" type="number" [(ngModel)]="activeRequest.requestedPrice" class="w-60" />
-          </div>
-          
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-            <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
-            <input pInputText id="customerPrice" type="number" [(ngModel)]="activeRequest.customerPrice" class="w-60" />
-          </div> 
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-          <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customers_price' | translate }}:</label>
-          <p class="w-60">{{ activeRequest.customerPrice || 'N/A' }}</p>
-          </div>
-
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-            <label for="companyAdvanceAmountRequred" class="w-40 text-left font-bold mr-2">{{ 'company_advance_amount_requred' | translate }}:</label>
-            <input pInputText id="companyAdvanceAmountRequred" type="number" [(ngModel)]="activeRequest.companyAdvanceAmountRequred" class="w-60" />
-          </div>
-
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceContent">
-            <label for="acceptedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
-            <input pInputText id="acceptedPrice" type="number" [(ngModel)]="activeRequest.acceptedPrice" class="w-60" />
-          </div>
-       
-          <div class="mb-3 d-flex align-items-center" *ngIf="showPriceLabels">
-            <div class="mb-3 d-flex align-items-center"> 
-            <label for="customerPrice" class="w-40 text-left font-bold mr-2">{{ 'customer_price' | translate }}:</label>
-               <p class="w-60">{{ PriceDetails!.customerPrice || 'N/A' }}</p>
- 
-               </div>
-               <div class="mb-3 d-flex align-items-center"> 
-                   <label for="companyPrice" class="w-40 text-left font-bold mr-2">{{ 'company_price' | translate }}:</label>
-                   <p class="w-60">{{ PriceDetails!.companyPrice || 'N/A' }}</p>
-                </div>
-        
-                <div class="mb-3 d-flex align-items-center"> 
-                <label for="agreedPrice" class="w-40 text-left font-bold mr-2">{{ 'final_accepted_price' | translate }}:</label>
-                   <p class="w-60">{{ PriceDetails!.agreedPrice || 'N/A' }}</p>
-                   </div>
-            </div>
-        <!-- Action Buttons -->
-        <div class="mt-4 d-flex justify-content-end">
-          <p-button 
-            label="{{ 'Apply' | translate }}" 
-            icon="pi pi-check" 
-            class="p-button-primary mr-2" 
-            (onClick)="updateRequest()">
-          </p-button>
-          <p-button 
-            label="{{ 'Close' | translate }}" 
-            icon="pi pi-times" 
-            class="p-button-secondary" 
-            (onClick)="closeJobDialog()">
-          </p-button>
-        </div>
+      <!-- Driver Selection -->
+      <div class="grid-item" *ngIf="showDriverContent">
+        <b>{{ 'driver' | translate }}:</b>
+        <ng-container *ngIf="!activeRequest.driverID; else driverAssigned">
+          <p-dropdown 
+            [options]="avilableDriverLists" 
+            optionLabel="fullName" 
+            optionValue="driverID" 
+            [(ngModel)]="activeRequest.driverID" 
+            placeholder="{{ 'select_driver' | translate }}" 
+            styleClass="dropdown-width">
+          </p-dropdown>
+        </ng-container>
+        <ng-template #driverAssigned>
+          Assigned Driver: {{ activeRequest.driverID }}
+        </ng-template>
       </div>
     </div>
+
+    <!-- Pricing Section -->
+    <p-divider></p-divider>
+    <div class="grid details-section">
+      <div class="grid-item" *ngIf="showPriceLabels">
+        <b>{{ 'customer_price' | translate }}:</b> {{ PriceDetails?.customerPrice || 'N/A' }}
+      </div>
+      <div class="grid-item" *ngIf="showPriceLabels">
+        <b>{{ 'company_price' | translate }}:</b> {{ PriceDetails?.companyPrice || 'N/A' }}
+      </div>
+      <div class="grid-item" *ngIf="showPriceLabels">
+        <b>{{ 'final_accepted_price' | translate }}:</b> {{ PriceDetails?.agreedPrice || 'N/A' }}
+      </div>
+      <div class="grid-item" *ngIf="showPriceContent">
+        <label for="requestedPrice">{{ 'your_price' | translate }}</label>
+        <input pInputText id="requestedPrice" type="number" min="1000" [(ngModel)]="activeRequest.requestedPrice" />
+      </div>
+      <div class="grid-item" *ngIf="showPriceContent">
+        <label for="customerPrice">{{ 'customer_price' | translate }}</label>
+        <input pInputText id="customerPrice" type="number" [(ngModel)]="activeRequest.customerPrice" />
+      </div>
+      <div class="grid-item" *ngIf="showPriceContent">
+        <label for="companyAdvanceAmountRequired">{{ 'company_advance_amount_required' | translate }}</label>
+        <input pInputText id="companyAdvanceAmountRequired" type="number" [(ngModel)]="activeRequest.companyAdvanceAmountRequred" />
+      </div>
+      <div class="grid-item" *ngIf="showPriceContent">
+        <label for="acceptedPrice">{{ 'final_accepted_price' | translate }}</label>
+        <input pInputText id="acceptedPrice" type="number" [(ngModel)]="activeRequest.acceptedPrice" />
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <p-divider></p-divider>
+    <div class="action-buttons">
+      <p-button 
+        label="{{ 'apply' | translate }}" 
+        icon="pi pi-check" 
+        class="p-button-primary mr-2" 
+        (onClick)="updateRequest()">
+      </p-button>
+      <p-button 
+        label="{{ 'close' | translate }}" 
+        icon="pi pi-times" 
+        class="p-button-secondary" 
+        (onClick)="closeJobDialog()">
+      </p-button>
     </div>
   </p-card>
 </p-tabPanel>
 
 
-    <!-- Contract Details Tab -->
-<p-tabPanel [header]="'contract_details' | translate">
-  <p-card *ngIf="contractDetails">
-    <div class="myform">
+
+<p-tabPanel [header]="'contract_details' | translate" *ngIf="contractDetails">
+  <p-card>
+    <!-- Section Heading -->
+    <h3 class="card-title">{{ 'contract_details' | translate }}</h3>
+
+    <!-- Details Section -->
+    <div class="grid details-section">
       <!-- Contract Date -->
-      <div class="mb-3 d-flex align-items-center">
-        <label class="w-40 text-left font-bold mr-2">{{ 'contract_date' | translate }}:</label>
-        <p class="w-60">{{ contractDetails.contractDate }}</p>
+      <div class="grid-item">
+        <b>{{ 'contract_date' | translate }}:</b> {{ contractDetails.contractDate ? (contractDetails.contractDate | date:'longDate') : 'N/A' }}
       </div>
 
       <!-- Agreed Price -->
-      <div class="mb-3 d-flex align-items-center">
-        <label class="w-40 text-left font-bold mr-2">{{ 'agreed_price' | translate }}:</label>
-        <p class="w-60">{{ contractDetails.agreedPrice || 'N/A' }}</p>
+      <div class="grid-item">
+        <b>{{ 'agreed_price' | translate }}:</b> {{ contractDetails.agreedPrice || 'N/A' }}
       </div>
 
       <!-- Terms and Conditions -->
-      <div class="mb-3 d-flex align-items-center">
-        <label class="w-40 text-left font-bold mr-2">{{ 'terms_and_conditions' | translate }}:</label>
-        <p class="w-60">{{ contractDetails.termsAndConditions || 'N/A' }}</p>
+      <div class="grid-item">
+        <b>{{ 'terms_and_conditions' | translate }}:</b> {{ contractDetails.termsAndConditions || 'N/A' }}
       </div>
 
       <!-- Advance Payment -->
-      <div class="mb-3 d-flex align-items-center">
-        <label class="w-40 text-left font-bold mr-2">{{ 'advance_payment' | translate }}:</label>
-        <p class="w-60">{{ contractDetails.advancePayment || 'N/A' }}</p>
+      <div class="grid-item">
+        <b>{{ 'advance_payment' | translate }}:</b> {{ contractDetails.advancePayment || 'N/A' }}
       </div>
 
       <!-- Advance Payment Date -->
-      <div class="mb-3 d-flex align-items-center">
-        <label class="w-40 text-left font-bold mr-2">{{ 'advance_payment_date' | translate }}:</label>
-        <p class="w-60">{{ contractDetails.advancePaymentDate ? (contractDetails.advancePaymentDate | date:'longDate') : 'N/A' }}</p>
+      <div class="grid-item">
+        <b>{{ 'advance_payment_date' | translate }}:</b> {{ contractDetails.advancePaymentDate ? (contractDetails.advancePaymentDate | date:'longDate') : 'N/A' }}
       </div>
 
       <!-- Status -->
-      <div class="mb-3 d-flex align-items-center">
-        <label class="w-40 text-left font-bold mr-2">{{ 'status' | translate }}:</label>
-        <p class="w-60">{{ contractDetails.status || 'N/A' }}</p>
+      <div class="grid-item">
+        <b>{{ 'status' | translate }}:</b> {{ contractDetails.status || 'N/A' }}
       </div>
+    </div>
 
+    <!-- Action Buttons -->
+    <p-divider></p-divider>
+    <div class="action-buttons">
+      <p-button 
+        label="{{ 'close' | translate }}" 
+        icon="pi pi-times" 
+        class="p-button-secondary" 
+        (onClick)="closeJobDialog()">
+      </p-button>
     </div>
   </p-card>
-
-  <!-- No contract details found message -->
-  <p *ngIf="!contractDetails">{{ 'no_contract_found' | translate }}</p>
 </p-tabPanel>
+
+<!-- Styles for Consistency -->
+<style>
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .details-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .grid-item {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+</style>
+
+ <!-- Truck and Driver Details Tab -->
+<!-- Truck and Driver Details Tab -->
+<p-tabPanel [header]="'truck_and_driver_details' | translate" *ngIf="TruckDetails || DriverDetails">
+  <p-card>
+    <!-- Section Heading -->
+    <h3 class="card-title">{{ 'truck_and_driver_details' | translate }}</h3>
+
+    <!-- Details Section -->
+    <div class="grid details-section">
+      <!-- Truck Details Section -->
+      <ng-container *ngIf="TruckDetails">
+        <h4 class="section-header">{{ 'truck_details' | translate }}</h4>
+
+        <div class="grid-item">
+          <b>{{ 'truck_id' | translate }}:</b> {{ TruckDetails.truckID || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'truck_number' | translate }}:</b> {{ TruckDetails.truckNumber || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'model' | translate }}:</b> {{ TruckDetails.model || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'company_id' | translate }}:</b> {{ TruckDetails.companyID || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'is_active' | translate }}:</b> {{ TruckDetails.isActive ? ('yes' | translate) : ('no' | translate) }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'available_for_booking' | translate }}:</b> 
+          {{ TruckDetails.isTruckAvilableForBooking ? ('yes' | translate) : ('no' | translate) }}
+        </div>
+      </ng-container>
+
+      <!-- Driver Details Section -->
+      <ng-container *ngIf="DriverDetails">
+        <h4 class="section-header">{{ 'driver_details' | translate }}</h4>
+
+        <div class="grid-item">
+          <b>{{ 'driver_id' | translate }}:</b> {{ DriverDetails.driverID || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'full_name' | translate }}:</b> {{ DriverDetails.fullName || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'email' | translate }}:</b> {{ DriverDetails.email || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'phone' | translate }}:</b> {{ DriverDetails.phone || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'license_number' | translate }}:</b> {{ DriverDetails.licenseNumber || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'status' | translate }}:</b> {{ DriverDetails.status || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'registration_comment' | translate }}:</b> {{ DriverDetails.registrationComment || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'company_id' | translate }}:</b> {{ DriverDetails.companyID || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'license_classes' | translate }}:</b> {{ DriverDetails.licenseClasses || 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'license_expire_date' | translate }}:</b>
+          {{ DriverDetails.licenseExpireDate ? (DriverDetails.licenseExpireDate | date:'longDate') : 'N/A' }}
+        </div>
+        <div class="grid-item">
+          <b>{{ 'available_for_booking' | translate }}:</b>
+          {{ DriverDetails.isAvilableForBooking ? ('yes' | translate) : ('no' | translate) }}
+        </div>
+        <div class="grid-item" *ngIf="DriverDetails.imageUrl">
+          <b>{{ 'image' | translate }}:</b>
+          <img [src]="DriverDetails.imageUrl" alt="{{ DriverDetails.fullName }}" class="driver-image">
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Action Buttons -->
+    <p-divider></p-divider>
+    <div class="action-buttons">
+      <p-button 
+        label="{{ 'close' | translate }}" 
+        icon="pi pi-times" 
+        class="p-button-secondary" 
+        >
+      </p-button>
+    </div>
+  </p-card>
+</p-tabPanel>
+
+
 
   </p-tabView>
 </p-dialog>

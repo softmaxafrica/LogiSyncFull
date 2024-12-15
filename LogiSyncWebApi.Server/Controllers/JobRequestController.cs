@@ -270,7 +270,10 @@ namespace LogiSyncWebApi.Server.Controllers
                         //update The Request Status if all agreement done( Price and initial Deposit / after assigned price agreement id)
                         if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID!= null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
                         {
-                            updatedJobRequest.Status = "READY FOR INVOICE";
+                            if (existingJobRequest.InvoiceNumber == null)
+                            {
+                                updatedJobRequest.Status = "READY FOR INVOICE";
+                            }
                             existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
                             existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
                         }

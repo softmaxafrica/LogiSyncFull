@@ -105,7 +105,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     Email = data.AdminEmail,
                     PasswordHash = Functions.HashPassword("defaultPassword@123"),
                     Role = "COMPANY",
-                    Status = "APPROVED"
+                    Status = "ACTIVE"
                 };
 
                 _context.SecUsers.Add(secUser);
@@ -452,7 +452,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     driver.RegstrationComment = driverApproval.RegstrationComment;
 
                     db.SaveChanges();
-                    if (driverApproval.Status == "ACTIVE")
+                    if (driverApproval.Status != "REJECTED")
                     {
 
                     
