@@ -29,7 +29,7 @@ namespace LogiSyncWebApi.Server.Models
         public string? ItemDescription { get; set; }
 
         [Column("AMOUNT")]
-        public double Amount { get; set; }
+        public double? Amount { get; set; }
 
         [Column("ISSUE_DATE")]
         public DateTime? IssueDate { get; set; }

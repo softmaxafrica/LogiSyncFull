@@ -84,16 +84,17 @@ namespace LogiSyncWebApi.Server.Services
                                      var savedInvoice = await invoiceController.CreateInvoice(newInvoice);
                                     int generatedInvoiceNumber = savedInvoice.InvoiceNumber;
 
-                                    // Update JobRequest Status
-                                    await jobRequestController.UpdateRequestStatus(jobRequestId, "DRAFT", generatedInvoiceNumber);
                                     //await chargableItemController.UpdateChargableItemsStatus(jobRequestId, "DRAFT");
+                                    // Update JobRequest Status
                                     await chargableItemController.UpdateChargableItemsStatusAndInvoiceNumber(jobRequestId, "DRAFT", generatedInvoiceNumber);
+
+                                    await jobRequestController.UpdateRequestStatus(jobRequestId, "DRAFT", generatedInvoiceNumber);
 
                                 }
                             }
 
                             // Commit the transaction if all operations succeed
-                            await transaction.CommitAsync();
+                             transaction.Commit();
                         }
                     }
                     catch (Exception ex)

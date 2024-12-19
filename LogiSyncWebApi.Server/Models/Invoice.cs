@@ -24,7 +24,7 @@ namespace LogiSyncWebApi.Server.Models
         public string? PaymentId { get; set; }
 
         [Column("TOTAL_AMOUNT")]
-        public double TotalAmount { get; set; }
+        public double? TotalAmount { get; set; }
 
         [Column("TOTAL_PAID_AMOUNT")]
         public double? TotalPaidAmount { get; set; }
@@ -33,10 +33,10 @@ namespace LogiSyncWebApi.Server.Models
         public double? OwedAmount { get; set; }
 
         [Column("SERVICE_CHARGE")]
-        public double ServiceCharge { get; set; }
+        public double? ServiceCharge { get; set; }
 
         [Column("OPERATIONAL_CHARGE")]
-        public double OperationalCharge { get; set; }
+        public double? OperationalCharge { get; set; }
 
         [Column("ISSUE_DATE")]
         public DateTime IssueDate { get; set; }

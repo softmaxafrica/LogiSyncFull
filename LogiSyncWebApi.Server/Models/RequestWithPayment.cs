@@ -20,12 +20,12 @@ namespace LogiSyncWebApi.Server.Models
         public string? CustomerID { get; set; }
 
         [Column("COMPANY_PRICE")]
-        public decimal? CompanyPrice { get; set; }
+        public double? CompanyPrice { get; set; }
         [Column("CUSTOMER_PRICE")]
-        public decimal? CustomerPrice { get; set; }
+        public double? CustomerPrice { get; set; }
 
         [Column("AGREED_PRICE")]
-        public decimal? AgreedPrice { get; set; }
+        public double? AgreedPrice { get; set; }
     }
 
 }

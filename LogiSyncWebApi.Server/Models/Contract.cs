@@ -32,10 +32,10 @@ namespace LogiSync.Models
         public string? TermsAndConditions { get; set; } // Terms and agreements in text format
 
         [Column("AGREED_PRICE")]
-        public decimal? AgreedPrice { get; set; } // Total price agreed upon for the request
+        public double? AgreedPrice { get; set; } // Total price agreed upon for the request
 
         [Column("ADVANCE_PAYMENT")]
-        public decimal? AdvancePayment { get; set; } // Initial deposit made by the customer
+        public double? AdvancePayment { get; set; } // Initial deposit made by the customer
 
         [Column("ADVANCE_PAYMENT_DATE")]
         public DateTime? AdvancePaymentDate { get; set; } // Date when the advance payment was made

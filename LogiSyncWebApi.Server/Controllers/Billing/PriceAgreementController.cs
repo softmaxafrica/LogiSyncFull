@@ -89,9 +89,9 @@ namespace LogiSyncWebApi.Server.Controllers
             RequestWithPayment priceDetails = new RequestWithPayment
             {
                 PriceAgreementID = newPriceAgreement.PriceAgreementID,
-                CompanyPrice = (decimal)newPriceAgreement.CompanyPrice,
-                AgreedPrice = (decimal)newPriceAgreement.AgreedPrice,
-                CustomerPrice= (decimal)newPriceAgreement.CustomerPrice,
+                CompanyPrice = newPriceAgreement.CompanyPrice,
+                AgreedPrice = newPriceAgreement.AgreedPrice,
+                CustomerPrice= newPriceAgreement.CustomerPrice,
                 CompanyID = newPriceAgreement.CompanyID,
                 JobRequestID = newPriceAgreement.JobRequestID,
                 CustomerID = newPriceAgreement.CustomerID

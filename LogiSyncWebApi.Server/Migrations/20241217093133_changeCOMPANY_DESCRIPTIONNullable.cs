@@ -5,30 +5,22 @@
 namespace LogiSyncWebApi.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class paymentCustUpd : Migration
+    public partial class changeCOMPANY_DESCRIPTIONNullable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "PHONE",
-                table: "Customers",
+                name: "COMPANY_DESCRIPTION",
+                table: "Companies",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "FULL_NAME",
-                table: "Customers",
-                type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "EMAIL",
-                table: "Customers",
+                name: "COMPANY_ADDRESS",
+                table: "Companies",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -39,8 +31,8 @@ namespace LogiSyncWebApi.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "PHONE",
-                table: "Customers",
+                name: "COMPANY_DESCRIPTION",
+                table: "Companies",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -49,18 +41,8 @@ namespace LogiSyncWebApi.Server.Migrations
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "FULL_NAME",
-                table: "Customers",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "EMAIL",
-                table: "Customers",
+                name: "COMPANY_ADDRESS",
+                table: "Companies",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

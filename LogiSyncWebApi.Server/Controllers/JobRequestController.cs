@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using LogiSyncWebApi.Server.Models; 
 using LogiSyncWebApi.Server.Shared;
 using LogiSyncWebApi.Server.Models.DataPayloads;
-using LogiSyncWebApi.Server.Migrations;
 using System.Data.Common;
 using System.Transactions;
 using System.ComponentModel.Design;
 using LogiSync.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 
 namespace LogiSyncWebApi.Server.Controllers
 {
@@ -99,7 +99,6 @@ namespace LogiSyncWebApi.Server.Controllers
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(GetCompanyJobRequest);
-
             try
             {
                 using (var db = new AppDbContext(_config))
@@ -111,9 +110,10 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Include(jr => jr.Customer)
                         .Include(jr => jr.InvoiceDetails)
                         .Where(jr =>
+                            (jr.Status == "CREATED") || (jr.Status == "ON AGREEMENT") ||
                             jr.Status != "CANCELLED" &&
-                            (jr.Status != "READY FOR INVOICE" ||
-                            (((jr.Status == "READY FOR INVOICE") ||(jr.Status == "ONGOING INVOICE GENERATION")) && jr.AssignedCompany == CompanyID)))
+                            //(jr.Status != "READY FOR INVOICE" || 
+                            (((jr.Status == "READY FOR INVOICE")  || (jr.Status == "ONGOING INVOICE GENERATION")|| (jr.Status == "READY TO SERVE") || (jr.Status== "INCOMPLETE ADVANCE PAYMENT") && jr.AssignedCompany == CompanyID)))
                         .ToList();
 
                     // Check if any job requests exist
@@ -267,6 +267,8 @@ namespace LogiSyncWebApi.Server.Controllers
                         {
                             updatedJobRequest.Status = "ON AGREEMENT";
                         }
+                      
+
                         //update The Request Status if all agreement done( Price and initial Deposit / after assigned price agreement id)
                         if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID!= null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
                         {
@@ -282,6 +284,8 @@ namespace LogiSyncWebApi.Server.Controllers
 
 
                         existingJobRequest.TruckID = string.IsNullOrEmpty(updatedJobRequest.TruckID) ? existingJobRequest.TruckID : updatedJobRequest.TruckID;
+                        existingJobRequest.DriverID= string.IsNullOrEmpty(updatedJobRequest.DriverID) ? existingJobRequest.DriverID : updatedJobRequest.DriverID;
+
                         existingJobRequest.CustomerID = string.IsNullOrEmpty(updatedJobRequest.CustomerID) ? existingJobRequest.CustomerID : updatedJobRequest.CustomerID;
                       
 
@@ -336,7 +340,7 @@ namespace LogiSyncWebApi.Server.Controllers
                                     newContr.RequestID = updatedJobRequest.JobRequestID;
                                     newContr.CompanyID = updatedJobRequest.CompanyID;
                                     newContr.CustomerID = updatedJobRequest.CustomerID;
-                                    newContr.AdvancePayment = (decimal?)updatedJobRequest.FirstDepositAmount;
+                                    newContr.AdvancePayment = updatedJobRequest.FirstDepositAmount;
                                     newContr.ContractDate = DateTime.UtcNow.ToLocalTime();
                                     newContr.AgreedPrice = updatedJobRequest.AcceptedPrice;
                                     newContr.ContractID = Functions.GenerateContractId();
@@ -374,6 +378,19 @@ namespace LogiSyncWebApi.Server.Controllers
                             existingPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
                             existingPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
                             existingPriceAgreement.CustomerID = updatedJobRequest.CustomerID;
+
+                            if ((((updatedJobRequest.AcceptedPrice > 0) || existingJobRequest.PriceAgreement.AgreedPrice > 0) && ((updatedJobRequest.FirstDepositAmount == 0) || (existingJobRequest.FirstDepositAmount) == 0)))
+                            {
+                                if (updatedJobRequest.AcceptedPrice < 1)
+                                {
+                                    existingJobRequest.FirstDepositAmount = existingJobRequest.PriceAgreement.AgreedPrice * 0.3;
+                                }
+                                else { existingJobRequest.FirstDepositAmount = updatedJobRequest.AcceptedPrice * 0.3; }
+                            }
+                            else if (updatedJobRequest.FirstDepositAmount.HasValue && (updatedJobRequest.FirstDepositAmount > 0))
+                            {
+                                existingJobRequest.FirstDepositAmount = updatedJobRequest.FirstDepositAmount;
+                            }
                         }
 
                     
@@ -486,7 +503,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     #endregion
 
                     // Save changes to JobRequest
-                    await db.SaveChangesAsync();
+                    db.SaveChanges();
 
                     executionResult.SetData(existingJobRequest);
                     return Ok(executionResult.GetServerResponse());

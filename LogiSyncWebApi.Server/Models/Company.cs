@@ -36,10 +36,10 @@ namespace LogiSyncWebApi.Server.Models
         public string AdminContact { get; set; }
 
         [Column("COMPANY_ADDRESS")]
-        public string CompanyAddress { get; set; }
+        public string? CompanyAddress { get; set; }
 
         [Column("COMPANY_DESCRIPTION")]
-        public string CompanyDescription { get; set; }
+        public string? CompanyDescription { get; set; }
 
         [Column("COMPANY_LATITUDE")]
         public double? CompanyLatitude { get; set; }

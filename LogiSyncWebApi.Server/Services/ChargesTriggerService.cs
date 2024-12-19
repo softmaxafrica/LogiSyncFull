@@ -36,7 +36,6 @@ namespace LogiSyncWebApi.Server.Services
                         {
                             var jobRequestController = new JobRequestController(dbContext, _configuration);
                             var jrItemsToBill = jobRequestController.GetPendingChargableItems();
-
                             if (jrItemsToBill != null && jrItemsToBill.Any())
                             {
                                 foreach (var item in jrItemsToBill)
@@ -48,7 +47,7 @@ namespace LogiSyncWebApi.Server.Services
                                         PriceAgreementID = item.PriceAgreementID,
                                         Status = "PENDING",
                                         CustomerID = item.CustomerID,
-                                        Amount = (double)item.PriceAgreement.AgreedPrice * 0.9,
+                                        Amount = item.PriceAgreement.AgreedPrice * (0.9),
                                         ItemDescription = "SERVICE CHARGES",
                                         IssueDate = DateTime.UtcNow,
                                         InvoiceNumber = null,
@@ -60,7 +59,7 @@ namespace LogiSyncWebApi.Server.Services
                                         PriceAgreementID = item.PriceAgreementID,
                                         Status = "PENDING",
                                         CustomerID = item.CustomerID,
-                                        Amount = (double)item.PriceAgreement.AgreedPrice * 0.1,
+                                        Amount = item.PriceAgreement.AgreedPrice * (0.1),
                                         ItemDescription = "OPERATIONAL CHARGES",
                                         IssueDate = DateTime.UtcNow,
                                         InvoiceNumber = null,

@@ -55,7 +55,7 @@ namespace LogiSyncWebApi.Server.Controllers.Billing
                     PriceAgreementID = payload.PriceAgreementID,
                     Status = payload.Status,
                     CustomerID = payload.CustomerID,
-                    Amount = (double)payload.Amount,
+                    Amount = payload.Amount,
                     ItemDescription=payload.ItemDescription,
                     IssueDate = DateTime.UtcNow.ToLocalTime(),
                     InvoiceNumber = null // InvoiceNumber will be null by default

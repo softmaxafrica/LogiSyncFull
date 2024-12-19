@@ -43,16 +43,16 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("CONTRACT_ID");
 
-                    b.Property<decimal?>("AdvancePayment")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double?>("AdvancePayment")
+                        .HasColumnType("float")
                         .HasColumnName("ADVANCE_PAYMENT");
 
                     b.Property<DateTime?>("AdvancePaymentDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("ADVANCE_PAYMENT_DATE");
 
-                    b.Property<decimal?>("AgreedPrice")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double?>("AgreedPrice")
+                        .HasColumnType("float")
                         .HasColumnName("AGREED_PRICE");
 
                     b.Property<string>("CompanyID")
@@ -97,7 +97,7 @@ namespace LogiSyncWebApi.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
 
-                    b.Property<double>("Amount")
+                    b.Property<double?>("Amount")
                         .HasColumnType("float")
                         .HasColumnName("AMOUNT");
 
@@ -158,12 +158,10 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnName("ADMIN_FULL_NAME");
 
                     b.Property<string>("CompanyAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("COMPANY_ADDRESS");
 
                     b.Property<string>("CompanyDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("COMPANY_DESCRIPTION");
 
@@ -510,7 +508,7 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("JOB_REQUEST_ID");
 
-                    b.Property<double>("OperationalCharge")
+                    b.Property<double?>("OperationalCharge")
                         .HasColumnType("float")
                         .HasColumnName("OPERATIONAL_CHARGE");
 
@@ -522,7 +520,7 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("PAYMENT_ID");
 
-                    b.Property<double>("ServiceCharge")
+                    b.Property<double?>("ServiceCharge")
                         .HasColumnType("float")
                         .HasColumnName("SERVICE_CHARGE");
 
@@ -531,7 +529,7 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("STATUS");
 
-                    b.Property<double>("TotalAmount")
+                    b.Property<double?>("TotalAmount")
                         .HasColumnType("float")
                         .HasColumnName("TOTAL_AMOUNT");
 
@@ -719,24 +717,24 @@ namespace LogiSyncWebApi.Server.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("PRICE_AGREEMENT_ID");
 
-                    b.Property<decimal?>("AgreedPrice")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double?>("AgreedPrice")
+                        .HasColumnType("float")
                         .HasColumnName("AGREED_PRICE");
 
                     b.Property<string>("CompanyID")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("COMPANY_ID");
 
-                    b.Property<decimal?>("CompanyPrice")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double?>("CompanyPrice")
+                        .HasColumnType("float")
                         .HasColumnName("COMPANY_PRICE");
 
                     b.Property<string>("CustomerID")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("CUSTOMER_ID");
 
-                    b.Property<decimal?>("CustomerPrice")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double?>("CustomerPrice")
+                        .HasColumnType("float")
                         .HasColumnName("CUSTOMER_PRICE");
 
                     b.Property<string>("JobRequestID")

@@ -468,7 +468,7 @@ this.newJobRequest.companyID=this.companyId;
    }
        
    if(ActiveReq.driverID !=null){
-    this.loadDriverDetails(ActiveReq.contractId);
+    this.loadDriverDetails(ActiveReq.driverID);
  }
      
      

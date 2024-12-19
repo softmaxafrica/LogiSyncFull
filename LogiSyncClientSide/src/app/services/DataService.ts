@@ -28,7 +28,7 @@ export class DataService {
    
   getDriverById(DriverId: string): Observable<ApiResponse<DriverPayload>> {
     return this.http.get<ApiResponse<DriverPayload>>(
-      `${this.baseUrl}Contracts/GetDriverById/${DriverId}`);
+      `${this.baseUrl}Driver/GetDriverById/${DriverId}`);
   }
 
   getTruckById(contractID: string): Observable<ApiResponse<Truck>> {

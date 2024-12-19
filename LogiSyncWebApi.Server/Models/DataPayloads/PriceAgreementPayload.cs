@@ -10,9 +10,9 @@ namespace LogiSyncWebApi.Server.Models.DataPayloads
         public string? CompanyID { get; set; }
         public string? CustomerID { get; set; }
         public string? JobRequestID { get; set; }
-        public decimal? CompanyPrice { get; set; }
-        public decimal? CustomerPrice { get; set; }
-        public decimal? AgreedPrice { get; set; }
+        public double? CompanyPrice { get; set; }
+        public double? CustomerPrice { get; set; }
+        public double? AgreedPrice { get; set; }
     }
 
     public class RequestWithPaymentPayload
@@ -29,9 +29,9 @@ namespace LogiSyncWebApi.Server.Models.DataPayloads
         public string? DriverID { get; set; }
         public string? RequestType { get; set; } //Truck, Driver, Both
         public string? CustomerID { get; set; }
-        public decimal? RequestedPrice { get; set; }
-        public decimal? CustomerPrice { get; set; }
-        public decimal? AcceptedPrice { get; set; }
+        public double? RequestedPrice { get; set; }
+        public double? CustomerPrice { get; set; }
+        public double? AcceptedPrice { get; set; }
         public string? CompanyID { get; set; }
         public string? ContractId { get; set; }
         public double? CompanyAdvanceAmountRequred { get; set; }
