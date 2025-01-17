@@ -159,6 +159,73 @@ namespace LogiSyncWebApi.Server.Controllers
         }
         #endregion
 
+        #region GetCustomerJobRequest
+        [HttpGet]
+        [Route("GetCustomerJobRequest/{CustomerID}")]
+        public IActionResult GetCustomerJobRequest(string CustomerID)
+        {
+            var executionResult = new ExecutionResult();
+            string functionName = nameof(GetCompanyJobRequest);
+            try
+            {
+                using (var db = new AppDbContext(_config))
+                {
+                    // Fetch all job requests that are relevant to the company
+                    var jobRequests = db.JobRequests
+                        .Include(jr => jr.PriceAgreement)
+                        .Include(jr => jr.Truck)
+                        .Include(jr => jr.Customer)
+                        .Include(jr => jr.InvoiceDetails)
+                        .Where(jr =>
+                            (jr.Status == "CREATED") || (jr.Status == "ON AGREEMENT") ||
+                            jr.Status != "CANCELLED" &&
+                            //(jr.Status != "READY FOR INVOICE" || 
+                            (((jr.Status == "READY FOR INVOICE") || (jr.Status == "ONGOING INVOICE GENERATION") || (jr.Status == "READY TO SERVE") || (jr.Status == "INCOMPLETE ADVANCE PAYMENT") && jr.CustomerID == CustomerID)))
+                        .ToList();
+
+                    // Check if any job requests exist
+                    if (jobRequests == null || jobRequests.Count == 0)
+                    {
+                        return NotFound("No Job Requests Available For This Company");
+                    }
+
+
+                    // Map PriceAgreement specific to the CompanyID and JobRequestID
+                    foreach (var job in jobRequests)
+                    {
+                        var priceAgreement = db.PriceAgreements
+                            .FirstOrDefault(pa => pa.CompanyID == CustomerID && pa.JobRequestID == job.JobRequestID);
+
+                        // If no matching PriceAgreement exists, assign a default instance
+                        if (priceAgreement == null)
+                        {
+                            priceAgreement = new RequestWithPayment
+                            {
+                                PriceAgreementID = Functions.GeneratePriceAgreementId(),
+                                //CompanyID = CompanyID,
+                                JobRequestID = job.JobRequestID,
+                                CustomerPrice = 0,
+                                CompanyPrice = 0,
+                                AgreedPrice = 0
+                            };
+                        }
+
+                        job.PriceAgreement = priceAgreement;
+                    }
+
+                    // Return the processed list of job requests
+                    executionResult.SetData(jobRequests);
+                    return Ok(executionResult.GetServerResponse());
+                }
+            }
+            catch (Exception ex)
+            {
+                executionResult.SetInternalServerError(nameof(JobRequestController), functionName, ex);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+            }
+        }
+        #endregion
+
         #region CreateJobRequest
         [HttpPost]
         [Route("CreateJobRequest")]

@@ -10,8 +10,8 @@ export const AppConstants = {
     DATETIME_FULL_FORMAT: 'dd/MM/yyyy HH:mm:ss',
     DECIMAL_FORMAT: '1.0-3',
     DEFAULT_CURRENCY: 'Tsh',
-  API_BASE_URL: 'https://localhost:7199/api/',
+  API_BASE_URL: 'http://localhost:7199/api/',
   API_URL_GENERAL_TRANSLATION: 'GetGenEngTranslations'  ,
    
-    API_SERVER_URL:'https://localhost:7199/'
+    API_SERVER_URL:'http://localhost:7199/'
   };

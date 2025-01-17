@@ -3,7 +3,7 @@
 -- Insert Truck Types with SAMPLE_IMAGE_URL values into TruckType table
 INSERT INTO TruckType (TRUCK_TYPE_ID, TYPE_NAME, DESCRIPTION, SAMPLE_IMAGE_URL)
 VALUES
-    ('TT001', 'Big Truck', 'Large truck for heavy cargo, ideal for long-haul and high-capacity deliveries.', 'BigTruck.jpeg'),
+    ('TT001', 'Big Truck', 'Large truck for heavy cargo, ideal for long-haul and high-capacity deliveries.', 'Big truck'),
     ('TT002', 'Container', 'Container transport truck, suitable for large container loads.', 'Container.jpeg'),
     ('TT003', 'Flatbed Truck', 'Flatbed truck for oversized or irregularly shaped loads.', 'flatbed_truck.jpeg'),
     ('TT004', 'Motorcycle', 'Suitable for small cargo, ideal for quick deliveries within city limits.', 'motorcycle.jpeg'),

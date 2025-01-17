@@ -3,8 +3,8 @@
   "configurations": [
     {
       "type": "chrome",
-      "request": "launch",
       "name": "localhost (Edge)",
+      //"url": "http://softmaxafrica-001-site2.otempurl.com/",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}"
     },
@@ -13,11 +13,12 @@
       "request": "launch",
       "name": "localhost (Chrome)",
       "url": "http://localhost:4200",
+      //"url": "http://softmaxafrica-001-site2.otempurl.com/",
       "webRoot": "${workspaceFolder}"
-    },
+    }
 
 
-   // http://softmaxafrica-001-site5.gtempurl.com/
+    // http://softmaxafrica-001-site2.otempurl.com/
 
   ]
 }
