@@ -87,7 +87,7 @@ export class DataService {
  return this.http.post<T>(`${this.baseUrl}Customer/${endpoint}`,customerRegData);
   }
 
-    //private baseUrl = 'http://softmaxafrica-001-site5.gtempurl.com/'; 
+    //private baseUrl = 'http://softmaxafrica-001-site2.otempurl.com/'; 
     private baseUrl = AppConstants.API_BASE_URL; 
 
     constructor(private http: HttpClient) {}
@@ -136,7 +136,7 @@ export class DataService {
   createJobRequest<T>(endpoint: string, payload: JobRequestPayload): Observable<T> {
     return this.http.post<T>(`${this.baseUrl}JobRequest/${endpoint}`, payload);
   }
-  //private baseUrl = 'http://softmaxafrica-001-site5.gtempurl.com/'; 
+  //private baseUrl = 'http://softmaxafrica-001-site2.otempurl.com/'; 
      getCompanyJobs(companyId: string): Observable<ApiResponse<JobRequest[]>> {
       return this.http.get<ApiResponse<JobRequest[]>>(
         `${this.baseUrl}JobRequest/GetCompanyJobRequest/${companyId}`

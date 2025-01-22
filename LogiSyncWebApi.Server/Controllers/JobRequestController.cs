@@ -177,10 +177,12 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Include(jr => jr.Customer)
                         .Include(jr => jr.InvoiceDetails)
                         .Where(jr =>
+                        (jr.CustomerID == CustomerID ) &&
                             (jr.Status == "CREATED") || (jr.Status == "ON AGREEMENT") ||
                             jr.Status != "CANCELLED" &&
+                            
                             //(jr.Status != "READY FOR INVOICE" || 
-                            (((jr.Status == "READY FOR INVOICE") || (jr.Status == "ONGOING INVOICE GENERATION") || (jr.Status == "READY TO SERVE") || (jr.Status == "INCOMPLETE ADVANCE PAYMENT") && jr.CustomerID == CustomerID)))
+                            (((jr.Status == "READY FOR INVOICE") || (jr.Status == "ONGOING INVOICE GENERATION") || (jr.Status == "READY TO SERVE") || (jr.Status == "INCOMPLETE ADVANCE PAYMENT"))))
                         .ToList();
 
                     // Check if any job requests exist
@@ -194,7 +196,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     foreach (var job in jobRequests)
                     {
                         var priceAgreement = db.PriceAgreements
-                            .FirstOrDefault(pa => pa.CompanyID == CustomerID && pa.JobRequestID == job.JobRequestID);
+                            .FirstOrDefault(pa => pa.CustomerID == CustomerID && pa.JobRequestID == job.JobRequestID);
 
                         // If no matching PriceAgreement exists, assign a default instance
                         if (priceAgreement == null)

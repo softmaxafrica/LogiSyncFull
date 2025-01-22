@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogiSyncWebApi.Server", "LogiSyncWebApi.Server\LogiSyncWebApi.Server.csproj", "{343D0CF4-9489-4CE4-BC4F-EC4F1E41A7D6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{01F7C869-2EC1-4FF8-9CED-B76CA83FB629} = {01F7C869-2EC1-4FF8-9CED-B76CA83FB629}
+	EndProjectSection
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "LogiSyncClientSide", "LogiSyncClientSide\LogiSyncClientSide.esproj", "{01F7C869-2EC1-4FF8-9CED-B76CA83FB629}"
 EndProject
