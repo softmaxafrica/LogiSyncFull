@@ -39,12 +39,24 @@ namespace LogiSyncWebApi.Server.Controllers
                 using (var db = new AppDbContext(_config))
                 {
                     var jobRequests = db.JobRequests
+                        .Include(jr => jr.Negotiations)
                         .Include(jr => jr.PriceAgreement)
                         .Include(jr => jr.Truck)
                         .Include(jr => jr.Customer)
                         .Include(jr=>jr.InvoiceDetails)
                         .Where(jr => jr.Status !="CANCELLED")
                         .ToList();
+
+                    foreach (var job in jobRequests)
+                    {
+                        var priceAgreement = db.PriceAgreements
+                            .Where(pa =>   pa.JobRequestID == job.JobRequestID).ToList();
+
+
+                        job.Negotiations = priceAgreement;
+
+                    }
+
                     executionResult.SetData(jobRequests);
                     return Ok(executionResult.GetServerResponse());
                 }
@@ -76,6 +88,12 @@ namespace LogiSyncWebApi.Server.Controllers
                         .Include(jr => jr.InvoiceDetails)
                          .Where(jr => jr.Status != "CANCELLED")
                         .FirstOrDefault(jr => jr.JobRequestID == jobRequestID);
+
+                   
+                        var priceAgreement = db.PriceAgreements
+                            .Where(pa =>  pa.JobRequestID == jobRequest.JobRequestID).ToList();
+                            jobRequest.Negotiations = priceAgreement;
+ 
                     if (jobRequest == null)
                     {
                         return NotFound("Job Request not found");
@@ -106,6 +124,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     // Fetch all job requests that are relevant to the company
                     var jobRequests = db.JobRequests
                         .Include(jr => jr.PriceAgreement)
+                        .Include(jr => jr.Negotiations)
                         .Include(jr => jr.Truck)
                         .Include(jr => jr.Customer)
                         .Include(jr => jr.InvoiceDetails)
@@ -126,8 +145,11 @@ namespace LogiSyncWebApi.Server.Controllers
                     // Map PriceAgreement specific to the CompanyID and JobRequestID
                     foreach (var job in jobRequests)
                     {
+                        var negotiationPrices= db.PriceAgreements
+                            .Where(pa => pa.CompanyID == CompanyID&& pa.JobRequestID == job.JobRequestID).ToList();
+
                         var priceAgreement = db.PriceAgreements
-                            .FirstOrDefault(pa => pa.CompanyID == CompanyID && pa.JobRequestID == job.JobRequestID);
+                        .FirstOrDefault(pa => pa.CompanyID == CompanyID && pa.JobRequestID == job.JobRequestID);
 
                         // If no matching PriceAgreement exists, assign a default instance
                         if (priceAgreement == null)
@@ -144,7 +166,10 @@ namespace LogiSyncWebApi.Server.Controllers
                         }
 
                         job.PriceAgreement = priceAgreement;
+                        job.Negotiations = negotiationPrices;
+
                     }
+                
                      
                     // Return the processed list of job requests
                     executionResult.SetData(jobRequests);
@@ -173,6 +198,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     // Fetch all job requests that are relevant to the company
                     var jobRequests = db.JobRequests
                         .Include(jr => jr.PriceAgreement)
+                         .Include(jr => jr.Negotiations)
                         .Include(jr => jr.Truck)
                         .Include(jr => jr.Customer)
                         .Include(jr => jr.InvoiceDetails)
@@ -196,23 +222,11 @@ namespace LogiSyncWebApi.Server.Controllers
                     foreach (var job in jobRequests)
                     {
                         var priceAgreement = db.PriceAgreements
-                            .FirstOrDefault(pa => pa.CustomerID == CustomerID && pa.JobRequestID == job.JobRequestID);
+                            .Where(pa => pa.CustomerID == CustomerID && pa.JobRequestID == job.JobRequestID).ToList();
+ 
 
-                        // If no matching PriceAgreement exists, assign a default instance
-                        if (priceAgreement == null)
-                        {
-                            priceAgreement = new RequestWithPayment
-                            {
-                                PriceAgreementID = Functions.GeneratePriceAgreementId(),
-                                //CompanyID = CompanyID,
-                                JobRequestID = job.JobRequestID,
-                                CustomerPrice = 0,
-                                CompanyPrice = 0,
-                                AgreedPrice = 0
-                            };
-                        }
-
-                        job.PriceAgreement = priceAgreement;
+                        job.Negotiations=priceAgreement;
+                  
                     }
 
                     // Return the processed list of job requests
@@ -336,10 +350,20 @@ namespace LogiSyncWebApi.Server.Controllers
                         {
                             updatedJobRequest.Status = "ON AGREEMENT";
                         }
-                      
 
-                        //update The Request Status if all agreement done( Price and initial Deposit / after assigned price agreement id)
-                        if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID!= null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
+                        //Check if customer first Deposit Not Supplied But company Already Agree on price then set first deposit to 30 Percent of AgreedPRICE
+                        //if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID != null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
+                        //{
+                        //    if (existingJobRequest.InvoiceNumber == null)
+                        //    {
+                        //        updatedJobRequest.Status = "READY FOR INVOICE";
+                        //    }
+                        //    existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
+                        //    existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
+                        //}
+
+                        //update The Request Status if all agreement done( Price and (Temporary Removed FirstDeposit Checking)  / after assigned price agreement id)
+                        if ((updatedJobRequest.AcceptedPrice > 0) && (updatedJobRequest.CompanyAdvanceAmountRequred > 0) || (existingJobRequest.CompanyAdvanceAmountRequred>0))
                         {
                             if (existingJobRequest.InvoiceNumber == null)
                             {
@@ -392,7 +416,7 @@ namespace LogiSyncWebApi.Server.Controllers
                         // Find the associated PriceAgreement using the PriceAgreementID
                         else
                         {
-
+                            existingJobRequest.PriceAgreementID = existingPriceAgreement.PriceAgreementID;
                             // Update PriceAgreement fields if provided
                             if (updatedJobRequest.RequestedPrice.HasValue && updatedJobRequest.RequestedPrice > 0)
                                 existingPriceAgreement.CompanyPrice = updatedJobRequest.RequestedPrice.Value;
@@ -401,8 +425,7 @@ namespace LogiSyncWebApi.Server.Controllers
 
                                 existingPriceAgreement.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
 
-                                var existingContract = await _context.Contracts
-                                .FirstOrDefaultAsync(c => c.RequestID == updatedJobRequest.JobRequestID);
+                                var existingContract = await _context.Contracts.FirstOrDefaultAsync(c => c.RequestID == updatedJobRequest.JobRequestID);
                                 if (existingContract == null)
                                 {
                                     Contract newContr = new Contract();

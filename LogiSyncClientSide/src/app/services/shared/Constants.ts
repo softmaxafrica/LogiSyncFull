@@ -12,8 +12,8 @@ export const AppConstants = {
     DEFAULT_CURRENCY: 'Tsh',
     //working url
   API_BASE_URL: 'https://localhost:7199/api/',
-  //API_BASE_URL: 'https://softmaxafrica-001-site2.otempurl.com/',
-  API_URL_GENERAL_TRANSLATION: 'GetGenEngTranslations'  ,
+  //API_BASE_URL: 'http://softmaxafrica-001-site2.otempurl.com/api/',
+  API_URL_GENERAL_TRANSLATION: 'GetGenEngTranslations',
    //working url
     //API_SERVER_URL:'https://localhost:7199/'
     API_SERVER_URL:'https://softmaxafrica-001-site2.otempurl.com/'

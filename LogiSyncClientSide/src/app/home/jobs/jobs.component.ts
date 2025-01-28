@@ -401,6 +401,7 @@ this.newJobRequest.companyID=this.companyId;
   }
   updateRequest( ) {
  
+
    
    this.activeRequest.companyID=this.companyId;
       this.dataServices.updateJobRequest( this.activeRequest!).subscribe(() => {
@@ -427,7 +428,7 @@ this.newJobRequest.companyID=this.companyId;
       this.showTruckContent=false;
       this.showDriverContent=false;
       
-    const selectedJobRequest = event;  // Assuming event.data contains JobRequest
+    const selectedJobRequest = event; 
      this.activeReqPrice= event.priceDetails?.companyPrice;
       const ActiveReq: RequestWithPrice = {
       jobRequestID: selectedJobRequest.jobRequestID,
@@ -453,7 +454,8 @@ this.newJobRequest.companyID=this.companyId;
     };
     // Set active request
     this.activeRequest = { ...ActiveReq };
-     if(ActiveReq.requestType.includes(AppConstants.TRUCK_REQUEST_TYPE))
+     if(ActiveReq.requestType.includes(AppConstants.TRUCK_REQUEST_TYPE) &&
+     ((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE")))
     {
       this.getAvailableTrucks(this.activeRequest.truckType);
       this.showTruckContent=true;
@@ -472,7 +474,8 @@ this.newJobRequest.companyID=this.companyId;
  }
      
      
-      if(this.activeRequest.requestType.includes(AppConstants.DRIVER_REQUEST_TYPE)){
+      if(this.activeRequest.requestType.includes(AppConstants.DRIVER_REQUEST_TYPE) &&
+      ((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE"))){
         this.getAvailableDrivers(this.companyId);
         this.showDriverContent=true;
       }
@@ -490,6 +493,8 @@ this.newJobRequest.companyID=this.companyId;
           this.showPriceContent=false;
           this.showPriceLabels=true;
         }
+
+        
     
         this.requestDetailsVisible = true;
 
@@ -592,10 +597,10 @@ loadColumns() {
   this.sourceColumns = [
     { field: 'cdate', header: 'Requested Time' },
     { field: 'udate', header: 'Last Update' },
-    { field: 'jobRequestID', header: 'Job Request ID' },
     { field: 'invoiceNumber', header: 'Invoice Number'},
 
-    
+    { field: 'pickupLocation', header: 'Pickup Location' },
+    { field: 'deliveryLocation', header: 'Delivery Location' },
   
 
     // TruckDetails (Truck)
@@ -613,13 +618,14 @@ loadColumns() {
 
   // Initialize selected columns with default values
   this.targetColumns = [
+    { field: 'jobRequestID', header: 'Job Request ID' },
+    { field: 'priceAgreement.priceAgreementID', header: 'Agreement ID' },
     { field: 'cargoDescription', header: 'Cargo Description' },
-    { field: 'pickupLocation', header: 'Pickup Location' },
-    { field: 'deliveryLocation', header: 'Delivery Location' },
+   
     // { field: 'containerNumber', header: 'Reference Number' },
       // PriceDetails (PriceAgreement)
       // { field: 'priceAgreement.priceAgreementID', header: 'Agreement ID' },
-
+ 
       { field: 'priceAgreement.agreedPrice', header: 'Accepted Price' },
       { field: 'priceAgreement.customerPrice', header: 'Customer Price' },
    { field: 'priceAgreement.companyPrice', header: 'Company Price' },

@@ -36,8 +36,11 @@ namespace LogiSyncWebApi.Server.Models
 
         //[ForeignKey("PriceAgreementID")]
         [ForeignKey("JobRequestID, CompanyID")]
-        public virtual RequestWithPayment PriceAgreement { get; set; }
-       
+        public  RequestWithPayment PriceAgreement { get; set; }
+
+        public List<RequestWithPayment>? Negotiations { get; set; }
+
+
         [Column("TRUCK_TYPE")]
         public string? TruckType { get; set; }
        

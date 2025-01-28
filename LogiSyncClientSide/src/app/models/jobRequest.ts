@@ -1,5 +1,6 @@
 import { Customer } from "./customer";
 import { Invoice } from "./invoices";
+import { RequestWithPrice } from "./jobRequestPayload";
 import { PriceAgreement } from "./priceAgreement";
  import { TrucksPayload } from "./TrucksPayload";
 
@@ -21,6 +22,7 @@ export interface JobRequest {
     driverID: string; // Added
     invoiceNumber:number;
     priceDetails: PriceAgreement;
+    // negotiations: RequestWithPrice[];
     truckDetails: TrucksPayload;
     customerDetails: Customer;
     invoices: Invoice[]; // Added
