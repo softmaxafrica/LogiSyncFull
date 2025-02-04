@@ -226,25 +226,55 @@ export class DriverListingComponent implements OnInit {
       }
     );
   }
+  // assignTruckTypes(): void {
+  //   if (this.assignTruckForm.valid && this.selectedDriverForAssignment) {
+  //     const selectedTruckTypes = this.assignTruckForm.value.truckTypes;
+  //     const assignedTruckTypes = selectedTruckTypes.map((truckType: { value: string }) => truckType.value);
+  //     const driverId = this.selectedDriverForAssignment.driverID;
+  
+  //     // Send the truckTypes directly as an array (not wrapped in an object)
+  //     this.dataService.assignTruckTypesToDriver(driverId, assignedTruckTypes).subscribe(
+  //       () => {
+  //         this.assignTruckDialogVisible = false;
+  //         this.functions.displaySuccess("Truck types assigned to");
+  //         this.getCompanyDrivers(); // Reload drivers to reflect updates
+  //       },
+  //       (error) => {
+  //         const errorMessage =
+  //           error.error?.message ||  
+  //           (typeof error.error === 'string' ? error.error : null) ||  
+  //           error.message || // General HTTP error message
+  //           'An unknown error occurred';
+  //         this.functions.displayError(errorMessage);
+  //       }
+  //     );
+  //   }
+  // }
   assignTruckTypes(): void {
     if (this.assignTruckForm.valid && this.selectedDriverForAssignment) {
       const selectedTruckTypes = this.assignTruckForm.value.truckTypes;
-      const assignedTruckTypes = selectedTruckTypes.map((truckType: { value: string }) => truckType.value);
+  
+      console.log("Raw selected truck types:", selectedTruckTypes);
+  
+      if (!selectedTruckTypes || selectedTruckTypes.length === 0) {
+        console.error("No truck types selected.");
+        return;
+      }
+  
+      const assignedTruckTypes = selectedTruckTypes.map((truckType: any) => truckType.value || truckType);
+  
+      console.log("Mapped truck types to send:", assignedTruckTypes);
+  
       const driverId = this.selectedDriverForAssignment.driverID;
   
-      // Send the truckTypes directly as an array (not wrapped in an object)
       this.dataService.assignTruckTypesToDriver(driverId, assignedTruckTypes).subscribe(
         () => {
           this.assignTruckDialogVisible = false;
-          this.functions.displaySuccess("Truck types assigned to");
-          this.getCompanyDrivers(); // Reload drivers to reflect updates
+          this.functions.displaySuccess("Truck types assigned successfully.");
+          this.getCompanyDrivers(); // Refresh list
         },
         (error) => {
-          const errorMessage =
-            error.error?.message ||  
-            (typeof error.error === 'string' ? error.error : null) ||  
-            error.message || // General HTTP error message
-            'An unknown error occurred';
+          const errorMessage = error.error?.message || error.message || 'An unknown error occurred';
           this.functions.displayError(errorMessage);
         }
       );

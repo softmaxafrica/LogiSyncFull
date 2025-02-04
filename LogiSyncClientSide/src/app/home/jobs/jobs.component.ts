@@ -27,6 +27,9 @@ import { Contract } from '../../models/contract';
   styleUrls: ['../billing/invoices/invoices.component.css']
 })
 export class JobsComponent implements OnInit {
+
+
+
   RequestToDelete: any;
 
 
@@ -417,7 +420,7 @@ this.newJobRequest.companyID=this.companyId;
   
    closeJobDialog() {
      
-    this.reloadPage();
+    // this.reloadPage();
     this.getAvailableTrucks('');
 
      }
@@ -455,7 +458,7 @@ this.newJobRequest.companyID=this.companyId;
     // Set active request
     this.activeRequest = { ...ActiveReq };
      if(ActiveReq.requestType.includes(AppConstants.TRUCK_REQUEST_TYPE) &&
-     ((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE")))
+     ((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE") || (ActiveReq.status=="CHOOSE TRUCK DRIVER") ))
     {
       this.getAvailableTrucks(this.activeRequest.truckType);
       this.showTruckContent=true;
@@ -475,7 +478,7 @@ this.newJobRequest.companyID=this.companyId;
      
      
       if(this.activeRequest.requestType.includes(AppConstants.DRIVER_REQUEST_TYPE) &&
-      ((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE"))){
+      ((ActiveReq.status =="READY FOR INVOICE") || (ActiveReq.status=="CHOOSE TRUCK DRIVER") || (ActiveReq.status =="READY TO SERVE"))){
         this.getAvailableDrivers(this.companyId);
         this.showDriverContent=true;
       }
@@ -485,7 +488,7 @@ this.newJobRequest.companyID=this.companyId;
         this.showDriverContent=false;
         this.showTruckContent=false;
       }
-      if((ActiveReq.status =="READY FOR INVOICE")|| (ActiveReq.status =="READY TO SERVE")||
+      if((ActiveReq.status =="READY FOR INVOICE") || (ActiveReq.status=="CHOOSE TRUCK DRIVER") || (ActiveReq.status =="READY TO SERVE")||
       (ActiveReq.status=="CANCELLED") || (ActiveReq.status.includes("PENDING"))|| 
       (ActiveReq.status.includes("DRAFT"))  || (ActiveReq.status.includes("INCOMPLETE ADVANCE PAYMENT")))
         {
@@ -648,5 +651,12 @@ onSearch() {
 }
    
 
+//#endregion
+
+
+//#region  TrackingService
+openTracking(arg0: any) {
+  throw new Error('Method not implemented.');
+  }
 //#endregion
 }

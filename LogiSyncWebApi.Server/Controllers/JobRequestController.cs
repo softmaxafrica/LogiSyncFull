@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using LogiSync.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LogiSyncWebApi.Server.Controllers
 {
@@ -132,7 +133,7 @@ namespace LogiSyncWebApi.Server.Controllers
                             (jr.Status == "CREATED") || (jr.Status == "ON AGREEMENT") ||
                             jr.Status != "CANCELLED" &&
                             //(jr.Status != "READY FOR INVOICE" || 
-                            (((jr.Status == "READY FOR INVOICE")  || (jr.Status == "ONGOING INVOICE GENERATION")|| (jr.Status == "READY TO SERVE") || (jr.Status== "INCOMPLETE ADVANCE PAYMENT") && jr.AssignedCompany == CompanyID)))
+                            (((jr.Status == "READY FOR INVOICE")  || (jr.Status == "ONGOING INVOICE GENERATION")|| (jr.Status == "READY TO SERVE") || (jr.Status == "CHOOSE TRUCK DRIVER") || (jr.Status== "INCOMPLETE ADVANCE PAYMENT") && jr.AssignedCompany == CompanyID)))
                         .ToList();
 
                     // Check if any job requests exist
@@ -208,7 +209,7 @@ namespace LogiSyncWebApi.Server.Controllers
                             jr.Status != "CANCELLED" &&
                             
                             //(jr.Status != "READY FOR INVOICE" || 
-                            (((jr.Status == "READY FOR INVOICE") || (jr.Status == "ONGOING INVOICE GENERATION") || (jr.Status == "READY TO SERVE") || (jr.Status == "INCOMPLETE ADVANCE PAYMENT"))))
+                            (((jr.Status == "READY FOR INVOICE") || (jr.Status == "ONGOING INVOICE GENERATION") || (jr.Status == "READY TO SERVE") || (jr.Status== "CHOOSE TRUCK DRIVER") || (jr.Status == "INCOMPLETE ADVANCE PAYMENT"))))
                         .ToList();
 
                     // Check if any job requests exist
@@ -332,161 +333,173 @@ namespace LogiSyncWebApi.Server.Controllers
                         {
                             return NotFound("Job Request not found");
                         }
-                        #region Updating Existing JobRequest 
-                        // Update JobRequest fields if provided
-                        existingJobRequest.PickupLocation = string.IsNullOrEmpty(updatedJobRequest.PickupLocation) ? existingJobRequest.PickupLocation : updatedJobRequest.PickupLocation;
-                        existingJobRequest.DeliveryLocation = string.IsNullOrEmpty(updatedJobRequest.DeliveryLocation) ? existingJobRequest.DeliveryLocation : updatedJobRequest.DeliveryLocation;
-                        existingJobRequest.CargoDescription = string.IsNullOrEmpty(updatedJobRequest.CargoDescription) ? existingJobRequest.CargoDescription : updatedJobRequest.CargoDescription;
-                        existingJobRequest.ContainerNumber = string.IsNullOrEmpty(updatedJobRequest.ContainerNumber) ? existingJobRequest.ContainerNumber : updatedJobRequest.ContainerNumber;
 
-
-                        if (updatedJobRequest.CompanyAdvanceAmountRequred !=null && updatedJobRequest.CompanyAdvanceAmountRequred > 0)
-                            existingJobRequest.CompanyAdvanceAmountRequred = updatedJobRequest.CompanyAdvanceAmountRequred.Value;
-
-                        if (updatedJobRequest.FirstDepositAmount.HasValue && updatedJobRequest.FirstDepositAmount != existingJobRequest.FirstDepositAmount)
-                            existingJobRequest.FirstDepositAmount = updatedJobRequest.FirstDepositAmount.Value;
-
-                        if ((updatedJobRequest.RequestedPrice > 0) && (updatedJobRequest.AcceptedPrice == 0|| updatedJobRequest.AcceptedPrice==null))
+                        if (((existingJobRequest.Status == "READY TO SERVE") || (existingJobRequest.Status== "CHOOSE TRUCK DRIVER")) && (!updatedJobRequest.TruckID.IsNullOrEmpty() || !updatedJobRequest.DriverID.IsNullOrEmpty()))
                         {
-                            updatedJobRequest.Status = "ON AGREEMENT";
-                        }
+                            existingJobRequest.TruckID = updatedJobRequest.TruckID;
+                            existingJobRequest.DriverID = updatedJobRequest.DriverID;
 
-                        //Check if customer first Deposit Not Supplied But company Already Agree on price then set first deposit to 30 Percent of AgreedPRICE
-                        //if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID != null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
-                        //{
-                        //    if (existingJobRequest.InvoiceNumber == null)
-                        //    {
-                        //        updatedJobRequest.Status = "READY FOR INVOICE";
-                        //    }
-                        //    existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
-                        //    existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
-                        //}
-
-                        //update The Request Status if all agreement done( Price and (Temporary Removed FirstDeposit Checking)  / after assigned price agreement id)
-                        if ((updatedJobRequest.AcceptedPrice > 0) && (updatedJobRequest.CompanyAdvanceAmountRequred > 0) || (existingJobRequest.CompanyAdvanceAmountRequred>0))
-                        {
-                            if (existingJobRequest.InvoiceNumber == null)
-                            {
-                                updatedJobRequest.Status = "READY FOR INVOICE";
-                            }
-                            existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
-                            existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
-                        }
-
-                        existingJobRequest.Status = string.IsNullOrEmpty(updatedJobRequest.Status) ? existingJobRequest.Status : updatedJobRequest.Status;
-
-
-                        existingJobRequest.TruckID = string.IsNullOrEmpty(updatedJobRequest.TruckID) ? existingJobRequest.TruckID : updatedJobRequest.TruckID;
-                        existingJobRequest.DriverID= string.IsNullOrEmpty(updatedJobRequest.DriverID) ? existingJobRequest.DriverID : updatedJobRequest.DriverID;
-
-                        existingJobRequest.CustomerID = string.IsNullOrEmpty(updatedJobRequest.CustomerID) ? existingJobRequest.CustomerID : updatedJobRequest.CustomerID;
-                      
-
-                        existingJobRequest.Udate = SysDate;
-
-                        #endregion
-
-                        var existingPriceAgreement = db.PriceAgreements.FirstOrDefault(pa => pa.CompanyID == updatedJobRequest.CompanyID && pa.JobRequestID == updatedJobRequest.JobRequestID);
-                        if (existingPriceAgreement == null)
-                        {
-                            PriceAgreementController PriceCntrl = new PriceAgreementController(_context);
-
-                            PriceAgreementPayload priceDetails = new PriceAgreementPayload
-                            {
-                                PriceAgreementID = Functions.GeneratePriceAgreementId(),
-                                CompanyPrice = updatedJobRequest.RequestedPrice,
-                                AgreedPrice = updatedJobRequest.AcceptedPrice,
-                                CustomerPrice = updatedJobRequest.CustomerPrice,
-                                JobRequestID = updatedJobRequest.JobRequestID,
-                                CustomerID = updatedJobRequest.CustomerID,
-                                CompanyID = updatedJobRequest.CompanyID,
-                            };
-                            var priceInsertResult = await PriceCntrl.NewPriceAgreement(priceDetails);
-
-                            var CreatedPriceAgreement = db.PriceAgreements.FirstOrDefault(pa => pa.PriceAgreementID == priceDetails.PriceAgreementID);
-
-                            CreatedPriceAgreement.CompanyPrice = updatedJobRequest.RequestedPrice;
-                            CreatedPriceAgreement.AgreedPrice = updatedJobRequest.AcceptedPrice;
-                            CreatedPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice;
-                            CreatedPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
-                            CreatedPriceAgreement.CustomerID = updatedJobRequest.CustomerID;
-                            CreatedPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
 
                         }
-                        // Find the associated PriceAgreement using the PriceAgreementID
                         else
                         {
-                            existingJobRequest.PriceAgreementID = existingPriceAgreement.PriceAgreementID;
-                            // Update PriceAgreement fields if provided
-                            if (updatedJobRequest.RequestedPrice.HasValue && updatedJobRequest.RequestedPrice > 0)
-                                existingPriceAgreement.CompanyPrice = updatedJobRequest.RequestedPrice.Value;
-                            if (updatedJobRequest.AcceptedPrice.HasValue && updatedJobRequest.AcceptedPrice > 0)
+
+
+                            #region Updating Existing JobRequest 
+                            // Update JobRequest fields if provided
+                            existingJobRequest.PickupLocation = string.IsNullOrEmpty(updatedJobRequest.PickupLocation) ? existingJobRequest.PickupLocation : updatedJobRequest.PickupLocation;
+                            existingJobRequest.DeliveryLocation = string.IsNullOrEmpty(updatedJobRequest.DeliveryLocation) ? existingJobRequest.DeliveryLocation : updatedJobRequest.DeliveryLocation;
+                            existingJobRequest.CargoDescription = string.IsNullOrEmpty(updatedJobRequest.CargoDescription) ? existingJobRequest.CargoDescription : updatedJobRequest.CargoDescription;
+                            existingJobRequest.ContainerNumber = string.IsNullOrEmpty(updatedJobRequest.ContainerNumber) ? existingJobRequest.ContainerNumber : updatedJobRequest.ContainerNumber;
+
+
+                            if (updatedJobRequest.CompanyAdvanceAmountRequred != null && updatedJobRequest.CompanyAdvanceAmountRequred > 0)
+                                existingJobRequest.CompanyAdvanceAmountRequred = updatedJobRequest.CompanyAdvanceAmountRequred.Value;
+
+                            if (updatedJobRequest.FirstDepositAmount.HasValue && updatedJobRequest.FirstDepositAmount != existingJobRequest.FirstDepositAmount)
+                                existingJobRequest.FirstDepositAmount = updatedJobRequest.FirstDepositAmount.Value;
+
+                            if ((updatedJobRequest.RequestedPrice > 0) && (updatedJobRequest.AcceptedPrice == 0 || updatedJobRequest.AcceptedPrice == null))
                             {
+                                updatedJobRequest.Status = "ON AGREEMENT";
+                            }
 
-                                existingPriceAgreement.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
+                            //Check if customer first Deposit Not Supplied But company Already Agree on price then set first deposit to 30 Percent of AgreedPRICE
+                            //if ((updatedJobRequest.AcceptedPrice > 0 || existingJobRequest.PriceAgreementID != null) && updatedJobRequest.CompanyAdvanceAmountRequred > 0 && (updatedJobRequest.CompanyAdvanceAmountRequred <= updatedJobRequest.FirstDepositAmount || existingJobRequest.FirstDepositAmount >= updatedJobRequest.CompanyAdvanceAmountRequred))
+                            //{
+                            //    if (existingJobRequest.InvoiceNumber == null)
+                            //    {
+                            //        updatedJobRequest.Status = "READY FOR INVOICE";
+                            //    }
+                            //    existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
+                            //    existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
+                            //}
 
-                                var existingContract = await _context.Contracts.FirstOrDefaultAsync(c => c.RequestID == updatedJobRequest.JobRequestID);
-                                if (existingContract == null)
+                            //update The Request Status if all agreement done( Price and (Temporary Removed FirstDeposit Checking)  / after assigned price agreement id)
+                            if ((updatedJobRequest.AcceptedPrice > 0) && (updatedJobRequest.CompanyAdvanceAmountRequred > 0) || (existingJobRequest.CompanyAdvanceAmountRequred > 0))
+                            {
+                                if (existingJobRequest.InvoiceNumber == null)
                                 {
-                                    Contract newContr = new Contract();
-                                    newContr.RequestID = updatedJobRequest.JobRequestID;
-                                    newContr.CompanyID = updatedJobRequest.CompanyID;
-                                    newContr.CustomerID = updatedJobRequest.CustomerID;
-                                    newContr.AdvancePayment = updatedJobRequest.FirstDepositAmount;
-                                    newContr.ContractDate = DateTime.UtcNow.ToLocalTime();
-                                    newContr.AgreedPrice = updatedJobRequest.AcceptedPrice;
-                                    newContr.ContractID = Functions.GenerateContractId();
+                                    updatedJobRequest.Status = "READY FOR INVOICE";
+                                }
+                                existingJobRequest.AssignedCompany = updatedJobRequest.CompanyID;
+                                existingJobRequest.PriceAgreementID = updatedJobRequest.PriceAgreementID;
+                            }
 
-                                    await contractContr.CreateContract(newContr);
-                                    existingJobRequest.ContractId = newContr.ContractID;
+                            existingJobRequest.Status = string.IsNullOrEmpty(updatedJobRequest.Status) ? existingJobRequest.Status : updatedJobRequest.Status;
 
+
+                            existingJobRequest.TruckID = string.IsNullOrEmpty(updatedJobRequest.TruckID) ? existingJobRequest.TruckID : updatedJobRequest.TruckID;
+                            existingJobRequest.DriverID = string.IsNullOrEmpty(updatedJobRequest.DriverID) ? existingJobRequest.DriverID : updatedJobRequest.DriverID;
+
+                            existingJobRequest.CustomerID = string.IsNullOrEmpty(updatedJobRequest.CustomerID) ? existingJobRequest.CustomerID : updatedJobRequest.CustomerID;
+
+
+                            existingJobRequest.Udate = SysDate;
+
+                            #endregion
+
+                            var existingPriceAgreement = db.PriceAgreements.FirstOrDefault(pa => pa.CompanyID == updatedJobRequest.CompanyID && pa.JobRequestID == updatedJobRequest.JobRequestID);
+                            if (existingPriceAgreement == null)
+                            {
+                                PriceAgreementController PriceCntrl = new PriceAgreementController(_context);
+
+                                PriceAgreementPayload priceDetails = new PriceAgreementPayload
+                                {
+                                    PriceAgreementID = Functions.GeneratePriceAgreementId(),
+                                    CompanyPrice = updatedJobRequest.RequestedPrice,
+                                    AgreedPrice = updatedJobRequest.AcceptedPrice,
+                                    CustomerPrice = updatedJobRequest.CustomerPrice,
+                                    JobRequestID = updatedJobRequest.JobRequestID,
+                                    CustomerID = updatedJobRequest.CustomerID,
+                                    CompanyID = updatedJobRequest.CompanyID,
+                                };
+                                var priceInsertResult = await PriceCntrl.NewPriceAgreement(priceDetails);
+
+                                var CreatedPriceAgreement = db.PriceAgreements.FirstOrDefault(pa => pa.PriceAgreementID == priceDetails.PriceAgreementID);
+
+                                CreatedPriceAgreement.CompanyPrice = updatedJobRequest.RequestedPrice;
+                                CreatedPriceAgreement.AgreedPrice = updatedJobRequest.AcceptedPrice;
+                                CreatedPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice;
+                                CreatedPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
+                                CreatedPriceAgreement.CustomerID = updatedJobRequest.CustomerID;
+                                CreatedPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
+
+                            }
+                            // Find the associated PriceAgreement using the PriceAgreementID
+                            else
+                            {
+                                existingJobRequest.PriceAgreementID = existingPriceAgreement.PriceAgreementID;
+                                // Update PriceAgreement fields if provided
+                                if (updatedJobRequest.RequestedPrice.HasValue && updatedJobRequest.RequestedPrice > 0)
+                                    existingPriceAgreement.CompanyPrice = updatedJobRequest.RequestedPrice.Value;
+                                if (updatedJobRequest.AcceptedPrice.HasValue && updatedJobRequest.AcceptedPrice > 0)
+                                {
+
+                                    existingPriceAgreement.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
+
+                                    var existingContract = await _context.Contracts.FirstOrDefaultAsync(c => c.RequestID == updatedJobRequest.JobRequestID);
+                                    if (existingContract == null)
+                                    {
+                                        Contract newContr = new Contract();
+                                        newContr.RequestID = updatedJobRequest.JobRequestID;
+                                        newContr.CompanyID = updatedJobRequest.CompanyID;
+                                        newContr.CustomerID = updatedJobRequest.CustomerID;
+                                        newContr.AdvancePayment = updatedJobRequest.FirstDepositAmount;
+                                        newContr.ContractDate = DateTime.UtcNow.ToLocalTime();
+                                        newContr.AgreedPrice = updatedJobRequest.AcceptedPrice;
+                                        newContr.ContractID = Functions.GenerateContractId();
+
+                                        await contractContr.CreateContract(newContr);
+                                        existingJobRequest.ContractId = newContr.ContractID;
+
+                                    }
+                                    else
+                                    {
+                                        // Update the existing contract's details
+                                        existingContract.CompanyID = updatedJobRequest.CompanyID;
+                                        //existingContract.CustomerID = updatedJobRequest.CustomerID;
+                                        //existingContract.AdvancePayment = updatedJobRequest.FirstDepositAmount;
+                                        existingContract.ContractDate = DateTime.UtcNow.ToLocalTime();
+                                        existingContract.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
+
+                                        // Save changes to the updated contract
+                                        _context.Contracts.Update(existingContract);
+                                        //  await _context.SaveChangesAsync();
+
+                                        // Update the contract ID in the job request if necessary
+                                        existingJobRequest.ContractId = existingContract.ContractID;
+
+                                        Console.WriteLine($"Updated existing contract for JobRequestID: {updatedJobRequest.JobRequestID}");
+                                    }
                                 }
                                 else
                                 {
-                                    // Update the existing contract's details
-                                    existingContract.CompanyID = updatedJobRequest.CompanyID;
-                                    //existingContract.CustomerID = updatedJobRequest.CustomerID;
-                                    //existingContract.AdvancePayment = updatedJobRequest.FirstDepositAmount;
-                                    existingContract.ContractDate = DateTime.UtcNow.ToLocalTime();
-                                    existingContract.AgreedPrice = updatedJobRequest.AcceptedPrice.Value;
-
-                                    // Save changes to the updated contract
-                                    _context.Contracts.Update(existingContract);
-                                  //  await _context.SaveChangesAsync();
-
-                                    // Update the contract ID in the job request if necessary
-                                    existingJobRequest.ContractId = existingContract.ContractID;
-
-                                    Console.WriteLine($"Updated existing contract for JobRequestID: {updatedJobRequest.JobRequestID}");
+                                    Console.WriteLine($"Contract already exists for JobRequestID: {updatedJobRequest.JobRequestID}");
                                 }
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Contract already exists for JobRequestID: {updatedJobRequest.JobRequestID}");
-                            }
 
-                            if (updatedJobRequest.CustomerPrice.HasValue && updatedJobRequest.CustomerPrice > 0)
-                                existingPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice.Value;
-                            existingPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
-                            existingPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
-                            existingPriceAgreement.CustomerID = updatedJobRequest.CustomerID;
+                                if (updatedJobRequest.CustomerPrice.HasValue && updatedJobRequest.CustomerPrice > 0)
+                                    existingPriceAgreement.CustomerPrice = updatedJobRequest.CustomerPrice.Value;
+                                existingPriceAgreement.CompanyID = updatedJobRequest.CompanyID;
+                                existingPriceAgreement.JobRequestID = updatedJobRequest.JobRequestID;
+                                existingPriceAgreement.CustomerID = updatedJobRequest.CustomerID;
 
-                            if ((((updatedJobRequest.AcceptedPrice > 0) || existingJobRequest.PriceAgreement.AgreedPrice > 0) && ((updatedJobRequest.FirstDepositAmount == 0) || (existingJobRequest.FirstDepositAmount) == 0)))
-                            {
-                                if (updatedJobRequest.AcceptedPrice < 1)
+                                if ((((updatedJobRequest.AcceptedPrice > 0) || existingJobRequest.PriceAgreement.AgreedPrice > 0) && ((updatedJobRequest.FirstDepositAmount == 0) || (existingJobRequest.FirstDepositAmount) == 0)))
                                 {
-                                    existingJobRequest.FirstDepositAmount = existingJobRequest.PriceAgreement.AgreedPrice * 0.3;
+                                    if (updatedJobRequest.AcceptedPrice < 1)
+                                    {
+                                        existingJobRequest.FirstDepositAmount = existingJobRequest.PriceAgreement.AgreedPrice * 0.3;
+                                    }
+                                    else { existingJobRequest.FirstDepositAmount = updatedJobRequest.AcceptedPrice * 0.3; }
                                 }
-                                else { existingJobRequest.FirstDepositAmount = updatedJobRequest.AcceptedPrice * 0.3; }
+                                else if (updatedJobRequest.FirstDepositAmount.HasValue && (updatedJobRequest.FirstDepositAmount > 0))
+                                {
+                                    existingJobRequest.FirstDepositAmount = updatedJobRequest.FirstDepositAmount;
+                                }
                             }
-                            else if (updatedJobRequest.FirstDepositAmount.HasValue && (updatedJobRequest.FirstDepositAmount > 0))
-                            {
-                                existingJobRequest.FirstDepositAmount = updatedJobRequest.FirstDepositAmount;
-                            }
+
+
                         }
-
-                    
-
                         // Save changes to both JobRequest and PriceAgreement
                         db.SaveChanges();
                         transaction.Commit();
@@ -587,6 +600,7 @@ namespace LogiSyncWebApi.Server.Controllers
                     {
                         return NotFound("Job Request not found");
                     }
+                   
 
                     #region Updating Existing JobRequest
                     existingJobRequest.Status = newStatus;

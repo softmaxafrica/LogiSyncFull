@@ -244,7 +244,7 @@ namespace LogiSyncWebApi.Server.Controllers
 
             if(Job.FirstDepositAmount<= invoice.TotalPaidAmount)
             {
-                Job.Status = "READY TO SERVE";
+                Job.Status = "CHOOSE TRUCK DRIVER";
             }
             else
             {

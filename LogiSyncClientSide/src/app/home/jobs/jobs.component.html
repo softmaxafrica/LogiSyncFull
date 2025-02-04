@@ -65,6 +65,13 @@
                  width="50px" 
                  (click)="DeleteRequest(job)" 
                  />
+
+                 <!-- New Tracking Icon -->
+                <img 
+                src="assets/images/icons/tracking.png" 
+                width="50px"
+                (click)="openTracking(job.truckID)"
+  />
                </td>
             </tr>
           </ng-template>
