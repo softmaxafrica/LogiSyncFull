@@ -24,7 +24,8 @@ import { TagModule } from 'primeng/tag';
  import { SharedModule } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { JobDetailsComponent } from './jobs/job-details/job-details.component';
-  
+import { TrackingServiceComponent } from './tracking-service/tracking-service.component';
+ 
 @NgModule({
   declarations: [
    

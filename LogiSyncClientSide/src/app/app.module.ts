@@ -134,7 +134,7 @@ import { DriverVettingComponent } from './home/drivers/driver-vetting/driver-vet
 import { JobDetailsComponent } from './home/jobs/job-details/job-details.component';
 import { CustomersComponent } from './home/customers/customers.component';
 import { TrackingServiceComponent } from './home/tracking-service/tracking-service.component';
-    export function HttpLoaderFactory(httpClient: HttpClient) {
+   export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
 
@@ -176,7 +176,6 @@ import { TrackingServiceComponent } from './home/tracking-service/tracking-servi
     FieldsetModule,
     BrowserAnimationsModule,
     BrowserModule,  
-    DrawerModule,
     AppRoutingModule,
     DividerModule,
     FloatLabelModule,

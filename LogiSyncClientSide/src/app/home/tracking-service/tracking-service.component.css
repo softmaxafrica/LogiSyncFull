@@ -28,7 +28,7 @@
   }
   
   .toggle-btn {
-    position: absolute;
+    position: relative;
     left: 15px;
     top: 15px;
     border: none;
