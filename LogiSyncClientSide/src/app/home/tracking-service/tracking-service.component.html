@@ -1,1 +1,44 @@
-<p>tracking-service works!</p>
+ 
+
+    <div class="card flex justify-center">
+        
+    </div>
+
+
+<div class="tracking-container">
+    <!-- Google Map (Left Side) -->
+    <div class="map-container">
+   
+  
+        <!-- Multiple Trucks Markers -->
+      
+    </div>
+  
+    <!-- Truck Info Panel (Right Side) -->
+    <div class="info-panel" *ngIf="showInfoPanel">
+      <button class="close-btn" (click)="toggleInfoPanel()">×</button>
+      <h2>Truck Details</h2>
+  
+      <!-- Single Truck Info -->
+      <div *ngIf="truckId">
+        <p><strong>Truck ID:</strong> {{ truckId }}</p>
+        <p><strong>Latitude:</strong>   </p>
+        <p><strong>Longitude:</strong> </p>
+      </div>
+  
+      <!-- Multiple Trucks -->
+      <div *ngIf="!truckId">
+        <h3>All Trucks</h3>
+        <ul>
+          <li *ngFor="let truck of truckLocations | keyvalue">
+            <strong>{{ truck.key }}:</strong>  
+          </li>
+        </ul>
+      </div>
+    </div>
+  
+    <!-- Toggle Button for Info Panel -->
+    <button class="toggle-btn" (click)="toggleInfoPanel()">☰</button>
+  </div>
+  
+ 

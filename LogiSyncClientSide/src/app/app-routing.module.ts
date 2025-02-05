@@ -15,6 +15,7 @@ import { DriverListingComponent } from './home/drivers/driver-listing/listing.co
 import { DriverVettingComponent } from './home/drivers/driver-vetting/driver-vetting.component';
 import { JobDetailsComponent } from './home/jobs/job-details/job-details.component';
 import { CustomersComponent } from './home/customers/customers.component';
+import { TrackingServiceComponent } from './home/tracking-service/tracking-service.component';
     
 const routes: Routes = [
   { path: '', redirectTo: 'home/landing', pathMatch: 'full' },
@@ -31,6 +32,10 @@ const routes: Routes = [
   { path: 'home/customers', component: CustomersComponent,canActivate: [AuthService] },
   
   { path: 'home/trucks', component: TrucksComponent, canActivate: [AuthService] },
+  
+  { path: 'home/live_track', component: TrackingServiceComponent, canActivate: [AuthService] },
+  { path: 'home/live_track/:truckId', component: TrackingServiceComponent, canActivate: [AuthService] },
+  
   
   { path: 'home/jobs', component: JobsComponent, canActivate: [AuthService] },
   { path: 'job-details/:jobRequestID', component: JobDetailsComponent , canActivate: [AuthService]},

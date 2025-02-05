@@ -420,7 +420,7 @@ this.newJobRequest.companyID=this.companyId;
   
    closeJobDialog() {
      
-    // this.reloadPage();
+      this.reloadPage();
     this.getAvailableTrucks('');
 
      }
@@ -490,7 +490,7 @@ this.newJobRequest.companyID=this.companyId;
       }
       if((ActiveReq.status =="READY FOR INVOICE") || (ActiveReq.status=="CHOOSE TRUCK DRIVER") || (ActiveReq.status =="READY TO SERVE")||
       (ActiveReq.status=="CANCELLED") || (ActiveReq.status.includes("PENDING"))|| 
-      (ActiveReq.status.includes("DRAFT"))  || (ActiveReq.status.includes("INCOMPLETE ADVANCE PAYMENT")))
+      (ActiveReq.status.includes("DRAFT"))  || (ActiveReq.status.includes("INCOMPLETE ADVANCE PAYMENT")) || (ActiveReq.status.includes("ONGOING INVOICE GENERATION")))
         {
           this.loadPriceDetails(ActiveReq.priceAgreementID);
           this.showPriceContent=false;
@@ -655,8 +655,13 @@ onSearch() {
 
 
 //#region  TrackingService
-openTracking(arg0: any) {
-  throw new Error('Method not implemented.');
+openTracking(truckId?: string) {
+  if (truckId) {
+    this.router.navigate(['/home/live_track', truckId]); 
+  } else {
+    this.router.navigate(['/home/live_track']); 
   }
+}
+
 //#endregion
 }

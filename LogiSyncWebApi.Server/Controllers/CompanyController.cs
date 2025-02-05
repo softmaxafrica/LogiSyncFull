@@ -46,10 +46,39 @@ namespace LogiSyncWebApi.Server.Controllers
         }
         #endregion
 
+
+        #region GetCompanyById
+        [HttpGet]
+        [Route("GetCompanyById/{CompanyId}")]
+        public IActionResult GetCompanyById(string CompanyId)
+        {
+            var executionResult = new ExecutionResult();
+            string functionName = nameof(GetCompanyById);
+
+            try
+            {
+                using (var db = new AppDbContext(_config))
+                {
+                    var company = db.Companies.FirstOrDefault(c => c.CompanyID == CompanyId);
+                    if (company == null)
+                    {
+                        return NotFound("Company not found");
+                    }
+                    executionResult.SetData(company);
+                    return Ok(executionResult.GetServerResponse());
+                }
+            }
+            catch (Exception ex)
+            {
+                executionResult.SetInternalServerError(nameof(CompanyController), functionName, ex);
+                return StatusCode(executionResult.GetStatusCode(), executionResult.GetServerResponse().Message);
+            }
+        }
+        #endregion
         #region GetCompanyById
         [HttpGet]
         [Route("GetCompanyByTinNumber/{TinNumber}")]
-        public IActionResult GetCompanyById(string TinNumber)
+        public IActionResult GetCompanyByTinNumber(string TinNumber)
         {
             var executionResult = new ExecutionResult();
             string functionName = nameof(GetCompanyById);

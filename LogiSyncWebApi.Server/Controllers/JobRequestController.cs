@@ -338,6 +338,7 @@ namespace LogiSyncWebApi.Server.Controllers
                         {
                             existingJobRequest.TruckID = updatedJobRequest.TruckID;
                             existingJobRequest.DriverID = updatedJobRequest.DriverID;
+                            existingJobRequest.Status = "READY TO SERVE";
 
 
                         }

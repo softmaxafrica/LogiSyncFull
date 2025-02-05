@@ -133,7 +133,8 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { DriverVettingComponent } from './home/drivers/driver-vetting/driver-vetting.component';
 import { JobDetailsComponent } from './home/jobs/job-details/job-details.component';
 import { CustomersComponent } from './home/customers/customers.component';
-   export function HttpLoaderFactory(httpClient: HttpClient) {
+import { TrackingServiceComponent } from './home/tracking-service/tracking-service.component';
+    export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
 
@@ -154,7 +155,8 @@ import { CustomersComponent } from './home/customers/customers.component';
     InvoicesComponent,
     PaymentsComponent,
     PriceAgreementComponent,
-    TrucksComponent
+    TrucksComponent,
+    TrackingServiceComponent
     ],
   imports: [
     
@@ -174,6 +176,7 @@ import { CustomersComponent } from './home/customers/customers.component';
     FieldsetModule,
     BrowserAnimationsModule,
     BrowserModule,  
+    DrawerModule,
     AppRoutingModule,
     DividerModule,
     FloatLabelModule,
