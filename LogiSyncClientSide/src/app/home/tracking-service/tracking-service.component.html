@@ -1,45 +1,36 @@
- 
+<p-card>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtyb_hRlQoEhe1aJMEbKL02JvFTIC6kI4&libraries=places,advanced_markers"></script>
 
- <p-card>
   <button class="toggle-btn" (click)="toggleInfoPanel()">☰</button>
 
-   <div class="card flex justify-center">
-        
-    </div>
-
-
-<div class="tracking-container">
-    <!-- Google Map (Left Side) -->
+  <div class="tracking-container">
+    <!-- Google Map -->
     <div class="map-container">
-   
-  
-       
+      <div id="map"></div>
     </div>
-  
-    <!-- Truck Info Panel (Right Side) -->
+
+    <!-- Truck Info Panel -->
     <div class="info-panel" *ngIf="showInfoPanel">
       <button class="close-btn" (click)="toggleInfoPanel()">×</button>
       <h2>Truck Details</h2>
-  
+
       <!-- Single Truck Info -->
-      <div *ngIf="truckId">
+      <div *ngIf="truckId && truckLocations[truckId]">
         <p><strong>Truck ID:</strong> {{ truckId }}</p>
-        <p><strong>Latitude:</strong>   </p>
-        <p><strong>Longitude:</strong> </p>
+        <p><strong>Latitude:</strong> {{ truckLocations[truckId].latitude }}</p>
+        <p><strong>Longitude:</strong> {{ truckLocations[truckId].longitude }}</p>
       </div>
-  
+
       <!-- Multiple Trucks -->
       <div *ngIf="!truckId">
         <h3>All Trucks</h3>
         <ul>
           <li *ngFor="let truck of truckLocations | keyvalue">
-            <strong>{{ truck.key }}:</strong>  
+            <strong>{{ truck.key }}:</strong> ({{ truck.value.latitude }}, {{ truck.value.longitude }})
           </li>
         </ul>
       </div>
     </div>
-  
-    <!-- Toggle Button for Info Panel -->
   </div>
-  
 </p-card>
+

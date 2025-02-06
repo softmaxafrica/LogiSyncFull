@@ -258,22 +258,15 @@ namespace LogiSyncWebApi.Server.Controllers
                 JobRequestID = Functions.GenerateJobRequestId()
             };
 
-            // Create PriceAgreement object
-            PriceAgreementController PriceCntrl = new PriceAgreementController(_context);
-            PriceAgreementPayload priceDetails = new PriceAgreementPayload
-            {
-                PriceAgreementID = Functions.GeneratePriceAgreementId(),
-                CompanyPrice = newJobRequest.RequestedPrice,
-                AgreedPrice = newJobRequest.AcceptedPrice,
-                CustomerPrice = newJobRequest.CustomerPrice,
-                CompanyID=newJobRequest.CompanyID,
-                JobRequestID= payload.JobRequestID,
-                CustomerID=newJobRequest.CustomerID
-            };
+            _context.JobRequests.Add(payload);
+            await _context.SaveChangesAsync();
+
+          
             using (var transaction = _context.Database.BeginTransaction()) // Start transaction
             {
-                var priceInsertResult = await PriceCntrl.NewPriceAgreement(priceDetails);
-                var priceDataResult = priceInsertResult.GetData();
+                try
+                {
+               
 
                 // Convert empty string fields to null for nullable fields
                 payload.PickupLocation = string.IsNullOrEmpty(newJobRequest.PickupLocation) ? null : newJobRequest.PickupLocation;
@@ -288,15 +281,32 @@ namespace LogiSyncWebApi.Server.Controllers
 
                 payload.CustomerID = string.IsNullOrEmpty(newJobRequest.CustomerID) ? "NOT SET" : newJobRequest.CustomerID;
 
-                // Set PriceAgreementID
-                payload.PriceAgreementID = priceDetails.PriceAgreementID;
+               
                 payload.Cdate = SysDate;
 
-                try
-                {
+
+                    // Create PriceAgreement object
+                    PriceAgreementController PriceCntrl = new PriceAgreementController(_context);
+                    PriceAgreementPayload priceDetails = new PriceAgreementPayload
+                    {
+                        PriceAgreementID = Functions.GeneratePriceAgreementId(),
+                        CompanyPrice = newJobRequest.RequestedPrice,
+                        AgreedPrice = newJobRequest.AcceptedPrice,
+                        CustomerPrice = newJobRequest.CustomerPrice,
+                        CompanyID = newJobRequest.CompanyID,
+                        JobRequestID = payload.JobRequestID,
+                        CustomerID = newJobRequest.CustomerID
+                    };
+                    var priceInsertResult = await PriceCntrl.NewPriceAgreement(priceDetails);
+                    var priceDataResult = priceInsertResult.GetData();
+
+                     // Set PriceAgreementID
+                     payload.PriceAgreementID = priceDetails.PriceAgreementID;
+
                     // Save the new JobRequest
-                    _context.JobRequests.Add(payload);
+                    //_context.JobRequests.Add(payload);
                     await _context.SaveChangesAsync();
+
                     transaction.Commit();
                     executionResult.SetData(payload);
                     return Ok(executionResult.GetServerResponse());

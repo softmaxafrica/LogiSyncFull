@@ -16,5 +16,11 @@ export const AppConstants = {
   API_URL_GENERAL_TRANSLATION: 'GetGenEngTranslations',
    //working url
     //API_SERVER_URL:'https://localhost:7199/'
-    API_SERVER_URL:'https://softmaxafrica-001-site2.otempurl.com/'
+    API_SERVER_URL:'https://softmaxafrica-001-site2.otempurl.com/',
+
+    GOOGLE_API_KEY_1: 'AIzaSyBtyb_hRlQoEhe1aJMEbKL02JvFTIC6kI4',
+    GOOGLE_API_KEY_2: 'AIzaSyBdY1HqeXCsdia9TEu_-dOhQOCCBF08BZo',
+    GOOGLE_API_KEY_3: 'AIzaSyBPSQJQMD9BYxK6FRnc80EuMcwFi5aeV-8',
+ 
+
   };
